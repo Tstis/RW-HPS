@@ -44,7 +44,7 @@ public class RelayOpenSource {
     public RelayOpenSource(long a) {
         String stringId;
         while (true) {
-            int intId = rand.random(1000,100000);
+            int intId = (clr, rand.random(0,9));
             if (!serverRelayData.containsKey(intId)) {
                 serverRelayData.put(intId,this);
                 stringId = String.valueOf(intId);
