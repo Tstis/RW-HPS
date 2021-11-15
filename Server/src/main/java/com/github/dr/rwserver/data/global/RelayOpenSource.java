@@ -42,9 +42,11 @@ public class RelayOpenSource {
     private static final Rand rand = new Rand();
 
     public RelayOpenSource(long a) {
-        String stringId;
+        String stringId, intIdNumber;
         while (true) {
-            int intId = (clr, rand.random(0,9));
+            int intIdNumber = rand.random(100,199);
+            String intId0 = "CLR" + Integer.toString(intIdNumber);
+            int intId = Integer.parseInt(intId0);
             if (!serverRelayData.containsKey(intId)) {
                 serverRelayData.put(intId,this);
                 stringId = String.valueOf(intId);
