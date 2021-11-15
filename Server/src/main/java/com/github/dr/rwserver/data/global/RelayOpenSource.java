@@ -42,15 +42,14 @@ public class RelayOpenSource {
     private static final Rand rand = new Rand();
 
     public RelayOpenSource(long a) {
-        String stringId, intIdNumber;
+        String stringId;
         while (true) {
             int intIdNumber = rand.random(100,199);
-            String intId0 = "CLR" + Integer.toString(intIdNumber);
-            int intId = Integer.parseInt(intId0);
-            if (!serverRelayData.containsKey(intId)) {
-                serverRelayData.put(intId,this);
-                stringId = String.valueOf(intId);
-                Log.debug(intId);
+            String strId = "CLR" + Integer.toString(intIdNumber);
+            if (!serverRelayData.containsKey(strId)) {
+                serverRelayData.put(strId,this);
+                stringId = strId;
+                Log.debug(strId);
                 break;
             }
         }
