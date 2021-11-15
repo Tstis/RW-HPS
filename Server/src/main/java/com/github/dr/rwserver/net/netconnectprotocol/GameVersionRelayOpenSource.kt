@@ -175,7 +175,7 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
             o.writeBoolean(relayOpenSource!!.isMod) //MOD
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{RW-HPS RelayOpenSource}}.Room ID : " + relayOpenSource!!.id)
+            o.writeString("{{ЧИСТЫЙ БАЛАНС 1 - RW-HPS}} | Room ID: " + relayOpenSource!!.id)
             o.writeBoolean(false)
             sendPacket(o.createPacket(170))
 
@@ -429,7 +429,7 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
     private fun idCustom(inId: String) {
         var id = inId
         if (id.isEmpty()) {
-            sendRelayServerType(Data.localeUtil.getinput("relayOpenSource.server.no", "空"))
+            sendRelayServerType(Data.localeUtil.getinput("relayOpenSource.server.no", "-0"))
             return
         }
         if ("R".equals(id[0].toString(), ignoreCase = true)) {
