@@ -175,19 +175,20 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
             o.writeBoolean(relayOpenSource!!.isMod) //MOD
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ЧИСТЫЙ БАЛАНС 1 - RW-HPS}} | Room ID: " + relayOpenSource!!.id)
+			o.writeString("ID: " + relayOpenSource!!.id)
+			o.writeString("{{ЧИСТЫЙ БАЛАНС 1 - RW-HPS}}")
             o.writeBoolean(false)
             sendPacket(o.createPacket(170))
 
             // Server AD [RW-HPS!]
-            sendPacket(NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket("Thank you for your use, this server is RW-HPS, you can get it in Github", "RW-HPS-AD", 5))
+            //sendPacket(NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket("Thank you for your use, this server is RW-HPS, you can get it in Github", "RW-HPS-AD", 5))
 
             sendPacket(
                 NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(
                     Data.localeUtil.getinput(
                         "relayOpenSource.server.admin.connect",
                         relayOpenSource!!.id
-                    ), "ADMIN", 5
+                    ), "АДМИН", 5
                 )
             )
             sendPacket(
@@ -195,7 +196,7 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
                     Data.localeUtil.getinput(
                         "relayOpenSource",
                         relayOpenSource!!.id
-                    ), "ADMIN", 5
+                    ), "АДМИН", 5
                 )
             )
             //ping();
