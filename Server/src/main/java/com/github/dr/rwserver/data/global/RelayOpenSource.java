@@ -44,12 +44,11 @@ public class RelayOpenSource {
     public RelayOpenSource(long a) {
         String stringId;
         while (true) {
-            int intIdNumber = rand.random(100,199);
-            String strId = "CLR" + Integer.toString(intIdNumber);
-            if (!serverRelayData.containsKey(strId)) {
-                serverRelayData.put(strId,this);
-                stringId = strId;
-                Log.debug(strId);
+            int intId = rand.random(100,199);
+            if (!serverRelayData.containsKey(intId)) {
+                serverRelayData.put(intId,this);
+                stringId = String.valueOf(intId);
+                Log.debug(intId);
                 break;
             }
         }
