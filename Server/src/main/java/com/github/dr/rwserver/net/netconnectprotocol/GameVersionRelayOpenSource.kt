@@ -175,28 +175,27 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
             o.writeBoolean(relayOpenSource!!.isMod) //MOD
             o.writeBoolean(false)
             o.writeBoolean(true)
-			o.writeString("ID: " + relayOpenSource!!.id)
-			o.writeString("{{ЧИСТЫЙ БАЛАНС 1 - RW-HPS}}")
+			o.writeString("{{ ЧИСТЫЙ БАЛАНС 1 >>> z" + relayOpenSource!!.id + " }}")
             o.writeBoolean(false)
             sendPacket(o.createPacket(170))
 
             // Server AD [RW-HPS!]
             //sendPacket(NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket("Thank you for your use, this server is RW-HPS, you can get it in Github", "RW-HPS-AD", 5))
 
-            sendPacket(
-                NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(
-                    Data.localeUtil.getinput(
-                        "relayOpenSource.server.admin.connect",
-                        relayOpenSource!!.id
-                    ), "АДМИН", 5
-                )
-            )
+//            sendPacket(
+//                NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(
+//                    Data.localeUtil.getinput(
+//                        "relayOpenSource.server.admin.connect",
+//                        relayOpenSource!!.id
+//                    ), "СЕРВЕР", 10
+//                )
+//            )
             sendPacket(
                 NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(
                     Data.localeUtil.getinput(
                         "relayOpenSource",
                         relayOpenSource!!.id
-                    ), "АДМИН", 5
+                    ), "СЕРВЕР", -1
                 )
             )
             //ping();
@@ -273,7 +272,7 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
                     Data.localeUtil.getinput(
                         "relayOpenSource",
                         relayOpenSource!!.id
-                    ), "ADMIN", 5
+                    ), "СЕРВЕР", -1
                 )
             )
         } catch (e: IOException) {
@@ -403,11 +402,9 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
                 }
             } else {
                 //relay.groupNet.disconnect();
-                if (relayOpenSource!!.isStartGame) {
                     if (relayOpenSource!!.size > 0) {
                         // Move Room Admin
                         adminMoveNew()
-                    }
                 } else {
                     // Close Room
                     relayOpenSource!!.groupNet.disconnect()
@@ -433,11 +430,11 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
             sendRelayServerType(Data.localeUtil.getinput("relayOpenSource.server.no", "-0"))
             return
         }
-        if ("R".equals(id[0].toString(), ignoreCase = true)) {
+        if ("Z".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
-        } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
+		} else if ("X".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
-            if (id.length > 7 || id.length < 5) {
+            if (id.length > 5 || id.length < 3) {
                 sendRelayServerType(Data.localeUtil.getinput("relayOpenSource.id.re"))
                 return
             }
@@ -449,7 +446,7 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
                     sendRelayServerType(Data.localeUtil.getinput("relayOpenSource.id.re"))
                 }
             } else {
-                if (id.length > 6) {
+                if (id.length > 4) {
                     sendRelayServerType(Data.localeUtil.getinput("relayOpenSource.id.re"))
                     return
                 }
@@ -462,9 +459,9 @@ open class GameVersionRelayOpenSource(connectionAgreement: ConnectionAgreement?)
             return
         }
         if (IsUtil.notIsBlank(id)) {
-            if ("new".equals(id, ignoreCase = true)) {
+            if ("new".equals(id, ignoreCase = true) || "новая".equals(id, ignoreCase = true)) {
                 newRelayId(false)
-            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true)) {
+            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true) || "мод".equals(id, ignoreCase = true) || "моды".equals(id, ignoreCase = true)) {
                 newRelayId(true)
             } else {
                 try {
