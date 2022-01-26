@@ -257,7 +257,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{RW-HPS Relay}}.Room ID : " + relay!!.id)
+            o.writeString("{{ ЧИСТЫЙ БАЛАНС 1 >>> z" + relayOpenSource!!.id + " }}")
             //
             o.writeBoolean(false)
             sendPacket(o.createPacket(170)) //+108+140
@@ -267,7 +267,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                     Data.localeUtil.getinput(
                         "relay.server.admin.connect",
                         relay!!.id
-                    ), "ADMIN", 5
+                    ), "СЕРВЕР", -1
                 )
             )
             sendPacket(
@@ -275,7 +275,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                     Data.localeUtil.getinput(
                         "relay",
                         relay!!.id
-                    ), "ADMIN", 5
+                    ), "СЕРВЕР", -1
                 )
             )
             //ping();
@@ -360,7 +360,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                     Data.localeUtil.getinput(
                         "relay",
                         relay!!.id
-                    ), "ADMIN", 5
+                    ), "СЕРВЕР", -1
                 )
             )
         } catch (e: IOException) {
@@ -521,10 +521,10 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
     private fun idCustom(inId: String) {
         var id = inId
         if (id.isEmpty()) {
-            sendRelayServerType(Data.localeUtil.getinput("relay.server.no", "空"))
+            sendRelayServerType(Data.localeUtil.getinput("relay.server.no", "-0"))
             return
         }
-        if ("R".equals(id[0].toString(), ignoreCase = true)) {
+        if ("z".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
         } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
@@ -556,7 +556,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
         if (IsUtil.notIsBlank(id)) {
             if ("new".equals(id, ignoreCase = true)) {
                 newRelayId(false)
-            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true)) {
+            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true) || "мод".equals(id, ignoreCase = true) || "моды".equals(id, ignoreCase = true)) {
                 newRelayId(true)
             } else {
                 try {
