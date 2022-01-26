@@ -9,8 +9,8 @@
 
 package com.github.dr.rwserver.plugin.event
 
-import com.github.dr.rwserver.data.Player
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
+import com.github.dr.rwserver.data.player.Player
+import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 
 interface AbstractEvent {
     /** 服务器初始化 [异步-ASync]  */
@@ -34,7 +34,7 @@ interface AbstractEvent {
      * @param passwd 密码SHA256的16进
      * @return String[0]=密码是否正确(Boolean) String[1]=你可以给他设置一个名字
      */
-    fun registerPlayerConnectPasswdCheckEvent(abstractNetConnect: AbstractNetConnect, passwd: String): Array<String> {
+    fun registerPlayerConnectPasswdCheckEvent(abstractNetConnect: GameVersionServer, passwd: String): Array<String> {
         return arrayOf("false", "")
     }
 
@@ -74,4 +74,7 @@ interface AbstractEvent {
 
     /** 玩家被解banIp [异步-ASync]  */
     fun registerPlayerIpUnbanEvent(ip: String) {}
+
+    /** Use Java AbstractEventJava */
+    abstract class AbstractEventJava : AbstractEvent
 }

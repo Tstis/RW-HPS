@@ -9,12 +9,12 @@
 
 package com.github.dr.rwserver.net.core
 
-import com.github.dr.rwserver.data.Player
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.GameCommand
-import com.github.dr.rwserver.io.GameOutputStream
 import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.output.CompressOutputStream
+import com.github.dr.rwserver.io.output.GameOutputStream
 import com.github.dr.rwserver.struct.Seq
-import com.github.dr.rwserver.util.zip.CompressOutputStream
 import java.io.IOException
 
 /**

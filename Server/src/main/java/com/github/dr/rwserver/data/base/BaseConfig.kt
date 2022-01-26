@@ -60,13 +60,6 @@ data class BaseConfig(
     /** 胜负判定时间 */
     val WinOrLoseTime: Int = 30000,
 
-    val WebApi: Boolean = false,
-    val WebUrl: String = "",
-    val WebApiPort: Int = 80,
-    val WebApiSsl: Boolean = false,
-    val WebApiSslKetPath: String = "",
-    val WebApiSslPasswd: String = "",
-
     val DeleteLib: Boolean = false,
 
     /** Single user relay disable pop-up selection */

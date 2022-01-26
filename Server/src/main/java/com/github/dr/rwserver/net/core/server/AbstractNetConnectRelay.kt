@@ -9,6 +9,7 @@
 
 package com.github.dr.rwserver.net.core.server
 
+import com.github.dr.rwserver.data.global.Relay
 import com.github.dr.rwserver.io.Packet
 import java.io.IOException
 
@@ -17,7 +18,19 @@ import java.io.IOException
  * As the interface of game CoreNet, it provides various version support for GameServer
  * @author Dr
  * @date 2021/7/31/ 14:14
- */interface AbstractNetConnectRelay {
+ */
+interface AbstractNetConnectRelay {
+    /**
+     * 获取Relay的协议 无则为null
+     * @return Relay
+     */
+    val relay: Relay?
+
+    val relayPlayerQQ: String?
+
+    fun setCachePacket(packet: Packet)
+    fun setlastSentPacket(packet: Packet)
+
     /**
      * 服务器握手
      */
@@ -33,9 +46,22 @@ import java.io.IOException
     fun relayRegisterConnection(packet: Packet)
 
     /**
-     * 检测Relay的校验是否正确
+     * ID直达
+     * @param relay Relay
+     * @throws IOException Error
+     */
+    @Throws(IOException::class)
+    fun relayDirectInspection(relay: Relay)
+
+    /**
+     * 检测Relay的校验是否正确-发送
      */
     fun sendRelayServerCheck()
+
+    /**
+     * 检测Relay的校验是否正确-校验
+     */
+    fun receiveRelayServerCheck(packet: Packet): Boolean
 
     /**
      * Server类型
@@ -54,12 +80,20 @@ import java.io.IOException
     fun sendRelayServerId()
 
     /**
+     * Accept language pack
+     * @param p Packet
+     * @throws IOException Error
+     */
+    @Throws(IOException::class)
+    fun receiveChat(p: Packet)
+
+    /**
      * 发送消息
      */
     fun getRelayT4(msg: String)
-    fun sendRelayPlayerInfo()
-    fun sendRelayPlayerConnectPacket(packet: Packet)
-    fun getRelayUnitData(packet: Packet)
+    //fun sendRelayPlayerInfo()
+    //fun sendRelayPlayerConnectPacket(packet: Packet)
+    //fun getRelayUnitData(packet: Packet)
 
     /**
      * 返回ping包
@@ -94,7 +128,8 @@ import java.io.IOException
      * @param packet Packet
      */
     fun addRelaySend(packet: Packet)
-    fun addRelayAccept(packet: Packet)
-    fun addRelayAccept1(packet: Packet)
+    fun sendResultPing(packet: Packet)
+    fun sendCustomPacket(packet: Packet)
     fun relayPlayerDisconnect()
+    fun multicastAnalysis(packet: Packet)
 }

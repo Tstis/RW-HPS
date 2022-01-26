@@ -174,10 +174,10 @@ object Log {
 
     /**
      * WLog：
-     * @param i 警告级
-     * @param tag 标题 默认警告级
+     * @param i Warning level -INT
+     * @param tag Title / Default warning level-String
      * @param e Exception
-     * i>=设置级 即写入文件
+     * i>=Set the level to write to the file
      */
     private fun log(i: Int, tag: Any, e: Exception) {
         val stringWriter = StringWriter()
@@ -250,8 +250,8 @@ object Log {
     }
 
     private enum class Logg(private val logg: Int) {
-        /* Log等级 默认为WARN */
-        /* 开发时为ALL */
+        /* Log level defaults to WARN */
+        /* ALL during development */
         OFF(8), FATAL(7), ERROR(6), WARN(5), INFO(4), DEBUG(3), TRACE(2), ALL(1);
 
         open fun getLogg(): Int {

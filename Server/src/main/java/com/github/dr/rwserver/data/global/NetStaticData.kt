@@ -13,7 +13,6 @@ import com.github.dr.rwserver.net.GroupNet
 import com.github.dr.rwserver.net.game.ProtocolData
 import com.github.dr.rwserver.net.game.StartNet
 import com.github.dr.rwserver.struct.Seq
-import com.github.dr.rwserver.util.Time.nanos
 import com.github.dr.rwserver.util.alone.BlackList
 
 /**
@@ -21,9 +20,9 @@ import com.github.dr.rwserver.util.alone.BlackList
  */
 object NetStaticData {
     @JvmField
-    val groupNet = GroupNet(nanos())
+    val groupNet = GroupNet()
     @JvmField
-    val relayOpenSource = RelayOpenSource("Single User Relay")
+    val relay = Relay("RW-HPS Beta Relay")
     @JvmField
     val blackList = BlackList()
     @JvmField

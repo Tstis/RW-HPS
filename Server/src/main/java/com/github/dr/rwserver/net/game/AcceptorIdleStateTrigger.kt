@@ -14,12 +14,27 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
+import java.util.concurrent.atomic.AtomicInteger
 
 @Sharable
 internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : ChannelInboundHandlerAdapter() {
+    val connectNum: AtomicInteger = AtomicInteger()
+
     @Throws(Exception::class)
     override fun channelActive(ctx: ChannelHandlerContext) {
         ctx.fireChannelActive()
+    }
+
+    @Throws(java.lang.Exception::class)
+    override fun channelRegistered(ctx: ChannelHandlerContext?) {
+        super.channelRegistered(ctx)
+        connectNum.incrementAndGet()
+    }
+
+    @Throws(java.lang.Exception::class)
+    override fun channelUnregistered(ctx: ChannelHandlerContext?) {
+        super.channelUnregistered(ctx)
+        connectNum.decrementAndGet()
     }
 
     @Throws(Exception::class)
@@ -33,7 +48,7 @@ internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : Channe
         if (evt is IdleStateEvent) {
             if (evt.state() == IdleState.WRITER_IDLE) {
                 val con = ctx.channel().attr(NewServerHandler.NETTY_CHANNEL_KEY).get()
-                if (TimeoutDetection.checkTimeoutDetection(con)) {
+                if (TimeoutDetection.checkTimeoutDetection(con.abstractNetConnect)) {
                     startNet.clear(ctx)
                 }
             }

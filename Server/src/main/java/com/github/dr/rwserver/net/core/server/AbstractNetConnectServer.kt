@@ -9,10 +9,10 @@
 
 package com.github.dr.rwserver.net.core.server
 
-import com.github.dr.rwserver.data.Player
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.util.log.Log
-import com.github.dr.rwserver.util.zip.CompressOutputStream
 import org.intellij.lang.annotations.JdkConstants
 import org.jetbrains.annotations.Nls
 import java.io.IOException
@@ -153,4 +153,13 @@ interface AbstractNetConnectServer {
             Log.error("(", e)
         }
     }
+
+
+
+    fun sendRelayServerInfo()
+    fun sendRelayPlayerInfo()
+    fun sendRelayServerCheck()
+    fun sendRelayServerId()
+    fun sendRelayPlayerConnectPacket(packet: Packet)
+    fun getRelayUnitData(packet: Packet)
 }

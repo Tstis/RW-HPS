@@ -12,9 +12,9 @@ package com.github.dr.rwserver.net.game
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.game.EventType
-import com.github.dr.rwserver.io.GameInputStream
 import com.github.dr.rwserver.io.Packet
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
+import com.github.dr.rwserver.io.input.GameInputStream
+import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.game.Events
 import io.netty.bootstrap.Bootstrap
@@ -28,7 +28,7 @@ import io.netty.channel.socket.nio.NioSocketChannel
  * @property port port
  * @constructor
  */
-class ConnectServer(private val ip: String, private val port: Int, private val abstractNetConnect: AbstractNetConnect) {
+class ConnectServer(private val ip: String, private val port: Int, private val abstractNetConnect: GameVersionServer) {
     private lateinit var channel: Channel
 
 
@@ -75,7 +75,7 @@ class ConnectServer(private val ip: String, private val port: Int, private val a
         channel.close()
     }
 
-    private class AcceptServerData(private val connectServer: ConnectServer,private val abstractNetConnect: AbstractNetConnect): ChannelInboundHandlerAdapter() {
+    private class AcceptServerData(private val connectServer: ConnectServer,private val abstractNetConnect: GameVersionServer): ChannelInboundHandlerAdapter() {
         @Throws(java.lang.Exception::class)
         override fun channelRead(ctx: ChannelHandlerContext, msg: Any) {
             if (msg is Packet) {
@@ -85,7 +85,7 @@ class ConnectServer(private val ip: String, private val port: Int, private val a
                     stream.skip(12)
                     stream.readString()
                     stream.readString()
-                    val player = abstractNetConnect.player!!
+                    val player = abstractNetConnect.player
                     connectServer.send(NetStaticData.protocolData.abstractNetPacket.getPlayerRegisterPacket(
                         player.name,
                         player.uuid,
@@ -93,11 +93,11 @@ class ConnectServer(private val ip: String, private val port: Int, private val a
                         stream.readInt()
                     ))
                     if (IsUtil.notIsBlank(player)) {
-                        Data.playerGroup.remove(player)
+                        Data.game.playerManage.playerGroup.remove(player)
                         if (!Data.game.isStartGame) {
-                            Data.playerAll.remove(player)
+                            Data.game.playerManage.playerAll.remove(player)
                             player.clear()
-                            Data.game.playerData[player.site] = null
+                            Data.game.playerManage.removePlayerArray(player)
                         }
                         Events.fire(EventType.PlayerLeaveEvent(player))
                     }

@@ -1,11 +1,25 @@
-subprojects {
-    apply plugin: "java"
+plugins {
+	id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+}
+
+allprojects {
+	apply plugin: "java"
+	apply plugin: "org.jetbrains.kotlin.jvm"
+
+	/* 使用Java11做标准语法并编译 */
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
+
 	repositories{
 		maven{ url "https://maven.aliyun.com/nexus/content/groups/public/"}
-		mavenCentral()
 		maven{ url 'https://jitpack.io' }
+		mavenCentral()
 	}
 
+	dependencies {
+		implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
+		//implementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '1.5.1'
+	}
 
 	ext{
 		//the build number that this plugin is made for
@@ -24,3 +38,5 @@ subprojects {
 		options.compilerArgs << "-Xlint:deprecation" << "-Werror"
 	}
 }
+	//implementation group: 'io.netty', name: 'netty-all', version: '5.0.0.Alpha2'
+	//implementation group: 'io.netty', name: 'netty-all', version: '4.1.51.Final'

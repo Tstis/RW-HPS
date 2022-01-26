@@ -1,27 +1,38 @@
 plugins {
 	id 'maven-publish'
-	id 'org.jetbrains.kotlin.jvm' version '1.5.31'
 }
-
-/* 使用Java11做标准语法并编译 */
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
 /**
  * 这里全部采用的compileOnly 为了适配idea 但是编译的时候会切到implementation
  * 需要帮助!
  */
 dependencies {
-	implementation group: 'io.netty', name: 'netty-all', version: '4.1.68.Final'
-	implementation ('com.gitee.ldp_dpsmax:chainMarket:23fc7f989f') {
-		exclude group: "io.netty"
-	}
+	//testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
+	//implementation project(":Net")
+	//implementation 'cn.hutool:hutool-socket:5.7.5'
+
+	implementation group: 'io.netty', name: 'netty-all', version: '4.1.73.Final'
+
+	//implementation fileTree(dir:'libs',include:['ChainMarket-23fc7f989f.jar'])
+
 	implementation 'com.github.deng-rui:RUDP:1.0.0'
 	implementation 'com.github.deng-rui:Compress-Zip:1.0.0'
+
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
-	implementation (group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.1') {
+
+	//compileOnly group: 'com.ip2location', name: 'ip2location-java', version: '8.5.0'
+	//compileOnly group: 'com.alibaba', name: 'fastjson', version: '1.2.58'
+	implementation (group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3') {
 		exclude group: "org.jetbrains.kotlin"
 	}
-	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.5.31'
+
+	compileOnly group: 'commons-io', name: 'commons-io', version: '2.11.0'
+	//compileOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.69'
+
+	//compileOnly fileTree(dir:'libs',include:['*.jar'])
+	//compileOnly group: 'org.quartz-scheduler', name: 'quartz', version: '2.3.2'
+	//compileOnly group: 'com.github.oshi', name: 'oshi-core', version: '5.5.0'
+
+
 }
 
 jar{
@@ -30,6 +41,17 @@ jar{
 	exclude 'META-INF/LICENSE'
 	exclude 'META-INF/NOTICE.txt'
 	exclude 'META-INF/NOTICE'
+
+	// Fuck Netty !!!!!!
+	exclude 'META-INF/INDEX.LIST'
+	exclude 'META-INF/*.properties'
+	exclude 'META-INF/*/*.properties'
+	exclude 'META-INF/*/*/*.properties'
+	exclude 'META-INF/*/*/*/*.properties'
+	exclude 'META-INF/*.xml'
+	exclude 'META-INF/*/*.xml'
+	exclude 'META-INF/*/*/*.xml'
+	exclude 'META-INF/*/*/*/*.xml'
 
 	manifest {
 		 attributes 'Main-Class': 'com.github.dr.rwserver.Main'

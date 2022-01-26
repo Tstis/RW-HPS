@@ -2,24 +2,24 @@
 
 # Events
 
-| Name                              | Desc                   |
-| :----------------                 | :------------          |
-| ServerLoadEvent                      | Server加载完成        |
-| PlayerReJoinEvent                      | 玩家重连服务器时        |
-| PlayerConnectEvent                      | 玩家连接时        |
-| PlayerChatEvent                      | 玩家发言时        |
-| PlayerConnectPasswdCheckEvent             | 玩家加入密码验证        |
-| PlayerJoinEvent                   | 有新玩家加入           |
-| PlayerLeaveEvent                  | 玩家离开服务器            |
-| GameStartEvent   | 服务器开始游戏     |
-| GameOverEvent   | 服务器结束游戏     |
-| PlayerBanEvent                 | 玩家被禁止加入         |
-| PlayerIpBanEvent                 | 玩家被禁止加入IP         |
-| PlayerUnbanEvent                 | 玩家被解除禁止加入         |
-| PlayerIpUnbanEvent                 | 玩家被解除禁止加入IP         |
-| PlayerJoinNameEvent                 | 玩家加入时的名字过滤         |
-| PlayerOperationUnitEvent                 | 玩家操作单位事件         |
-| PlayerJoinUuidandNameEvent                 | 玩家进入的UUID/Name         |
+| Name                          | Desc           |
+|:------------------------------|:---------------|
+| ServerLoadEvent               | Server加载完成     |
+| PlayerReJoinEvent             | 玩家重连服务器时       |
+| PlayerConnectEvent            | 玩家连接时          |
+| PlayerChatEvent               | 玩家发言时          |
+| PlayerConnectPasswdCheckEvent | 玩家加入密码验证       |
+| PlayerJoinEvent               | 有新玩家加入         |
+| PlayerLeaveEvent              | 玩家离开服务器        |
+| GameStartEvent                | 服务器开始游戏        |
+| GameOverEvent                 | 服务器结束游戏        |
+| PlayerBanEvent                | 玩家被禁止加入        |
+| PlayerIpBanEvent              | 玩家被禁止加入IP      |
+| PlayerUnbanEvent              | 玩家被解除禁止加入      |
+| PlayerIpUnbanEvent            | 玩家被解除禁止加入IP    |
+| PlayerJoinNameEvent           | 玩家加入时的名字过滤     |
+| PlayerOperationUnitEvent      | 玩家操作单位事件       |
+| PlayerJoinUuidandNameEvent    | 玩家进入的UUID/Name |
 
 # 如何使用
 ## 新版

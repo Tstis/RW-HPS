@@ -19,14 +19,12 @@ import com.github.dr.rwserver.core.Call.upDataGameData
 import com.github.dr.rwserver.core.thread.Threads.getIfScheduledFutureData
 import com.github.dr.rwserver.core.thread.Threads.newThreadService
 import com.github.dr.rwserver.core.thread.Threads.removeScheduledFutureData
-import com.github.dr.rwserver.data.Player
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.Data.LINE_SEPARATOR
 import com.github.dr.rwserver.data.global.NetStaticData
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.GameStartEvent
 import com.github.dr.rwserver.game.GameMaps.MapType
-import com.github.dr.rwserver.game.Team.amNoPlayerTeam
-import com.github.dr.rwserver.game.Team.amYesPlayerTeam
 import com.github.dr.rwserver.util.IsUtil.isNumeric
 import com.github.dr.rwserver.util.IsUtil.notIsBlank
 import com.github.dr.rwserver.util.IsUtil.notIsNumeric
@@ -143,7 +141,7 @@ class ClientCommands(handler: CommandHandler) {
                     return@register
                 }
                 val admin = AtomicBoolean(true)
-                Data.playerGroup.each({ p: Player -> p.isAdmin },{ _: Player -> admin.set(false) })
+                Data.game.playerManage.playerGroup.each({ p: Player -> p.isAdmin },{ _: Player -> admin.set(false) })
                 if (admin.get() && Data.config.OneAdmin) {
                     player.isAdmin = true
                     upDataGameData()
@@ -151,7 +149,7 @@ class ClientCommands(handler: CommandHandler) {
                     return@register
                 }
                 newThreadService({
-                    Data.playerGroup.each(
+                    Data.game.playerManage.playerGroup.each(
                         { p: Player -> p.isAdmin }) { i: Player ->
                         i.isAdmin = false
                         player.isAdmin = true
@@ -174,10 +172,10 @@ class ClientCommands(handler: CommandHandler) {
                     return@register
                 }
                 val playerSite = args[0].toInt() - 1
-                val newAdmin = Data.game.playerData[playerSite]
+                val newAdmin = Data.game.playerManage.getPlayerArray(playerSite)
                 if (notIsBlank(newAdmin)) {
                     player.isAdmin = false
-                    newAdmin.isAdmin = true
+                    newAdmin!!.isAdmin = true
                     upDataGameData()
                     sendMessageLocal(player, "give.ok", player.name)
                 } else {
@@ -190,13 +188,13 @@ class ClientCommands(handler: CommandHandler) {
             player.sendSystemMessage(localeUtil.getinput("server.noSay", if (player.noSay) "开启" else "关闭"))
         }
         handler.register("am", "<on/off>", "clientCommands.am") { args: Array<String>, player: Player ->
-            Data.game.amTeam = "on" == args[0]
-            if (Data.game.amTeam) {
-                amYesPlayerTeam()
+            Data.game.playerManage.amTeam = "on" == args[0]
+            if (Data.game.playerManage.amTeam) {
+                Data.game.playerManage.amYesPlayerTeam()
             } else {
-                amNoPlayerTeam()
+                Data.game.playerManage.amNoPlayerTeam()
             }
-            player.sendSystemMessage(localeUtil.getinput("server.amTeam", if (Data.game.amTeam) "开启" else "关闭"))
+            player.sendSystemMessage(localeUtil.getinput("server.amTeam", if (Data.game.playerManage.amTeam) "开启" else "关闭"))
         }
         handler.register("income", "<income>", "clientCommands.income") { args: Array<String>, player: Player ->
             if (isAdmin(player)) {
@@ -208,14 +206,11 @@ class ClientCommands(handler: CommandHandler) {
                 upDataGameData()
             }
         }
-        handler.register(
-            "status",
-            "clientCommands.status"
-        ) { _: Array<String>?, player: Player ->
+        handler.register("status", "clientCommands.status") { _: Array<String>?, player: Player ->
             player.sendSystemMessage(
                 player.localeUtil.getinput(
                     "status.version",
-                    Data.playerGroup.size(),
+                    Data.game.playerManage.playerGroup.size(),
                     Data.core.admin.bannedIPs.size(),
                     Data.SERVER_CORE_VERSION,
                     player.con!!.version
@@ -233,10 +228,11 @@ class ClientCommands(handler: CommandHandler) {
                     return@register
                 }
                 val site = args[0].toInt() - 1
-                if (Data.game.playerData[site] != null) {
-                    Data.game.playerData[site].kickTime = getTimeFutureMillis(60 * 1000L)
+                val kickPlayer = Data.game.playerManage.getPlayerArray(site)
+                if (kickPlayer != null) {
+                    kickPlayer.kickTime = getTimeFutureMillis(60 * 1000L)
                     try {
-                        Data.game.playerData[site].con!!.sendKick(localeUtil.getinput("kick.you"))
+                        kickPlayer.con!!.sendKick(localeUtil.getinput("kick.you"))
                     } catch (e: IOException) {
                         error("[Player] Send Kick Player Error", e)
                     }
@@ -274,10 +270,7 @@ class ClientCommands(handler: CommandHandler) {
                 upDataGameData()
             }
         }
-        handler.register(
-            "addai",
-            "HIDE"
-        ) { _: Array<String>?, player: Player -> player.sendSystemMessage(player.localeUtil.getinput("err.nosupr")) }
+        handler.register("addai", "HIDE") { _: Array<String>?, player: Player -> player.sendSystemMessage(player.localeUtil.getinput("err.nosupr")) }
         handler.register("fog", "<type>", "HIDE") { args: Array<String>, player: Player ->
             if (isAdmin(player)) {
                 Data.game.mist = if ("off" == args[0]) 0 else if ("basic" == args[0]) 1 else 2
@@ -307,7 +300,7 @@ class ClientCommands(handler: CommandHandler) {
                     removeScheduledFutureData("AfkCountdown")
                     sendMessageLocal(player, "afk.clear", player.name)
                 }
-                if (Data.config.StartMinPlayerSize > Data.playerGroup.size()) {
+                if (Data.config.StartMinPlayerSize > Data.game.playerManage.playerGroup.size()) {
                     player.sendSystemMessage(player.localeUtil.getinput("start.playerNo", Data.config.StartMinPlayerSize))
                     return@register
                 }
@@ -320,7 +313,7 @@ class ClientCommands(handler: CommandHandler) {
 
                 val enc = NetStaticData.protocolData.abstractNetPacket.getTeamDataPacket()
 
-                Data.playerGroup.each { e: Player ->
+                Data.game.playerManage.playerGroup.each { e: Player ->
                     try {
                         e.con!!.sendTeamData(enc)
                         e.con!!.sendStartGame()
@@ -329,19 +322,11 @@ class ClientCommands(handler: CommandHandler) {
                         error("Start Error", err)
                     }
                 }
+                /*
                 if (Data.config.WinOrLose) {
-                }
+                }*/
                 Data.game.isStartGame = true
-                var int3 = 0
-                for (i in 0 until Data.game.maxPlayer) {
-                    val player1 = Data.game.playerData[i]
-                    if (player1 != null) {
-                        if (player1.sharedControl || Data.game.sharedControl) {
-                            int3 = int3 or 1 shl i
-                        }
-                    }
-                }
-                Data.game.sharedControlPlayer = int3
+                Data.game.playerManage.updateControlIdentifier()
                 testPreparationPlayer()
                 Events.fire(GameStartEvent())
             }
@@ -407,24 +392,27 @@ class ClientCommands(handler: CommandHandler) {
                 //int newSite = 0;
                 val team = args[2].toInt()
                 if (oldSite < Data.game.maxPlayer && newSite < Data.game.maxPlayer) {
-                    val od = Data.game.playerData[oldSite]
+                    val od = Data.game.playerManage.getPlayerArray(oldSite)
+                    val nw = Data.game.playerManage.getPlayerArray(newSite)
+                    if (od == null) {
+                        return@register
+                    }
                     if (newSite > -2) {
-                        if (Data.game.playerData[newSite] == null) {
-                            Data.game.playerData[oldSite] = null
+                        if (nw == null) {
+                            Data.game.playerManage.removePlayerArray(oldSite)
                             od.site = newSite
                             if (team > -1) {
                                 od.team = team
                             }
-                            Data.game.playerData[newSite] = od
+                            Data.game.playerManage.setPlayerArray(newSite,od)
                         } else {
-                            val nw = Data.game.playerData[newSite]
                             od.site = newSite
                             nw.site = oldSite
                             if (team > -1) {
                                 od.team = team
                             }
-                            Data.game.playerData[newSite] = od
-                            Data.game.playerData[oldSite] = nw
+                            Data.game.playerManage.setPlayerArray(newSite,od)
+                            Data.game.playerManage.setPlayerArray(oldSite,nw)
                         }
                     }
                     sendTeamData()
@@ -446,13 +434,14 @@ class ClientCommands(handler: CommandHandler) {
             val newSite = args[0].toInt() - 1
             val team = args[1].toInt()
             if (newSite < Data.game.maxPlayer) {
-                if (Data.game.playerData[newSite] == null) {
-                    Data.game.playerData[player.site] = null
+                val newSitePlayer = Data.game.playerManage.getPlayerArray(newSite)
+                if (newSitePlayer == null) {
+                    Data.game.playerManage.removePlayerArray(player)
                     player.site = newSite
                     if (team > -1) {
                         player.team = team
                     }
-                    Data.game.playerData[newSite] = player
+                    Data.game.playerManage.setPlayerArray(newSite,player)
                     sendTeamData()
                 }
             }
@@ -471,8 +460,9 @@ class ClientCommands(handler: CommandHandler) {
                 val newSite = args[1].toInt() - 1
                 if (playerSite < Data.game.maxPlayer && newSite < Data.game.maxPlayer) {
                     if (newSite > -1) {
-                        if (notIsBlank(Data.game.playerData[playerSite])) {
-                            Data.game.playerData[playerSite].team = newSite
+                        val newTeamPlayer = Data.game.playerManage.getPlayerArray(playerSite)
+                        if (newTeamPlayer != null) {
+                            newTeamPlayer.team = newSite
                         }
                     }
                     sendTeamData()

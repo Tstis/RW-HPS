@@ -59,4 +59,4 @@ FileUtil().createNewFile();
 [Events](Events.md)
 
 # Net框架
-![](img/NetArchitecture.png)
+![](../img/NetArchitecture.png)

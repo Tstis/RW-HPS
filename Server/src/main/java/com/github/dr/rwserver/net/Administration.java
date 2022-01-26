@@ -10,8 +10,8 @@
 package com.github.dr.rwserver.net;
 
 import com.github.dr.rwserver.core.thread.Threads;
-import com.github.dr.rwserver.data.Player;
 import com.github.dr.rwserver.data.global.Data;
+import com.github.dr.rwserver.data.player.Player;
 import com.github.dr.rwserver.data.plugin.PluginData;
 import com.github.dr.rwserver.struct.ObjectMap;
 import com.github.dr.rwserver.struct.Seq;
@@ -24,6 +24,7 @@ public class Administration {
 
     private final Seq<ChatFilter> chatFilters = new Seq<>();
     public final Seq<String> bannedIPs;
+    public final Seq<Long> bannedIP24;
     public final Seq<String> bannedUUIDs;
     public final Seq<String> whitelist;
     public final Seq<String> playerData;
@@ -44,12 +45,14 @@ public class Administration {
         });
 
         bannedIPs = pluginData.getData("bannedIPs", new Seq<>());
+        bannedIP24 = pluginData.getData("bannedIPs", new Seq<>());
         bannedUUIDs = pluginData.getData("bannedUUIDs", new Seq<>());
         whitelist = pluginData.getData("whitelist", new Seq<>());
         playerData = pluginData.getData("playerData", new Seq<>());
 
         Threads.addSavePool(() -> {
             pluginData.setData("bannedIPs",bannedIPs);
+            //pluginData.setData("bannedIP24",bannedIP24);
             pluginData.setData("bannedUUIDs",bannedUUIDs);
             pluginData.setData("whitelist",whitelist);
             pluginData.setData("playerData",playerData);

@@ -11,14 +11,12 @@ package com.github.dr.rwserver.data.global
 
 import com.github.dr.rwserver.command.ex.Vote
 import com.github.dr.rwserver.core.Application
-import com.github.dr.rwserver.data.Player
 import com.github.dr.rwserver.data.base.BaseConfig
 import com.github.dr.rwserver.game.Rules
+import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.struct.ObjectMap
-import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.LocaleUtil
 import com.github.dr.rwserver.util.game.CommandHandler
-import com.github.dr.rwserver.util.zip.CompressOutputStream
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
@@ -39,7 +37,7 @@ object Data {
 	 */
     /** 自定义包名  */
     const val SERVER_ID = "com.github.dr.rwserver"
-    const val SERVER_CORE_VERSION = "1.5.0"
+    const val SERVER_CORE_VERSION = "5.1.0-RC"
     /** 单位数据缓存  */
 	@JvmField
 	val utilData = CompressOutputStream.getGzipOutputStream("customUnits", false)
@@ -63,13 +61,6 @@ object Data {
 	@JvmField
 	val MapsMap = ObjectMap<String, String>()
 
-    /** 在线玩家  */
-	@JvmField
-	val playerGroup = Seq<Player>(16)
-
-    /** ALL  */
-	@JvmField
-	val playerAll = Seq<Player>(16)
     @JvmField
 	val core = Application()
     @JvmField

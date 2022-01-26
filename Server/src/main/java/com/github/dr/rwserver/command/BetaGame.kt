@@ -9,8 +9,8 @@
 package com.github.dr.rwserver.command
 
 import com.github.dr.rwserver.core.thread.Threads.newThreadService2
-import com.github.dr.rwserver.data.Player
 import com.github.dr.rwserver.data.global.Data
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.GameOverEvent
 import com.github.dr.rwserver.struct.IntSet
 import com.github.dr.rwserver.util.game.Events
@@ -32,7 +32,7 @@ object BetaGame {
             val intSet = IntSet(16)
 
             // 玩家是否死亡
-            Data.playerGroup.eachBooleanIfs({ d: Player -> !d.dead }) { e: Player ->
+            Data.game.playerManage.playerGroup.eachBooleanIfs({ d: Player -> !d.dead }) { e: Player ->
                 // 玩家距离最后一次移动单位的时间
                 val breakTime = time - e.lastMoveTime
                 // 超过判定时间是警告一次 ; 达到判定的两倍即发送自杀包
@@ -47,7 +47,7 @@ object BetaGame {
             }
             if (intSet.size <= 1) {
                 val winTeam = intSet.iterator().next()
-                Data.playerGroup.eachBooleanIfs({ p: Player -> p.team == winTeam }) { c: Player -> info(c.name) }
+                Data.game.playerManage.playerGroup.eachBooleanIfs({ p: Player -> p.team == winTeam }) { c: Player -> info(c.name) }
                 Events.fire(GameOverEvent())
             }
         }, 10, 10, TimeUnit.SECONDS, ".")

@@ -11,10 +11,10 @@ package com.github.dr.rwserver.game
 
 import com.github.dr.rwserver.core.Call
 import com.github.dr.rwserver.core.NetServer
-import com.github.dr.rwserver.data.Player
 import com.github.dr.rwserver.data.global.Data
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.net.Administration.PlayerInfo
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
+import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 import com.github.dr.rwserver.plugin.event.AbstractEvent
 import com.github.dr.rwserver.util.Time.millis
 import com.github.dr.rwserver.util.log.Log
@@ -66,7 +66,7 @@ class Event : AbstractEvent {
        // ConnectServer("127.0.0.1",5124,player.con)
     }
 
-    override fun registerPlayerConnectPasswdCheckEvent(abstractNetConnect: AbstractNetConnect, passwd: String): Array<String> {
+    override fun registerPlayerConnectPasswdCheckEvent(abstractNetConnect: GameVersionServer, passwd: String): Array<String> {
         if ("" != Data.game.passwd) {
             if (passwd != Data.game.passwd) {
                 try {
@@ -83,7 +83,7 @@ class Event : AbstractEvent {
     override fun registerPlayerLeaveEvent(player: Player) {
         if (Data.config.OneAdmin && player.isAdmin) {
             try {
-                val p = Data.playerGroup[0]
+                val p = Data.game.playerManage.playerGroup[0]
                 p.isAdmin = true
                 Call.upDataGameData()
                 player.isAdmin = false
@@ -95,16 +95,7 @@ class Event : AbstractEvent {
 
         if (Data.game.isStartGame) {
             player.sharedControl = true
-            var int3 = 0
-            for (i in 0 until Data.game.maxPlayer) {
-                val player1 = Data.game.playerData[i]
-                if (player1 != null) {
-                    if (player1.sharedControl || Data.game.sharedControl) {
-                        int3 = int3 or 1 shl i
-                    }
-                }
-            }
-            Data.game.sharedControlPlayer = int3
+            Data.game.playerManage.updateControlIdentifier()
             Call.sendSystemMessage("player.dis", player.name)
             Call.sendTeamData()
 
@@ -118,6 +109,12 @@ class Event : AbstractEvent {
     }
 
     override fun registerGameOverEvent() {
+        /*
+        if (getIfScheduledFutureData("UpServerList")) {
+            NetServer.removeServerList()
+            removeScheduledFutureData("UpServerList")
+        }
+        */
         if (Data.game.maps.mapData != null) {
             Data.game.maps.mapData!!.clean()
         }

@@ -77,7 +77,7 @@ class FileUtil {
         this.path = filepath
     }
 
-    private constructor(file: File, filepath: String, Uuid: String) {
+    private constructor(file: File, filepath: String, air: String) {
         this.file = file
         this.path = filepath
         file.mkdirs()
@@ -263,7 +263,7 @@ class FileUtil {
          * 默认使用Jar同目录下的 与启动的位置无关
          */
 		init {
-            val path = this.javaClass.protectionDomain.codeSource.location.path
+            val path = this::class.java.protectionDomain.codeSource.location.path
             val pathSplit = path.split("/").toTypedArray()
             val jarName = pathSplit[pathSplit.size - 1]
             val jarPath = path.replace(jarName, "")

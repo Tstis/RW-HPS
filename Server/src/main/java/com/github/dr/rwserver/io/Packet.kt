@@ -9,15 +9,24 @@
 
 package com.github.dr.rwserver.io
 
+import com.github.dr.rwserver.util.ExtractUtil
+
 /**
  * @author Dr
  */
 class Packet(@JvmField val type: Int, @JvmField val bytes: ByteArray) {
 
+    /**
+     * Return detailed Packet data
+     * @return Packet String
+     */
     override fun toString(): String {
-        return "Packet{" +
-                "bytes=" + bytes.contentToString() +
-                ", type=" + type +
-                '}'
+        return  """
+                Packet{
+                    Bytes=${bytes.contentToString()}
+                    BytesHex=${ExtractUtil.bytesToHex(bytes)}
+                    type=${type}
+                }
+                """.trimIndent()
     }
 }

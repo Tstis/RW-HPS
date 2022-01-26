@@ -11,29 +11,17 @@ package com.github.dr.rwserver.net.game
 
 import com.github.dr.rwserver.net.core.AbstractNetPacket
 import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
 
 class ProtocolData {
-    /** 可以支持什么版本 */
-    var gameNetVersion = 0
-        private set
-    
-    internal lateinit var abstractNetConnect: AbstractNetConnect
+    @Volatile
     internal lateinit var typeConnect: TypeConnect
+    @Volatile
     internal lateinit var abstractNetPacket: AbstractNetPacket
 
-    @JvmField
-    var AbstractNetConnectVersion: String = ""
     @JvmField
     var AbstractNetPacketVersion: String = ""
     @JvmField
     var TypeConnectVersion: String = ""
-
-    fun setNetConnectProtocol(protocolData: AbstractNetConnect, gameNetVersion: Int) {
-        abstractNetConnect = protocolData
-        AbstractNetConnectVersion = protocolData.version
-        this.gameNetVersion = gameNetVersion
-    }
 
     fun setNetConnectPacket(packet: AbstractNetPacket, version: String) {
         abstractNetPacket = packet
@@ -45,8 +33,7 @@ class ProtocolData {
         TypeConnectVersion = typeConnect.version
     }
 
-    protected fun update(abstractNetConnect: AbstractNetConnect, typeConnect: TypeConnect) {
-        this.abstractNetConnect = abstractNetConnect
+    protected fun update(typeConnect: TypeConnect) {
         this.typeConnect = typeConnect
     }
 }

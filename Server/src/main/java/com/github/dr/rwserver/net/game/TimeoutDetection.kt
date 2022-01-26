@@ -9,6 +9,7 @@
 
 package com.github.dr.rwserver.net.game
 
+import com.github.dr.rwserver.net.core.TypeConnect
 import com.github.dr.rwserver.net.core.server.AbstractNetConnect
 import com.github.dr.rwserver.util.Time.concurrentMillis
 import com.github.dr.rwserver.util.threads.ThreadFactoryName
@@ -27,9 +28,10 @@ internal class TimeoutDetection(s: Int, startNet: StartNet) {
 
     private class CheckTime(private val startNet: StartNet) : Runnable {
         override fun run() {
-            startNet.OVER_MAP.each { k: String, v: AbstractNetConnect ->
-                if (checkTimeoutDetection(v)) {
-                    v.disconnect()
+            startNet.OVER_MAP.each { k: String, v: TypeConnect ->
+                val con = v.abstractNetConnect
+                if (checkTimeoutDetection(con)) {
+                    con.disconnect()
                     startNet.OVER_MAP.remove(k)
                 }
             }

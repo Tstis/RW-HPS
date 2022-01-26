@@ -78,7 +78,7 @@ class UpListCustom(handler: CommandHandler) {
         formBody.add("ServerName",Data.core.serverName)
         formBody.add("Port", Data.config.Port.toString())
         formBody.add("MapName",Data.game.maps.mapName)
-        formBody.add("PlayerSize",Data.playerGroup.size().toString())
+        formBody.add("PlayerSize",Data.game.playerManage.playerGroup.size().toString())
         formBody.add("PlayerMaxSize",Data.game.maxPlayer.toString())
 
         val resultUpList = HttpRequestOkHttp.doPost("https://api.data.der.kim/UpList/v3/upList", formBody)
@@ -141,7 +141,7 @@ class UpListCustom(handler: CommandHandler) {
                         Data.core.serverName,
                         if (IsUtil.isBlank(Data.config.Subtitle)) Data.game.maps.mapName else Data.config.Subtitle,
                         if (Data.game.isStartGame) "ingame" else "battleroom",
-                        Data.playerGroup.size().toString()))
+                        Data.game.playerManage.playerGroup.size().toString()))
                     HttpRequestOkHttp.doPostRw("http://gs1.corrodinggames.com/masterserver/1.4/interface", result0)
                     HttpRequestOkHttp.doPostRw("http://gs4.corrodinggames.net/masterserver/1.4/interface", result0)
 

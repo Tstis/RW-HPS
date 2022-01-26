@@ -11,14 +11,12 @@ package com.github.dr.rwserver.command.ex;
 
 import com.github.dr.rwserver.core.Call;
 import com.github.dr.rwserver.core.thread.Threads;
-import com.github.dr.rwserver.data.Player;
 import com.github.dr.rwserver.data.global.Data;
+import com.github.dr.rwserver.data.player.Player;
 import com.github.dr.rwserver.game.EventType;
 import com.github.dr.rwserver.util.alone.annotations.NeedToRefactor;
 import com.github.dr.rwserver.util.game.Events;
-import com.github.dr.rwserver.util.log.Log;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -110,7 +108,7 @@ public class Vote {
                 teamOnly();
                 break;
             case "kick" :
-                target = Data.game.playerData[Integer.parseInt(name)];
+                target = Data.game.playerManage.getPlayerArray(Integer.parseInt(name));
                 if(target == null) {
                     player.sendSystemMessage(player.localeUtil.getinput("vote.kick.err",name));
                 } else {
@@ -133,7 +131,7 @@ public class Vote {
      * 正常投票
       */
     private void normalDistribution() {
-        require = Data.playerGroup.size();
+        require = Data.game.playerManage.playerGroup.size();
         endNoMsg = () -> Call.sendSystemMessageLocal("vote.done.no",type+" "+(isBlank(name)?"":name), y, require);
         endYesMsg = () -> Call.sendSystemMessageLocal("vote.ok");
         teamVoteIng = () -> Call.sendSystemMessage("vote.ing",reciprocal);
@@ -145,7 +143,7 @@ public class Vote {
      */
     private void teamOnly() {
         final AtomicInteger require = new AtomicInteger(0);
-        Data.playerGroup.eachBooleanIfs(e -> e.team == player.team, p -> require.getAndIncrement());
+        Data.game.playerManage.playerGroup.eachBooleanIfs(e -> e.team == player.team, p -> require.getAndIncrement());
         this.require = require.get();
         endNoMsg = () -> Call.sendSystemTeamMessageLocal(player.team, "vote.done.no", type + " " + (isBlank(name) ? "" : name), y, require);
         endYesMsg = () -> Call.sendSystemTeamMessageLocal(player.team, "vote.ok");
@@ -224,11 +222,7 @@ public class Vote {
 
     private void kick() {
         Call.sendSystemMessage("kick.player", target.name);
-        try {
-            target.con.sendKick(target.localeUtil.getinput("kick.you"));
-        } catch (IOException e) {
-            Log.error("[Player] Send Kick Player Error",e);
-        }
+        target.kickPlayer(target.localeUtil.getinput("kick.you"));
     }
 
     private void gameover() {
@@ -236,7 +230,7 @@ public class Vote {
     }
 
     private void surrender() {
-        Data.playerGroup.eachBooleanIfs(e -> e.team == player.team, p -> p.con.sendSurrender());
+        Data.game.playerManage.playerGroup.eachBooleanIfs(e -> e.team == player.team, p -> p.con.sendSurrender());
     }
 
 

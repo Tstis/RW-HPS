@@ -1,6 +1,6 @@
 # RW-HPS
-欢迎来到 RW-HPS Plugin 文档  
-本文面向要进行开发的用户。对于只使用现成插件的用户，请阅读 [用户手册](run/UserManual.md)
+**欢迎来到 RW-HPS 文档**    
+##对于初次使用的用户，请阅读 [用户手册](run/UserManual.md)
 
 ## JVM 平台 RW-HPS 开发
 

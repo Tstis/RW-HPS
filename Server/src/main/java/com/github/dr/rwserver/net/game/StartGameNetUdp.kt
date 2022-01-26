@@ -11,7 +11,6 @@ package com.github.dr.rwserver.net.game
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
 import com.github.dr.rwserver.util.log.Log.error
 import com.github.dr.rwserver.util.threads.ThreadFactoryName.nameThreadFactory
 import net.udp.ReliableServerSocket.ReliableClientSocket
@@ -22,16 +21,11 @@ import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 internal class StartGameNetUdp(
-    private val startNet: StartNet,
-    private var abstractNetConnect: AbstractNetConnect,
-    private var typeConnect: TypeConnect
+    private val startNet: StartNet
 ) {
     private val group = ThreadPoolExecutor(4, Int.MAX_VALUE, 1L, TimeUnit.MINUTES, LinkedBlockingQueue(), nameThreadFactory("UDP-"))
     private val timeoutDetection: TimeoutDetection = TimeoutDetection(5, startNet)
-    internal fun update() {
-        abstractNetConnect = NetStaticData.protocolData.abstractNetConnect
-        typeConnect = NetStaticData.protocolData.typeConnect
-    }
+
 
     @Throws(IOException::class)
     protected fun close() {
@@ -40,19 +34,20 @@ internal class StartGameNetUdp(
 
     @Throws(Exception::class)
     internal fun run(socket: ReliableClientSocket) {
+        val typeConnect: TypeConnect = NetStaticData.protocolData.typeConnect
         val sockAds = socket.remoteSocketAddress
-        var con = startNet.OVER_MAP[sockAds.toString()]
-        if (con == null) {
-            con = abstractNetConnect.getVersionNet(ConnectionAgreement(socket, startNet))
-            startNet.OVER_MAP.put(sockAds.toString(), con)
+        var type = startNet.OVER_MAP[sockAds.toString()]
+        if (type == null) {
+            type = typeConnect.getTypeConnect(ConnectionAgreement(socket, startNet))
+            startNet.OVER_MAP.put(sockAds.toString(), type)
         }
-        val conFinal = con
+        val typeFinal = type
         group.execute {
             while (!socket.isClosed) {
                 try {
                     val `in` = DataInputStream(socket.inputStream)
                     val size = `in`.readInt()
-                    val type = `in`.readInt()
+                    val typeInt = `in`.readInt()
                     val bytes = ByteArray(size)
                     var bytesRead = 0
                     while (bytesRead < size) {
@@ -62,15 +57,15 @@ internal class StartGameNetUdp(
                         }
                         bytesRead += readIn
                     }
-                    typeConnect.typeConnect(conFinal, Packet(type, bytes))
+                    typeFinal.typeConnect(Packet(typeInt, bytes))
                 } catch (e: Exception) {
                     error("UDP READ", e)
-                    conFinal.disconnect()
+                    typeFinal.abstractNetConnect.disconnect()
                     startNet.OVER_MAP.remove(sockAds.toString())
                     return@execute
                 }
             }
-            conFinal.disconnect()
+            typeFinal.abstractNetConnect.disconnect()
             startNet.OVER_MAP.remove(sockAds.toString())
         }
     }

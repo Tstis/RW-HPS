@@ -9,8 +9,8 @@
 
 package com.github.dr.rwserver.game
 
-import com.github.dr.rwserver.data.Player
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
+import com.github.dr.rwserver.data.player.Player
+import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 
 /**
  * @author Dr
@@ -28,7 +28,7 @@ class EventType {
     /** 玩家连接密码验证. */
     class PlayerConnectPasswdCheckEvent(
         /** 游戏实现协议  */
-        val abstractNetConnect: AbstractNetConnect,
+        val abstractNetConnect: GameVersionServer,
         /** 密码SHA256的16进  */
         val passwd: String
     ) {

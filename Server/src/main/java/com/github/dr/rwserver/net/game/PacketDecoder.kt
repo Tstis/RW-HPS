@@ -10,7 +10,7 @@
 package com.github.dr.rwserver.net.game
 
 import com.github.dr.rwserver.io.Packet
-import com.github.dr.rwserver.util.log.Log.error
+import com.github.dr.rwserver.util.log.Log.warn
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.ByteToMessageDecoder
@@ -19,9 +19,19 @@ import io.netty.util.ReferenceCountUtil
 /**
  * @author Dr
  */
+/**
+ *    1 2 3 4  5  6  7  8  ...
+ *   +-+-+-+-+-+-+-+-+---------------+
+ *   |0|0|0|0| 0| 0| 0| 0| Data|
+ *   +-+-+-+-+-+-+-+-+---------------+
+ *   |  Type |Data length| Data
+ *   +---------------+---------------+
+ */
 internal class PacketDecoder : ByteToMessageDecoder() {
     companion object {
+        /** Packet header data length */
         private const val HEADER_SIZE = 8
+        /** Maximum accepted single package size */
         private const val MAX_CONTENT_LENGTH = 52428800
     }
 
@@ -44,11 +54,15 @@ internal class PacketDecoder : ByteToMessageDecoder() {
             ctx.close()
         }
         */
-        //消息长度
 
-        // 50MB
+        /*
+         * Someone may be sending a lot of packets to the server to take up broadband
+         * Close the connection directly by default
+         *
+         * Maximum accepted single package size = 50 MB
+         */
         if (readableBytes > MAX_CONTENT_LENGTH) {
-            error("MAX Packet")
+            warn("Package size exceeds maximum")
             ReferenceCountUtil.release(bufferIn)
             /*
             NetStaticData.blackList.addBlackList(ip)
@@ -60,6 +74,9 @@ internal class PacketDecoder : ByteToMessageDecoder() {
         val readerIndex = bufferIn.readerIndex()
         val contentLength = bufferIn.readInt()
         val type = bufferIn.readInt()
+        /*
+         * Insufficient data length, reset the identification bit and read again
+         */
         if (bufferIn.readableBytes() < contentLength) {
             bufferIn.readerIndex(readerIndex)
             return

@@ -10,16 +10,12 @@
 package com.github.dr.rwserver.net.game
 
 import com.github.dr.rwserver.data.global.Data
-import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.net.core.AbstractNet
-import com.github.dr.rwserver.net.core.server.AbstractNetConnect
+import com.github.dr.rwserver.net.core.TypeConnect
 import com.github.dr.rwserver.struct.OrderedMap
 import com.github.dr.rwserver.struct.Seq
-import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.log.Log.clog
 import com.github.dr.rwserver.util.log.Log.error
-import com.shareData.chainMarket.HttpServer
-import com.shareData.chainMarket.constant.HttpsSetting
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.*
 import io.netty.channel.epoll.Epoll
@@ -45,7 +41,7 @@ class StartNet {
     private val start: AbstractNet
 
     @JvmField
-    val OVER_MAP = OrderedMap<String, AbstractNetConnect>(16)
+    val OVER_MAP = OrderedMap<String, TypeConnect>(16)
 
     internal val ioGroup: EventExecutorGroup = DefaultEventExecutorGroup(32)
 
@@ -64,10 +60,6 @@ class StartNet {
     fun openPort(port: Int) {
         Data.config.RunPid = Data.core.pid
         Data.config.save()
-
-        if (Data.config.WebApi) {
-            startWebApi()
-        }
 
         openPort(port,1,0)
     }
@@ -119,8 +111,7 @@ class StartNet {
     }
 
     fun startUdp(port: Int) {
-        startGameNetUdp =
-            StartGameNetUdp(this, NetStaticData.protocolData.abstractNetConnect, NetStaticData.protocolData.typeConnect)
+        startGameNetUdp = StartGameNetUdp(this)
         try {
             ReliableServerSocket(port).use { serverSocket ->
                 this.serverSocket = serverSocket
@@ -134,16 +125,8 @@ class StartNet {
         }
     }
 
-    private fun startWebApi() {
-        val httpServer = HttpServer()
-        HttpsSetting.sslEnabled = Data.config.WebApiSsl
-        HttpsSetting.keystorePath = Data.config.WebApiSslKetPath
-        HttpsSetting.certificatePassword = Data.config.WebApiSslPasswd
-        HttpsSetting.keystorePassword = Data.config.WebApiSslPasswd
-        httpServer.start(
-            Data.config.WebApiPort, "com.github.dr.rwserver.net.web.api", 1024,
-            null, null
-        )
+    fun getConnectSize(): Int {
+        return start.getConnectSize()
     }
 
     fun stop() {
@@ -156,22 +139,13 @@ class StartNet {
             val attr = channel.attr(NewServerHandler.NETTY_CHANNEL_KEY)
             val con = attr.get()
             if (con != null) {
-                con.disconnect()
+                con.abstractNetConnect.disconnect()
             } else {
                 channel.close()
                 ctx.close()
             }
         } finally {
             OVER_MAP.remove(channel.id().asLongText())
-        }
-    }
-
-    fun updateNet() {
-        if (IsUtil.notIsBlank(start)) {
-            start.updateNet()
-        }
-        if (IsUtil.notIsBlank(serverSocket)) {
-            startGameNetUdp!!.update()
         }
     }
 

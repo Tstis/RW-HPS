@@ -31,20 +31,19 @@ public class NetServer {
             Threads.removeScheduledFutureData("GamePing");
             Threads.removeScheduledFutureData("GameTeam");
             Data.game = null;
-            Data.playerGroup.clear();
-            Data.playerAll.clear();
+            Data.game.playerManage.playerGroup.clear();
+            Data.game.playerManage.playerAll.clear();
             Log.clog("Server closed");
         }
     }
 
     public static void reLoadServer() {
-        Threads.removeScheduledFutureData("GameTask");
         Threads.removeScheduledFutureData("GamePing");
         Threads.removeScheduledFutureData("GameWinOrLoseCheck");
         Threads.removeScheduledFutureData("Gameover");
         Call.killAllPlayer();
-        Data.playerGroup.clear();
-        Data.playerAll.clear();
+        Data.game.playerManage.playerGroup.clear();
+        Data.game.playerManage.playerAll.clear();
         Data.game.re();
         Threads.newThreadService2(Call::sendPlayerPing,0,2, TimeUnit.SECONDS,"GamePing");
         Data.game.isStartGame = false;

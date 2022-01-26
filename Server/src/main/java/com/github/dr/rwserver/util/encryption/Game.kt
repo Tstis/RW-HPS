@@ -14,8 +14,39 @@ package com.github.dr.rwserver.util.encryption
  * @Data 2020/6/25 9:28
  */
 object Game {
+    // 1.14
     @JvmStatic
 	fun connectKey(paramInt: Int): String {
-        return "c:" + paramInt + "m:" + (paramInt * 87 + 24) + "0:" + 44000 * paramInt + "1:" + paramInt + "2:" + 13000 * paramInt + "3:" + (28000 + paramInt) + "4:" + 75000 * paramInt + "5:" + (160000 + paramInt) + "6:" + 850000 * paramInt + "t1:" + 44000 * paramInt + "d:" + 5 * paramInt
+        return buildString {
+            append("c:${paramInt}")
+            append("m:${paramInt * 87 + 24}")
+            append("0:${paramInt * 44000}")
+            append("1:${paramInt}")
+            append("2:${paramInt * 13000}")
+            append("3:${paramInt + 28000}")
+            append("4:${paramInt * 75000}")
+            append("5:${paramInt + 160000}")
+            append("6:${paramInt * 850000}")
+            append("t1:${paramInt * 44000}")
+            append("d:${paramInt * 5}")
+        }
+    }
+
+    // 1.15
+    @JvmStatic
+    fun connectKeyNew(paramInt: Int): String {
+        return buildString {
+            append("c:${paramInt}")
+            append("m:${paramInt * 87 + 24}")
+            append("0:${paramInt * 44000}")
+            append("1:${paramInt}")
+            append("2:${paramInt * 13000}")
+            append("3:${paramInt + 28000}")
+            append("4:${paramInt * 75000}")
+            append("5:${paramInt + 160000}")
+            append("6:${paramInt * 850000}")
+            append("t1:${paramInt * 4000.0 * 11.0}")
+            append("d:${paramInt * 5}")
+        }
     }
 }

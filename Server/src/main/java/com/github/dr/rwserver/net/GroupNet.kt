@@ -24,7 +24,7 @@ import java.util.concurrent.Executors
 /**
  * @author Dr
  */
-class GroupNet(id: Long) {
+class GroupNet {
     private val channelGroup: ChannelGroup = DefaultChannelGroup( GlobalEventExecutor.INSTANCE)
     private val singleTcpThreadExecutor = Executors.newSingleThreadExecutor()
     private val singleUdpThreadExecutor = Executors.newSingleThreadExecutor()

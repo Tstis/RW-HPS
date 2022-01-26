@@ -11,11 +11,10 @@ package com.github.dr.rwserver.core
 
 import com.github.dr.rwserver.core.thread.Threads.getIfScheduledFutureData
 import com.github.dr.rwserver.core.thread.Threads.newThreadService
-import com.github.dr.rwserver.core.thread.Threads.newThreadService2
 import com.github.dr.rwserver.core.thread.Threads.removeScheduledFutureData
-import com.github.dr.rwserver.data.Player
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.GameOverEvent
 import com.github.dr.rwserver.game.GameCommand
 import com.github.dr.rwserver.struct.Seq
@@ -41,21 +40,21 @@ object Call {
 
     @JvmStatic
     fun sendMessageLocal(player: Player, text: String, vararg obj: Any) {
-        Data.playerGroup.each { e: Player ->
+        Data.game.playerManage.playerGroup.each { e: Player ->
             e.sendMessage(player, e.localeUtil.getinput(text, *obj))
         }
     }
 
     @JvmStatic
     fun sendTeamMessage(team: Int, player: Player, text: String) {
-        Data.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player ->
+        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player ->
             p.sendMessage(player, "[TEAM] $text")
         }
     }
 
     @JvmStatic
     fun sendSystemTeamMessageLocal(team: Int, text: String, vararg obj: Any) {
-        Data.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player ->
+        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player ->
             p.sendSystemMessage("[TEAM] " + p.localeUtil.getinput(text, *obj))
         }
     }
@@ -71,13 +70,13 @@ object Call {
 
     @JvmStatic
     fun sendSystemMessageLocal(text: String, vararg obj: Any) {
-        Data.playerGroup.each { e: Player -> e.sendSystemMessage(e.localeUtil.getinput(text, *obj))
+        Data.game.playerManage.playerGroup.each { e: Player -> e.sendSystemMessage(e.localeUtil.getinput(text, *obj))
         }
     }
 
     @JvmStatic
     fun sendSystemMessage(text: String, vararg obj: Any) {
-        Data.playerGroup.each { e: Player ->
+        Data.game.playerManage.playerGroup.each { e: Player ->
             e.sendSystemMessage(e.localeUtil.getinput(text, *obj))
         }
     }
@@ -89,7 +88,7 @@ object Call {
         }
         try {
             val enc = NetStaticData.protocolData.abstractNetPacket.getTeamDataPacket()
-            Data.playerGroup.each { e: Player -> e.con!!.sendTeamData(enc) }
+            Data.game.playerManage.playerGroup.each { e: Player -> e.con!!.sendTeamData(enc) }
         } catch (e: IOException) {
             error("[ALL] Send Team Error", e)
         }
@@ -97,12 +96,12 @@ object Call {
 
     @JvmStatic
     fun sendPlayerPing() {
-        Data.playerGroup.each { e: Player -> e.con!!.ping() }
+        Data.game.playerManage.playerGroup.each { e: Player -> e.con!!.ping() }
     }
 
     @JvmStatic
     fun upDataGameData() {
-        Data.playerGroup.each { e: Player ->
+        Data.game.playerManage.playerGroup.each { e: Player ->
             try {
                 e.con!!.sendServerInfo(false)
             } catch (err: IOException) {
@@ -113,7 +112,7 @@ object Call {
 
     @JvmStatic
     fun killAllPlayer() {
-        Data.playerGroup.each { e: Player ->
+        Data.game.playerManage.playerGroup.each { e: Player ->
             try {
                 e.con!!.sendKick("Game Over")
             } catch (err: IOException) {
@@ -124,7 +123,7 @@ object Call {
 
     @JvmStatic
     fun disAllPlayer() {
-        Data.playerGroup.each { e: Player -> e.con!!.disconnect() }
+        Data.game.playerManage.playerGroup.each { e: Player -> e.con!!.disconnect() }
     }
 
     @JvmStatic
@@ -136,61 +135,72 @@ object Call {
         Timer().schedule(RandyTask(), 0, 100)
     }
 
+    /**
+     * 检测玩家是否全部收到StartGame-Packet
+     * @property loadTime 失败次数
+     * @property loadTimeMaxTry 尝试最大次数
+     * @property start 是否收到
+     */
     private class RandyTask : TimerTask() {
         private var loadTime = 0
         private val loadTimeMaxTry = 30
         private var start = true
+
         override fun run() {
-            Data.playerGroup.each { p: Player ->
+            start = true
+
+            Data.game.playerManage.playerGroup.each { p: Player ->
                 if (!p.start) {
                     loadTime += 1
                     start = false
-                    if (loadTime > loadTimeMaxTry) {
-                        if (start) {
-                            sendSystemMessageLocal("start.testNo")
-                        }
-                        newThreadService2(SendGameTickCommand(), 0, 150, TimeUnit.MILLISECONDS, "GameTask")
-                        cancel()
-                    }
                 }
             }
-            if (start) {
-                start = false
-                sendSystemMessageLocal("start.testYes")
+
+            if (loadTime > loadTimeMaxTry) {
+                sendSystemMessageLocal("start.testNo")
+                Timer().schedule(SendGameTickCommand(), 0, 150)
+                cancel()
             }
-            newThreadService2(SendGameTickCommand(), 0, 150, TimeUnit.MILLISECONDS, "GameTask")
-            cancel()
+
+            if (start) {
+                sendSystemMessageLocal("start.testYes")
+                Timer().schedule(SendGameTickCommand(), 0, 150)
+                cancel()
+            }
         }
     }
 
-    private class SendGameTickCommand : Runnable {
+    private class SendGameTickCommand : TimerTask() {
         private var time = 0
         private var oneSay = true
-        private var gameover = true
         override fun run() {
             // 检测人数是否符合Gameover
-            if (Data.playerGroup.size() == 0) {
-                if (gameover) {
-                    Events.fire(GameOverEvent())
-                    gameover = false
-                }
+            if (Data.game.playerManage.playerGroup.size() == 0) {
+                Events.fire(GameOverEvent())
+                cancel()
+                return
             }
-            if (Data.playerGroup.size() <= 1) {
+
+            if (Data.game.playerManage.playerGroup.size() <= 1) {
                 if (oneSay) {
                     oneSay = false
                     sendSystemMessageLocal("gameOver.oneMin")
-                    newThreadService({Events.fire(GameOverEvent())}, 1, TimeUnit.MINUTES, "Gameover")
+                    newThreadService({
+                        Events.fire(GameOverEvent())
+                        cancel()
+                    }, 1, TimeUnit.MINUTES, "Gameover")
                 }
             } else {
                 if (getIfScheduledFutureData("Gameover")) {
                     oneSay = true
-                    gameover = true
                     removeScheduledFutureData("Gameover")
                 }
             }
+
             if (Data.game.reConnectBreak) {
                 return
             }
+
             time += 10
             when (val size = Data.game.gameCommandCache.size) {
                 0 -> {
@@ -212,12 +222,7 @@ object Call {
                     val comm = Seq<GameCommand>(size)
                     IntStream.range(0, size).mapToObj { Data.game.gameCommandCache.poll() }.forEach { value: GameCommand -> comm.add(value) }
                     try {
-                        NetStaticData.groupNet.broadcast(
-                            NetStaticData.protocolData.abstractNetPacket.getGameTickCommandsPacket(
-                                time,
-                                comm
-                            )
-                        )
+                        NetStaticData.groupNet.broadcast(NetStaticData.protocolData.abstractNetPacket.getGameTickCommandsPacket(time, comm))
                     } catch (e: IOException) {
                         error("[ALL] Send Game Ticks Error", e)
                     }

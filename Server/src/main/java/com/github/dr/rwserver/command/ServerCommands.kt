@@ -19,10 +19,11 @@ import com.github.dr.rwserver.core.Core.exit
 import com.github.dr.rwserver.core.NetServer
 import com.github.dr.rwserver.core.thread.Threads.newThreadCore
 import com.github.dr.rwserver.core.thread.Threads.newThreadService2
-import com.github.dr.rwserver.data.Player
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.Data.LINE_SEPARATOR
 import com.github.dr.rwserver.data.global.NetStaticData
+import com.github.dr.rwserver.data.global.Relay
+import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.data.plugin.PluginManage.run
 import com.github.dr.rwserver.func.StrCons
 import com.github.dr.rwserver.game.EventType.GameOverEvent
@@ -30,10 +31,14 @@ import com.github.dr.rwserver.game.EventType.PlayerBanEvent
 import com.github.dr.rwserver.game.Rules
 import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.net.game.StartNet
-import com.github.dr.rwserver.net.netconnectprotocol.*
+import com.github.dr.rwserver.net.netconnectprotocol.TypeRelay
+import com.github.dr.rwserver.net.netconnectprotocol.TypeRelayRebroadcast
+import com.github.dr.rwserver.net.netconnectprotocol.TypeRwHps
+import com.github.dr.rwserver.net.netconnectprotocol.realize.*
 import com.github.dr.rwserver.plugin.PluginsLoad.PluginLoadData
 import com.github.dr.rwserver.plugin.center.PluginCenter
 import com.github.dr.rwserver.struct.Seq
+import com.github.dr.rwserver.util.ExtractUtil.ipToLong
 import com.github.dr.rwserver.util.Time.getTimeFutureMillis
 import com.github.dr.rwserver.util.game.CommandHandler
 import com.github.dr.rwserver.util.game.Events
@@ -87,20 +92,18 @@ class ServerCommands(handler: CommandHandler) {
                 log["The server is not closed, please close"]
                 return@register
             }
+
+            /* Register Server Protocol Command */
+            registerPlayerCommand(handler)
+
             set(Data.config.Log.uppercase(Locale.getDefault()))
             Data.game = Rules(Data.config)
-            if (Data.config.SingleUserRelay) {
-                Data.SERVER_COMMAND.handleMessage("startrelayt", log)
-                return@register
-            }
             Data.game.init()
             newThreadService2({ sendTeamData() } , 0, 2, TimeUnit.SECONDS, "GameTeam")
             newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS, "GamePing")
 
-NetStaticData.protocolData.setTypeConnect(TypeRwHps())
-NetStaticData.protocolData.setNetConnectProtocol(GameVersionServer(ConnectionAgreement()), 151)
-NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
-
+            NetStaticData.protocolData.setTypeConnect(TypeRwHps(GameVersionServer(ConnectionAgreement())))
+            NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
 /*
             NetStaticData.protocolData.setTypeConnect(TypeRwHpsBeta());
             NetStaticData.protocolData.setNetConnectProtocol(GameVersionServerBeta(ConnectionAgreement()),157);
@@ -128,14 +131,17 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
                 log["The server is not closed, please close"]
                 return@register
             }
+
+            /* Register Server Protocol Command */
+            registerPlayerCommand(handler)
+
             set(Data.config.Log.uppercase(Locale.getDefault()))
             Data.game = Rules(Data.config)
             Data.game.init()
             newThreadService2({ sendTeamData() } , 0, 2, TimeUnit.SECONDS, "GameTeam")
             newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS, "GamePing")
-            NetStaticData.protocolData.setTypeConnect(TypeRwHps())
+            NetStaticData.protocolData.setTypeConnect(TypeRwHps(GameVersionFFA(ConnectionAgreement())))
             NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
-            NetStaticData.protocolData.setNetConnectProtocol(GameVersionFFA(ConnectionAgreement()), 151)
             newThreadCore {
                 val startNet = StartNet()
                 NetStaticData.startNet.add(startNet)
@@ -153,18 +159,37 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
                 }
             }
         }
-        handler.register("startrelayopen", "serverCommands.start.relayopen") { _: Array<String>?, log: StrCons ->
-            if (NetStaticData.startNet.size() > 0) {
-                log["The server is not closed, please close"]
-                return@register
-            }
-            set(Data.config.Log.uppercase(Locale.getDefault()))
 
+        handler.register("startrelay", "serverCommands.start") { _: Array<String>?, _: StrCons ->
+            set(Data.config.Log.uppercase(Locale.getDefault()))
+            Data.game = Rules(Data.config)
+            Data.game.init()
+
+            NetStaticData.protocolData.setTypeConnect(TypeRelay(GameVersionRelay(ConnectionAgreement())))
+            NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
+
+            val startNetTcp = StartNet()
+            NetStaticData.startNet.add(startNetTcp)
+            newThreadCore { startNetTcp.openPort(Data.config.Port) }
+            if (Data.config.UDPSupport) {
+                newThreadCore {
+                    try {
+                        val startNet = StartNet()
+                        NetStaticData.startNet.add(startNet)
+                        startNet.startUdp(Data.config.Port)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+        handler.register("startrelaytest", "serverCommands.start") { _: Array<String>?, _: StrCons ->
+            set(Data.config.Log.uppercase(Locale.getDefault()))
             Data.game = Rules(Data.config)
             Data.game.init()
             
-            NetStaticData.protocolData.setTypeConnect(TypeRelayOpenSource())
-            NetStaticData.protocolData.setNetConnectProtocol(GameVersionRelayOpenSource(ConnectionAgreement()), 1000)
+            NetStaticData.protocolData.setTypeConnect(TypeRelayRebroadcast(GameVersionRelayRebroadcast(ConnectionAgreement())))
+            NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
 
             val startNetTcp = StartNet()
             NetStaticData.startNet.add(startNetTcp)
@@ -199,27 +224,6 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
                 }
             }
         }
-        handler.register("players", "serverCommands.players") { _: Array<String>?, log: StrCons ->
-            if (Data.playerGroup.size() == 0) {
-                log["No players are currently in the server."]
-            } else {
-                log["Players: {0}", Data.playerGroup.size()]
-                val data = StringBuilder()
-                for (player in Data.playerGroup) {
-                    data.append(LINE_SEPARATOR)
-                        .append(player.name)
-                        .append(" / ")
-                        .append("ID: ").append(player.uuid)
-                        .append(" / ")
-                        .append("IP: ").append(player.con!!.ip)
-                        .append(" / ")
-                        .append("Protocol: ").append(player.con!!.getConnectionAgreement())
-                        .append(" / ")
-                        .append("Admin: ").append(player.isAdmin)
-                }
-                log[data.toString()]
-            }
-        }
         handler.register("maps", "serverCommands.maps") { _: Array<String>?, log: StrCons ->
             val response = StringBuilder()
             val i = AtomicInteger(0)
@@ -232,6 +236,27 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
     }
 
     private fun registerPlayerCommand(handler: CommandHandler) {
+        handler.register("players", "serverCommands.players") { _: Array<String>?, log: StrCons ->
+            if (Data.game.playerManage.playerGroup.size() == 0) {
+                log["No players are currently in the server."]
+            } else {
+                log["Players: {0}", Data.game.playerManage.playerGroup.size()]
+                val data = StringBuilder()
+                for (player in Data.game.playerManage.playerGroup) {
+                    data.append(LINE_SEPARATOR)
+                        .append(player.name)
+                        .append(" / ")
+                        .append("ID: ").append(player.uuid)
+                        .append(" / ")
+                        .append("IP: ").append(player.con!!.ip)
+                        .append(" / ")
+                        .append("Protocol: ").append(player.con!!.useConnectionAgreement)
+                        .append(" / ")
+                        .append("Admin: ").append(player.isAdmin)
+                }
+                log[data.toString()]
+            }
+        }
         handler.register("say", "<text...>", "serverCommands.say") { arg: Array<String>, _: StrCons ->
             val response = StringBuilder(arg[0])
             var i = 1
@@ -242,7 +267,7 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
             }
             if (Data.config.SingleUserRelay) {
                 try {
-                    NetStaticData.relayOpenSource.groupNet.broadcast(
+                    NetStaticData.relay.groupNet.broadcast(
                         NetStaticData.protocolData.abstractNetPacket.getSystemMessagePacket(
                             response.toString().replace("<>", "")
                         )
@@ -269,7 +294,7 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
             }
             val add = "add" == arg[0]
             val site = arg[1].toInt() - 1
-            val player = Data.game.playerData[site]
+            val player = Data.game.playerManage.getPlayerArray(site)
             if (player != null) {
                 if (add) {
                     Data.core.admin.addAdmin(player.uuid)
@@ -295,25 +320,28 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
         }
         handler.register("ban", "<PlayerSerialNumber>", "serverCommands.ban") { arg: Array<String>, _: StrCons ->
             val site = arg[0].toInt() - 1
-            if (Data.game.playerData[site] != null) {
-                Events.fire(PlayerBanEvent(Data.game.playerData[site]))
+            val player = Data.game.playerManage.getPlayerArray(site)
+            if (player != null) {
+                Events.fire(PlayerBanEvent(player))
             }
         }
         handler.register("mute", "<PlayerSerialNumber> [Time(s)]", "serverCommands.mute") { arg: Array<String>, _: StrCons ->
             val site = arg[0].toInt() - 1
-            if (Data.game.playerData[site] != null) {
+            val player = Data.game.playerManage.getPlayerArray(site)
+            if (player != null) {
                 //Data.game.playerData[site].muteTime = getLocalTimeFromU(Long.parseLong(arg[1])*1000L);
-                Data.game.playerData[site].muteTime = getTimeFutureMillis(43200 * 1000L)
+                player.muteTime = getTimeFutureMillis(43200 * 1000L)
             }
         }
         handler.register("kick", "<PlayerSerialNumber> [time]", "serverCommands.kick") { arg: Array<String>, _: StrCons ->
             val site = arg[0].toInt() - 1
-            if (Data.game.playerData[site] != null) {
-                Data.game.playerData[site].kickTime = if (arg.size > 1) getTimeFutureMillis(
+            val player = Data.game.playerManage.getPlayerArray(site)
+            if (player != null) {
+                player.kickTime = if (arg.size > 1) getTimeFutureMillis(
                     arg[1].toInt() * 1000L
                 ) else getTimeFutureMillis(60 * 1000L)
                 try {
-                    Data.game.playerData[site].con!!.sendKick(localeUtil.getinput("kick.you"))
+                    player.con!!.sendKick(localeUtil.getinput("kick.you"))
                 } catch (e: IOException) {
                     error("[Player] Send Kick Player Error", e)
                 }
@@ -330,17 +358,18 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
         handler.register("kill", "<PlayerSerialNumber>", "serverCommands.kill") { arg: Array<String>, log: StrCons ->
             if (Data.game.isStartGame) {
                 val site = arg[0].toInt() - 1
-                if (Data.game.playerData[site] != null) {
-                    Data.game.playerData[site].con!!.sendSurrender()
+                val player = Data.game.playerManage.getPlayerArray(site)
+                if (player != null) {
+                    player.con!!.sendSurrender()
                 }
             } else {
                 log[localeUtil.getinput("err.noStartGame")]
             }
         }
         handler.register("giveadmin", "<PlayerSerialNumber...>", "serverCommands.giveadmin") { arg: Array<String>, _: StrCons ->
-            Data.playerGroup.each(
+            Data.game.playerManage.playerGroup.each(
                 { p: Player -> p.isAdmin }) { i: Player ->
-                val player = Data.game.playerData[arg[0].toInt() - 1]
+                val player = Data.game.playerManage.getPlayerArray(arg[0].toInt())
                 if (player != null) {
                     i.isAdmin = false
                     player.isAdmin = true
@@ -350,7 +379,7 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
             }
         }
         handler.register("clearmuteall", "serverCommands.clearmuteall") { _: Array<String>?, _: StrCons ->
-            Data.playerGroup.each { e: Player -> e.muteTime = 0 }
+            Data.game.playerManage.playerGroup.each { e: Player -> e.muteTime = 0 }
         }
         handler.register("cleanmods", "serverCommands.cleanmods") { _: Array<String>?, _: StrCons ->
             Data.core.unitBase64.clear()
@@ -362,6 +391,37 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
             Data.game.mapsData.clear()
             Data.game.checkMaps()
             log["Reload {0}:{1}", size, Data.game.mapsData.size]
+        }
+    }
+
+    private fun registerRelayCommand(handler: CommandHandler) {
+        handler.register("players", "serverCommands.players") { _: Array<String>?, log: StrCons ->
+            if (Data.game.playerManage.playerGroup.size() == 0) {
+                log["No players are currently in the server."]
+            } else {
+                log["Players: {0}", Data.game.playerManage.playerGroup.size()]
+                val data = StringBuilder()
+                for (player in Data.game.playerManage.playerGroup) {
+                    data.append(LINE_SEPARATOR)
+                        .append(player.name)
+                        .append(" / ")
+                        .append("ID: ").append(player.uuid)
+                        .append(" / ")
+                        .append("IP: ").append(player.con!!.ip)
+                        .append(" / ")
+                        .append("Protocol: ").append(player.con!!.useConnectionAgreement)
+                        .append(" / ")
+                        .append("Admin: ").append(player.isAdmin)
+                }
+                log[data.toString()]
+            }
+        }
+        handler.register("ban", "<PlayerSerialNumber>", "serverCommands.ban") { arg: Array<String>, _: StrCons ->
+            val site = arg[0].toInt() - 1
+            val player = Data.game.playerManage.getPlayerArray(site)
+            if (player != null) {
+                Events.fire(PlayerBanEvent(player))
+            }
         }
     }
 
@@ -381,7 +441,6 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
         registerCore(handler)
         registerCorex(handler)
         registerInfo(handler)
-        registerPlayerCommand(handler)
         handler.register("log", "[a...]", "serverCommands.exit") { arg: Array<String>, _: StrCons ->
             Data.LOG_COMMAND.handleMessage(
                 arg[0], null
@@ -394,8 +453,18 @@ NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
         }
         handler.register("kc", "<1>", "serverCommands.exit") { arg: Array<String>, _: StrCons ->
             val site = arg[0].toInt() - 1
-            val player = Data.game.playerData[site]
-            player.con!!.disconnect()
+            val player = Data.game.playerManage.getPlayerArray(site)
+            player!!.con!!.disconnect()
+        }
+
+        handler.register("banrelay", "<id>", "") { arg: Array<String>, _: StrCons ->
+            val relay = Relay.getRelay(arg[0])
+            relay.groupNet.disconnect()
+            relay.sendMsg("您被管理员Ban 请勿占用公共资源")
+            val ip = relay.admin!!.ip
+            Data.core.admin.bannedIP24.add(ipToLong(ip))
+            relay.admin!!.disconnect()
+            println("OK $ip")
         }
     }
 }

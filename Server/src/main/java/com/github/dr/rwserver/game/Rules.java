@@ -11,10 +11,10 @@ package com.github.dr.rwserver.game;
 
 import com.github.dr.rwserver.core.thread.Threads;
 import com.github.dr.rwserver.custom.CustomEvent;
-import com.github.dr.rwserver.data.Player;
 import com.github.dr.rwserver.data.base.BaseConfig;
 import com.github.dr.rwserver.data.global.Data;
 import com.github.dr.rwserver.data.global.NetStaticData;
+import com.github.dr.rwserver.data.player.PlayerManage;
 import com.github.dr.rwserver.io.Packet;
 import com.github.dr.rwserver.struct.OrderedMap;
 import com.github.dr.rwserver.struct.Seq;
@@ -27,7 +27,6 @@ import com.github.dr.rwserver.util.zip.zip.ZipDecoder;
 
 import java.io.File;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Locale;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +38,7 @@ public class Rules {
     /** 是否已启动游戏 */
     public boolean isStartGame = false;
     /** 倍数 */
-    public float income = 1f;
+    public float income;
     /** 初始钱 */
     public int credits = 0;
     /** 最大玩家 */
@@ -58,18 +57,14 @@ public class Rules {
     public final String passwd;
     /** 按键包缓存 */
     public final LinkedBlockingQueue<GameCommand> gameCommandCache = new LinkedBlockingQueue<>();
-    /** 混战分配 */
-    public boolean amTeam = false;
-    /** 队伍数据 */
-    public volatile Player[] playerData;
     /** AFK */
     public boolean isAfk = true;
     /** 重连暂停 */
     public boolean reConnectBreak = false;
     /** 重连缓存 GameSave */
     public volatile Packet gameSaveCache = null;
-    /** 共享控制 */
-    public int sharedControlPlayer = 0;
+    /** PlayerManage */
+    public final PlayerManage playerManage;
     /** Mpa Lock */
     public boolean mapLock = false;
 
@@ -91,26 +86,23 @@ public class Rules {
             Log.debug("Read Error",exp);
         }
 
-        NetStaticData.relayOpenSource.setMod(config.getSingleUserRelayMod());
+        NetStaticData.relay.setMod(config.getSingleUserRelayMod());
 
         autoLoadOrUpdate(config);
 
-        init(config.getMaxPlayer());
+        int maxPlayer = config.getMaxPlayer();
+        this.maxPlayer = maxPlayer;
+        this.playerManage = new PlayerManage(maxPlayer);
+        income = Data.config.getDefIncome();
     }
 
     public void init() {
         new CustomEvent();
     }
 
-    public void init(int maxPlayer) {
-        this.maxPlayer = maxPlayer;
-        playerData = new Player[maxPlayer];
-        income = Data.config.getDefIncome();
-    }
-
     public void re() {
         gameCommandCache.clear();
-        Arrays.fill(playerData, null);
+        playerManage.cleanPlayerAllData();
         income = Data.config.getDefIncome();
         initUnit = 1;
         mist = 2;

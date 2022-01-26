@@ -11,25 +11,40 @@ package com.github.dr.rwserver.net.core
 
 import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.net.core.server.AbstractNetConnect
+import com.github.dr.rwserver.net.game.ConnectionAgreement
 
 /**
- * 适配多协议支持
- * com.github.dr.rwServer.net.game.NewServerHandler 只提供网络支持 解析数据包的调用需要本方法
+ * Parser, parse each game package
+ * [NewServerHandler.kt] Only provide network support. This method is needed to parse the data packet call
+ *
+ * Each Type Connect is bound to an Abstract Net Connect
  * @author Dr
+ * @date 2021/12/16 07:40:35
  */
-interface TypeConnect {
+abstract class TypeConnect(val abstractNetConnect: AbstractNetConnect) {
     /**
-     * 协议处理
-     * @param con 传入协议实现
-     * @param packet 接受的包
+     * 为什么要用con.getVersionNet来获取 多此一举
+     * 我是 ** ((
+     */
+
+    /**
+     * Set up a packet parser for the connection
+     * @param connectionAgreement ConnectionAgreement
+     * @return AbstractNetConnect
+     */
+    abstract fun getTypeConnect(connectionAgreement: ConnectionAgreement): TypeConnect
+
+    /**
+     * Protocol processing
+     * @param packet Accepted packages
      * @throws Exception Error
      */
     @Throws(Exception::class)
-    fun typeConnect(con: AbstractNetConnect, packet: Packet)
+    abstract fun typeConnect(packet: Packet)
 
     /**
      * 获取TypeConnect处理版本号
      * @return Version
      */
-    val version: String
+    abstract val version: String
 }

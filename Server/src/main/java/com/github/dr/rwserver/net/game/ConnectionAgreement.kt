@@ -138,7 +138,7 @@ class ConnectionAgreement {
         return Objects.hash(id)
     }
 
-    private fun convertIp(ipString: String): String {
+    fun convertIp(ipString: String): String {
         return ipString.substring(1, ipString.indexOf(':'))
     }
 }
