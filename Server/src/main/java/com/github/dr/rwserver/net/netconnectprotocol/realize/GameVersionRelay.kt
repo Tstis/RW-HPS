@@ -257,7 +257,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ ЧИСТЫЙ БАЛАНС 1 >>> z" + relayOpenSource!!.id + " }}")
+            o.writeString("{{ ЧИСТЫЙ БАЛАНС 1 >>> z" + relay!!.id + " }}")
             //
             o.writeBoolean(false)
             sendPacket(o.createPacket(170)) //+108+140
