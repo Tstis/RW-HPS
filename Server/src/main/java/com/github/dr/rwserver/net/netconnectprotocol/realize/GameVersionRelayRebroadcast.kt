@@ -23,13 +23,31 @@ import java.util.*
 import java.util.stream.IntStream
 
 /**
+ * Many thanks to them for providing cloud computing for the project
+ * This is essential to complete the RW-HPS Relay test
+ * @Thanks : [SimpFun Cloud](https://vps.tiexiu.xyz)
+ * @Thanks : [Github 1dNDN](https://github.com/1dNDN)
+ *
+ * This test was done on :
+ * Relay-CN (V. 5.1.0)
+ * 2022.1.26 20:00
+ */
+
+/**
+ * Relay protocol implementation
+ * Can realize multicast and save bandwidth
+ *
+ * @property lastSentPacket Last packet sent
+ * @property version Protocol version
+ * @constructor
+ *
  * @author Dr
  */
 class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : GameVersionRelay(connectionAgreement) {
     private lateinit var lastSentPacket: Packet
 
     override val version: String
-        get() = "1.14 RELAY Rebroadcast"
+        get() = "RELAY Rebroadcast"
 
     override fun setlastSentPacket(packet: Packet) {
         lastSentPacket = packet
@@ -56,7 +74,7 @@ class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : Ga
             o.writeBoolean(false)
             o.writeBoolean(true)
             o.writeString("{{RW-HPS Relay}}.Room ID : " + relay!!.id)
-            //
+            // Multicast
             o.writeBoolean(true)
             sendPacket(o.createPacket(170)) //+108+140
             sendPacket(NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(Data.localeUtil.getinput("relay.server.admin.connect", relay!!.id), "ADMIN", 5))

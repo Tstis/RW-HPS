@@ -70,36 +70,8 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 | Minimum 	| Any                     | 64M      | Any        | 16M HDD | Java 11   |
 
 ## Server Command List
-<details>
-  <summary>Server Command List</summary>  
-
-| Command 					 | Parameter 																						 | Information 									 |
-|:--- 					 |:--- 																						 |:--- 									 |
-| help 		              |                                                  										 | Get help 		 |
-| start                  |                                                  										 | Turn on the server 						 |
-| say 		      | &lt;TEXT&gt;                                                  										 | Send messages in the name of Server 				 |
-| giveadmin                | &lt;PlayerSerialNumber&gt; 																 | Transfer Admin       		         |
-| restart 			 | 																							 | Restart server 				 |
-| gameover 				 |  	 | Restart The Game               				 |
-| clearbanip          		 |                                                  										 | Clean up the banned IP               	 |
-| admin          		 |&lt;add/remove&gt; &lt;PlayerSite&gt;                                                  										 | Set up admin               			 |
-| clearbanuuid          		 |                               	   											 | Clear banned uuid               			 |
-| clearbanall          		 |                               	   											 | Empty ban               			 |
-| ban          		 | &lt;PlayerSerialNumber&gt;                                 	   											 | Ban someone               			 |
-| mute          		 |  &lt;PlayerSerialNumber&gt;  &lt;Time/s&gt;                             	   											 | Forbid sb from speaking               			 |
-| kick          		 |  &lt;PlayerSerialNumber&gt;  &lt;Time/s&gt;                             	   											 | Kick               			 |
-| isafk          		 |  &lt;off/on&gt;                             	   											 | Whether to enable AFK               			 |
-| plugins          		 |                               	   											 | View the list of plugins               			 |
-| players          		 |                               	   											 | View player list               			 |
-| kill          		 | &lt;PlayerSerialNumber&gt;                             	   											 | Kill the player               			 |
-| clearmuteall          		 |                               	   											 | Unmute all               			 |
-| maps          		 |                               	   											 | View Custom Map               			 |
-| reloadmaps          		 |                               	   											 | Reload map               			 |
-| stop          		 |                               	   											 | Stop the server               			 |
-Sorry, maybe more commands have not been added because the document has no time to update  
+Depending on the startup protocol, the server command will change accordingly    
 Please use help in the console to see more  
-</details>
-
 
 ## Game Command List
 <details>
@@ -135,18 +107,34 @@ If you meet any problem or have any questions, feel free to file an issue. Our g
 - RW-HPS is a free and open source project and is only for educational purposes. You shall not use this project for any illegal purposes. The author or the developement team of this project will not be held responsible for any damages.
 
 ## License
+- [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)
 ```
 Copyright (C) 2020-2021 RW-HPS Team and contributors.
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License v3.0 as
-published by the Free Software Foundation.
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License v3.0
-along with this program.  If not, see <https://www.gnu.org/licenses/agpl-3.0>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
+- [EULA](https://github.com/RW-HPS/RW-HPS/blob/master/Server/src/main/resources/eula/Engilsh.md)
+```
+Copyright © 2021 RW-HPS.Team <RW-HPS@der.kim>
+
+Permission is granted to each person to copy and distribute a verbatim copy of this license document and to make changes to it while it complies with the CC BY-NC-SA 4.0 agreement, provided that its copyright information is retained with the original author.
+
+Please be sure to carefully read and understand all rights and restrictions set forth in the General User Agreement. You are required to carefully read and decide whether to accept or not accept the terms of this Agreement before using it. The Software and its related copies, related program code or related resources may not be downloaded, installed or used on any of your terminals unless or until you accept the terms of this Agreement.
+
+By downloading or using the Software, its related copies, related program code or related resources, you agree to be bound by the terms of this Agreement. If you do not agree to the terms of this Agreement, you shall immediately remove the Software, the Affiliated Resources and their associated source code.
+
+The rights in the Software are licensed, not sold.
+
+This Agreement and the GNU Affero General Public License (i.e., the AGPL Agreement) together constitute the agreement between the Software and you, and any conflict between this Agreement and the AGPL Agreement shall be governed by this Agreement. You must agree to and abide by both this Agreement and the AGPL Agreement, or you shall immediately uninstall and remove the Software, the Auxiliary Resources, and their associated source code.
 ```

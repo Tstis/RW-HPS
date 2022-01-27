@@ -87,6 +87,8 @@ class Initialization {
 
     private fun loadLang() {
         Data.localeUtilMap.put("CN", LocaleUtil(Objects.requireNonNull(Main::class.java.getResourceAsStream("/bundles/GA_zh_CN.properties"))))
+        Data.localeUtilMap.put("HK", LocaleUtil(Objects.requireNonNull(Main::class.java.getResourceAsStream("/bundles/GA_zh_HK.properties"))))
+        Data.localeUtilMap.put("RU", LocaleUtil(Objects.requireNonNull(Main::class.java.getResourceAsStream("/bundles/GA_ru_RU.properties"))))
         Data.localeUtilMap.put("EN", LocaleUtil(Objects.requireNonNull(Main::class.java.getResourceAsStream("/bundles/GA_en_US.properties"))))
 
         // Default use EN
@@ -110,15 +112,20 @@ class Initialization {
          * Choose the language environment according to the country
          */
         private fun initServerLanguage(pluginData: PluginData) {
-            val isChina = pluginData.getData<Boolean>("isChina") {
-                HttpRequestOkHttp.doGet("https://api.data.der.kim/IP/getCountry").contains("中国")
+            val serverCountry = pluginData.getData<String>("serverCountry") {
+                val country = HttpRequestOkHttp.doGet("https://api.data.der.kim/IP/getCountry")
+                if (country.contains("香港")) {
+                    "HK"
+                } else if (country.contains("中国")) {
+                    "CN"
+                } else if (country.contains("俄罗斯")) {
+                    "RU"
+                } else {
+                    "EN"
+                }
             }
 
-            if (isChina) {
-                Data.localeUtil = Data.localeUtilMap["CN"]
-            } else {
-                Data.localeUtil = Data.localeUtilMap["EN"]
-            }
+            Data.localeUtil = Data.localeUtilMap[serverCountry]
 
             Log.clog(Data.localeUtil.getinput("server.language"))
         }

@@ -88,7 +88,7 @@ class AbstractPluginData {
         return (T) PLUGIN_DATA.get(name, () -> new Value<>(data)).getData();
     }
 
-    public <T> T getData(String name,@NotNull final Prov<Boolean> data) {
+    public <T> T getData(String name,@NotNull final Prov<T> data) {
         return (T) PLUGIN_DATA.get(name, () -> new Value<>(data.get())).getData();
     }
 

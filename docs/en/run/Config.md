@@ -1,6 +1,9 @@
 > Server default start command
->> Server mode is **start**  
->> Relay mode is **startrelayopen**  
+>> Server mode is **start**
+>>> Relay mode is **startrelay** :   
+>>> Direct forwarding consumes more bandwidth and has the same effect as forwarding with VPN  
+>>> Relay mode is **startrelaytest** :  
+>>> Use multicast to reduce bandwidth consumption  
 "DefStartCommand": "start"
 
 > Log logging level  

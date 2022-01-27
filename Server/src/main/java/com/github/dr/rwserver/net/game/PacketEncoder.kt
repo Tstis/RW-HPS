@@ -14,6 +14,18 @@ import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder
 
+/**
+ * Format data
+ * @author Dr
+ */
+/**
+ *    1 2 3 4  5  6  7  8  ...
+ *   +-+-+-+-+-+-+-+-+---------------+
+ *   |0|0|0|0| 0| 0| 0| 0| Data|
+ *   +-+-+-+-+-+-+-+-+---------------+
+ *   |  Type |Data length| Data
+ *   +---------------+---------------+
+ */
 internal class PacketEncoder : MessageToByteEncoder<Packet>() {
     @Throws(Exception::class)
     override fun encode(p1: ChannelHandlerContext, msg: Packet, out: ByteBuf) {

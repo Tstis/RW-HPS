@@ -30,9 +30,9 @@ public class NetServer {
             NetStaticData.startNet.each(StartNet::stop);
             Threads.removeScheduledFutureData("GamePing");
             Threads.removeScheduledFutureData("GameTeam");
-            Data.game = null;
             Data.game.playerManage.playerGroup.clear();
             Data.game.playerManage.playerAll.clear();
+            Data.game = null;
             Log.clog("Server closed");
         }
     }

@@ -43,10 +43,12 @@ internal class NewServerHandler internal constructor(
                 }
 
                 ctx.executor().execute {
-                    if (type.abstractNetConnect.isConnectServer) {
-                        type.abstractNetConnect.connectServer!!.send(msg)
+                    /*
+                    if (type.isConnectServer) {
+                        type.connectServer!!.send(msg)
                         return@execute
-                    }
+                    }*/
+                    //TODO
                     try {
                         type.typeConnect(msg)
                     } catch (e: Exception) {

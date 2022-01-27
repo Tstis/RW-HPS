@@ -55,7 +55,7 @@ class TypeRwHps(val con: GameVersionServer) : TypeConnect(con) {
             }
         } else {
             when (packet.type) {
-                160 -> {
+                PacketType.PACKET_PREREGISTER_CONNECTION -> {
                     con.sendRelayServerInfo()
                     con.sendRelayServerCheck()
                 }

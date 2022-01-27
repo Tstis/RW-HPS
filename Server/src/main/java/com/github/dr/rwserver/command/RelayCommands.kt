@@ -9,4 +9,49 @@
 
 package com.github.dr.rwserver.command
 
-class RelayCommands 
+import com.github.dr.rwserver.data.global.Data
+import com.github.dr.rwserver.data.global.Relay
+import com.github.dr.rwserver.func.StrCons
+import com.github.dr.rwserver.util.ExtractUtil.ipToLong
+import com.github.dr.rwserver.util.IsUtil.isBlank
+import com.github.dr.rwserver.util.game.CommandHandler
+
+class RelayCommands(handler: CommandHandler) {
+    private fun registerRelayCommand(handler: CommandHandler) {
+        handler.register("players", "serverCommands.players") { _: Array<String>?, log: StrCons ->
+            if (Relay.serverRelayIpData.size() == 0) {
+                log["No players are currently in the server."]
+            } else {
+                log[Relay.getRelayAllIP()]
+            }
+        }
+        handler.register("banrelay", "<id>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
+            val relay = Relay.getRelay(arg[0])
+            if (isBlank(relay)) {
+                log["NOT RELAY ROOM"]
+            } else {
+                relay.groupNet.disconnect()
+                relay.sendMsg("You are banned by the administrator, please do not occupy public resources")
+                val ip = relay.admin!!.ip
+                Data.core.admin.bannedIP24.add(ipToLong(ip))
+                relay.admin!!.disconnect()
+                log["OK!  ${ip} The *.*.*.0 segment is disabled"]
+            }
+
+        }
+
+        handler.register("unbanrelay", "<ip>", "serverCommands.unBanrelay") { arg: Array<String>, log: StrCons ->
+            val ip = arg[0]
+            Data.core.admin.bannedIP24.remove(ipToLong(ip))
+            log["OK!  ${ip} The *.*.*.0 segment is unDisabled"]
+        }
+    }
+
+    companion object {
+        private val localeUtil = Data.localeUtil
+    }
+
+    init {
+        registerRelayCommand(handler)
+    }
+}

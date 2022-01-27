@@ -69,7 +69,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
 
 
     override val version: String
-        get() = "1.14 RELAY"
+        get() = "RELAY"
 
     override fun sendRelayServerInfo() {
         val cPacket: Packet? = Cache.packetCache["sendRelayServerInfo"]

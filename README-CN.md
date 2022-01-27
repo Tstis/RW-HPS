@@ -11,21 +11,38 @@
 - RW-HPS 是完全免费且开放源代码的软件，仅供学习和娱乐用途使用
 - RW-HPS 不会通过任何方式强制收取费用，或对使用者提出物质条件
 ### 许可证
+- [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)
 ```
 Copyright (C) 2020-2021 RW-HPS Team and contributors.
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License v3.0 as
-published by the Free Software Foundation.
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
-You should have received a copy of the GNU Affero General Public License v3.0
-along with this program.  If not, see <https://www.gnu.org/licenses/agpl-3.0>.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
+- [EULA](https://github.com/RW-HPS/RW-HPS/blob/master/Server/src/main/resources/eula/China.md)
+```
+版权所有©2021 RW-HPS.Team <RW-HPS@der.kim>
+
+允许在其遵守CC BY-NC-SA 4.0协议的同时，每个人复制和分发此许可证文档的逐字记录副本，且允许对其进行更改，但必须保留其版权信息与原作者。
+
+请务必仔细阅读和理解通用用户协议书中规定的所有权利和限制。在使用前，您需要仔细阅读并决定接受或不接受本协议的条款。除非或直至您接受本协议的条款，否则本软件及其相关副本、相关程序代码或相关资源不得在您的任何终端上下载、安装或使用。
+
+您一旦下载、使用本软件及其相关副本、相关程序代码或相关资源，即表示您同意接受本协议各项条款的约束。如您不同意本协议中的条款，您则应当立即删除本软件、附属资源及其相关源代码。
+
+本软件权利只许可使用，而不出售。
+
+本协议与GNU Affero通用公共许可证(即AGPL协议)共同作为本软件与您的协议，且本协议与AGPL协议的冲突部分均按照本协议约束。您必须同时同意并遵守本协议与AGPL协议，否则，您应立即卸载、删除本软件、附属资源及其相关源代码。
+```
+
 `RW-HPS` 采用 `AGPLv3` 协议开源。为了整个社区的良性发展，我们**强烈建议**您做到以下几点：
 - **间接接触（包括但不限于使用 `Http API` 或 跨进程技术 以及字节码修改）到 `RW-HPS` 的软件使用 `AGPLv3` 开源**
 - **不鼓励，不支持一切商业使用**
@@ -116,35 +133,8 @@ RW-HPS是一个Rusted Warfare游戏的服务端,用于在运行Java11的服务�
 | 最低配置 	| 任何                      | 64M      | 任何     | 16M HDD  | Java 11   |
 
 ## 服务器命令列表
-<details>
-  <summary>服务器命令列表</summary>  
-
-| 命令 					 | 参数 																						 | 信息 									 |
-|:--- 					 |:--- 																						 |:--- 									 |
-| help 		              |                                                  										 | 获取帮助 		 |
-| start                  |                                                  										 | 开启服务器 						 |
-| say 		            | &lt;文字&gt;                                                  								| 用Server的名义发消息 				 |
-| giveadmin              | &lt;玩家位置&gt; 																            | 转移Admin       		         |
-| restart 			      | 																						| 重启服务器 				  |
-| gameover 				 |  	                                                                                    | 重新开始游戏               				 |
-| clearbanip          		 |                                                  										 | 清理被ban的ip               	 |
-| admin          		 |&lt;add/remove&gt; &lt;PlayerSite&gt;                                                  										 | 设置admin               			 |
-| clearbanuuid          		 |                               	   											 | 清除被ban的uuid               			 |
-| clearbanall          		 |                               	   											 | 清空ban               			 |
-| ban          		 | &lt;PlayerSerialNumber&gt;                                 	   											 | 禁止某人               			 |
-| mute          		 |  &lt;PlayerSerialNumber&gt;  &lt;Time/s&gt;                             	   											 | 禁言某人               			 |
-| kick          		 |  &lt;PlayerSerialNumber&gt;  &lt;Time/s&gt;                             	   											 | 踢出               			 |
-| isafk          		 |  &lt;off/on&gt;                             	   											 | 是否启用AFK               			 |
-| plugins          		 |                               	   											 | 查看插件列表               			 |
-| players          		 |                               	   											 | 查看玩家列表               			 |
-| kill          		 | &lt;PlayerSerialNumber&gt;                              	   											 | 杀死玩家               			 |
-| clearmuteall          		 |                               	   											 | 取消全部禁言               			 |
-| maps          		 |                               	   											 | 查看Custom Map               			 |
-| reloadmaps          		 |                               	   											 | 重新加载地图               			 |
-| stop          		 |                               	   											 | 停止服务器               			 |
-抱歉 或许有更多的命令没有被加入 因为文档没有时间更新  
+根据服务器使用的协议不同,命令也会发生改变  
 请在控制台使用help查看更多  
-</details>
 
 ## 游戏命令列表
 <details>

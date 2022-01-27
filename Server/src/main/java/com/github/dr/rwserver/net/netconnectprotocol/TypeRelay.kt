@@ -36,7 +36,7 @@ class TypeRelay(val con: GameVersionRelay) : TypeConnect(con) {
             }
             else -> {
                 when (packet.type) {
-                    160 -> {
+                    PacketType.PACKET_PREREGISTER_CONNECTION -> {
                         con.setCachePacket(packet)
                         con.sendRelayServerInfo()
                         con.sendRelayServerCheck()

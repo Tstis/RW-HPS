@@ -9,8 +9,6 @@
 
 package com.github.dr.rwserver.util
 
-import com.github.dr.rwserver.io.Packet
-
 /**
  * @author Miku
  * @author Dr
@@ -43,5 +41,8 @@ object PacketType {
     const val PACKET_SYNC = 35
     const val PACKET_START_GAME = 120
     const val PACKET_PASSWD_ERROR = 113
-    val PACKET_RESULT_EART_BEAT = Packet(PACKET_HEART_BEAT, ByteArray(0))
+
+    //Relay Commands
+
+
 }

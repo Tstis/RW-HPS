@@ -1,6 +1,9 @@
 > 服务器默认启动命令  
 >> Server模式为**start**  
->> Relay模式为**startrelayopen**  
+>>> Relay模式为**startrelay**  
+>>> 直接转发消耗更多带宽，效果与使用 VPN 转发相同  
+>>> Relay模式为**startrelaytest**  
+>>> 使用多播, 减少宽带消耗  
 "DefStartCommand": "start"  
 
 > Log记录等级  

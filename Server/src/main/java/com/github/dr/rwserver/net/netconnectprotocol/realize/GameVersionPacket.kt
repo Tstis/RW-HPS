@@ -76,7 +76,7 @@ open class GameVersionPacket : AbstractNetPacket {
         val enc = CompressOutputStream.getGzipOutputStream("c", false)
         enc.writeBytes(cmd.arr)
         o.flushEncodeData(enc)
-        return o.createPacket(10)
+        return o.createPacket(PacketType.PACKET_TICK)
     }
 
     @Throws(IOException::class)
@@ -89,7 +89,7 @@ open class GameVersionPacket : AbstractNetPacket {
             enc.writeBytes(c.arr)
             o.flushEncodeData(enc)
         }
-        return o.createPacket(10)
+        return o.createPacket(PacketType.PACKET_TICK)
     }
 
     @Throws(IOException::class)
@@ -128,7 +128,7 @@ open class GameVersionPacket : AbstractNetPacket {
             val bytes = stream.readStreamBytes()
             o.writeString("gameSave")
             o.flushMapData(bytes.size, bytes)
-            return o.createPacket(35)
+            return o.createPacket(PacketType.PACKET_SYNC)
         }
     }
 
@@ -169,7 +169,7 @@ open class GameVersionPacket : AbstractNetPacket {
         val o = GameOutputStream()
         o.writeString("exited")
 
-        val cachePacket = o.createPacket(111)
+        val cachePacket = o.createPacket(PacketType.PACKET_DISCONNECT)
         Cache.packetCache.put("getExitPacket",cachePacket)
 
         return cachePacket
