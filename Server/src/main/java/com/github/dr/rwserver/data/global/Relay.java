@@ -70,7 +70,7 @@ public class Relay {
     public Relay(String i,boolean up,String[] playerName,boolean isMod,boolean betaGameVersion) {
         String stringId;
         while (true) {
-            int intId = rand.random(1000,100000);
+            int intId = rand.random(100,199);
             if (!serverRelayData.containsKey(intId)) {
                 serverRelayData.put(intId,this);
                 stringId = String.valueOf(intId);
