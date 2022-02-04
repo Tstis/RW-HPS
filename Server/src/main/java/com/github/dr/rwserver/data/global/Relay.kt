@@ -49,7 +49,7 @@ class Relay {
     constructor(a: Long) {
         val stringId: String
         while (true) {
-            val intId = rand.random(1000, 100000)
+            val intId = rand.random(100, 199)
             if (!serverRelayData.containsKey(intId)) {
                 serverRelayData.put(intId, this)
                 stringId = intId.toString()
