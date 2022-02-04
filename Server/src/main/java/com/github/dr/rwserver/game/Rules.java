@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -10,6 +10,7 @@
 package com.github.dr.rwserver.game;
 
 import com.github.dr.rwserver.core.thread.Threads;
+import com.github.dr.rwserver.core.thread.TimeTaskData;
 import com.github.dr.rwserver.custom.CustomEvent;
 import com.github.dr.rwserver.data.base.BaseConfig;
 import com.github.dr.rwserver.data.global.Data;
@@ -24,6 +25,7 @@ import com.github.dr.rwserver.util.encryption.Sha;
 import com.github.dr.rwserver.util.file.FileUtil;
 import com.github.dr.rwserver.util.log.Log;
 import com.github.dr.rwserver.util.zip.zip.ZipDecoder;
+import kotlin.jvm.Volatile;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -107,6 +109,9 @@ public class Rules {
         initUnit = 1;
         mist = 2;
         sharedControl = false;
+
+        gameSaveCache = null;
+        reConnectBreak = false;
     }
 
     public void checkMaps() {
@@ -149,12 +154,12 @@ public class Rules {
 
     private void autoLoadOrUpdate(BaseConfig config) {
         if (config.getAutoReLoadMap()) {
-            Threads.newThreadService2(() -> {
+            TimeTaskData.AutoReLoadMapTask = Threads.newThreadService2(() -> {
                 if (IsUtil.notIsBlank(Data.game) && !Data.game.isStartGame) {
                     Data.game.mapsData.clear();
                     Data.game.checkMaps();
                 }
-            },0,1, TimeUnit.MINUTES,"AutoReLoadMap");
+            },0,1, TimeUnit.MINUTES);
         }
     }
 }

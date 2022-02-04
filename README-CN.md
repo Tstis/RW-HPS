@@ -12,8 +12,11 @@
 - RW-HPS 不会通过任何方式强制收取费用，或对使用者提出物质条件
 ### 许可证
 - [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)
+<details>
+  <summary>AGPL-3.0</summary>
+
 ```
-Copyright (C) 2020-2021 RW-HPS Team and contributors.
+Copyright (C) 2020-2022 RW-HPS Team and contributors.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -28,9 +31,15 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
+</details>
+
+
 - [EULA](https://github.com/RW-HPS/RW-HPS/blob/master/Server/src/main/resources/eula/China.md)
+<details>
+  <summary>EULA</summary>
+
 ```
-版权所有©2021 RW-HPS.Team <RW-HPS@der.kim>
+版权所有©2022 RW-HPS.Team <RW-HPS@der.kim>
 
 允许在其遵守CC BY-NC-SA 4.0协议的同时，每个人复制和分发此许可证文档的逐字记录副本，且允许对其进行更改，但必须保留其版权信息与原作者。
 
@@ -42,18 +51,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 本协议与GNU Affero通用公共许可证(即AGPL协议)共同作为本软件与您的协议，且本协议与AGPL协议的冲突部分均按照本协议约束。您必须同时同意并遵守本协议与AGPL协议，否则，您应立即卸载、删除本软件、附属资源及其相关源代码。
 ```
+</details>
+
+<details>
+  <summary>FOSSA Status</summary>
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS?ref=badge_large)
+</details>
 
 `RW-HPS` 采用 `AGPLv3` 协议开源。为了整个社区的良性发展，我们**强烈建议**您做到以下几点：
 - **间接接触（包括但不限于使用 `Http API` 或 跨进程技术 以及字节码修改）到 `RW-HPS` 的软件使用 `AGPLv3` 开源**
 - **不鼓励，不支持一切商业使用**
 
 **鉴于项目的特殊性，开发团队可能在任何时间停止更新或删除项目。**
-
-<details>
-  <summary>License</summary>
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS?ref=badge_large)
-</details>
 
 ### 衍生软件需声明引用
 
@@ -83,11 +93,11 @@ RW-HPS是一个Rusted Warfare游戏的服务端,用于在运行Java11的服务�
 - 地图位置
 
 **游戏相关**
-- 单位移动
+- 基础的游戏
 - 游戏重连
 - 自定义地图
 - 保存的游戏
-- Mods支持?
+- 不正宗的Mods支持 (指不能加载rwmod)
 
 **扩展功能**
 - 加载插件
@@ -96,11 +106,16 @@ RW-HPS是一个Rusted Warfare游戏的服务端,用于在运行Java11的服务�
 - RELAY协议
 
 **其他**
-- BanUUID
-- BanIP
+- BanPlayer
+- BanRelayRoom
 - 禁言
 
 </details>
+
+#### 目前待完成
+- [ ] 模拟层 (技术力限制)
+- [ ] Vote
+- [ ] 1.15.P*
 
 ### 不会支持的游戏协议
 - 金钱相关，如增值服务

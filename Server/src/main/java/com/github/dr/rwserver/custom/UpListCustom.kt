@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -11,6 +11,8 @@ package com.github.dr.rwserver.custom
 
 import com.github.dr.rwserver.core.thread.Threads.newThreadCore
 import com.github.dr.rwserver.core.thread.Threads.newThreadService2
+import com.github.dr.rwserver.core.thread.TimeTaskData
+import com.github.dr.rwserver.core.thread.TimeTaskData.CustomUpServerListTask
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.json.Json
 import com.github.dr.rwserver.func.StrCons
@@ -65,6 +67,7 @@ class UpListCustom(handler: CommandHandler) {
                 HttpRequestOkHttp.doPostRw("http://gs1.corrodinggames.com/masterserver/1.4/interface", removeData)
                 HttpRequestOkHttp.doPostRw("http://gs4.corrodinggames.net/masterserver/1.4/interface", removeData)
                 upServerList = false
+                TimeTaskData.stopCustomUpServerListTask()
                 log["已删除"]
             } else {
                 log["未上传 不需要删除"]
@@ -133,7 +136,7 @@ class UpListCustom(handler: CommandHandler) {
             clog(Data.localeUtil.getinput("err.noOpen"))
         }
 
-        newThreadService2({
+        CustomUpServerListTask = newThreadService2({
             val pingdata = object : ReExp() {
                 @Throws(Exception::class)
                 override fun runs(): Any {
@@ -155,6 +158,6 @@ class UpListCustom(handler: CommandHandler) {
             if (pingdata == null) {
                 Log.warn("错误 请检查网络")
             }
-        }, 50, 50, TimeUnit.SECONDS, "UPLIST")
+        }, 50, 50, TimeUnit.SECONDS)
     }
 }

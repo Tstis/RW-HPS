@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -104,6 +104,10 @@ open class GameOutputStream @JvmOverloads constructor(private val buffer: Disabl
         stream.writeShort(value.toInt())
     }
 
+    @Throws(IOException::class)
+    fun writeFloat(value: Int) {
+        stream.writeFloat(value.toFloat())
+    }
     @Throws(IOException::class)
     fun writeFloat(value: Float) {
         stream.writeFloat(value)

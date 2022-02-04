@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -16,16 +16,14 @@ import com.github.dr.rwserver.core.Call.sendTeamData
 import com.github.dr.rwserver.core.Call.sendTeamMessage
 import com.github.dr.rwserver.core.Call.testPreparationPlayer
 import com.github.dr.rwserver.core.Call.upDataGameData
-import com.github.dr.rwserver.core.thread.Threads.getIfScheduledFutureData
 import com.github.dr.rwserver.core.thread.Threads.newThreadService
-import com.github.dr.rwserver.core.thread.Threads.removeScheduledFutureData
+import com.github.dr.rwserver.core.thread.TimeTaskData
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.Data.LINE_SEPARATOR
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.GameStartEvent
 import com.github.dr.rwserver.game.GameMaps.MapType
-import com.github.dr.rwserver.util.IsUtil.isNumeric
 import com.github.dr.rwserver.util.IsUtil.notIsBlank
 import com.github.dr.rwserver.util.IsUtil.notIsNumeric
 import com.github.dr.rwserver.util.Time.getTimeFutureMillis
@@ -33,7 +31,6 @@ import com.github.dr.rwserver.util.game.CommandHandler
 import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.log.Log.error
 import java.io.IOException
-import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -81,8 +78,7 @@ class ClientCommands(handler: CommandHandler) {
                     response.append(" ").append(args[i])
                     i++
                 }
-                val inputMapName =
-                    response.toString().replace("'", "").replace(" ", "").replace("-", "").replace("_", "")
+                val inputMapName = response.toString().replace("'", "").replace(" ", "").replace("-", "").replace("_", "")
                 val mapPlayer = Data.MapsMap[inputMapName]
                 if (mapPlayer != null) {
                     val data = mapPlayer.split("@").toTypedArray()
@@ -137,7 +133,7 @@ class ClientCommands(handler: CommandHandler) {
                     player.sendSystemMessage(localeUtil.getinput("err.startGame"))
                     return@register
                 }
-                if (getIfScheduledFutureData("AfkCountdown")) {
+                if (TimeTaskData.PlayerAfkTask != null) {
                     return@register
                 }
                 val admin = AtomicBoolean(true)
@@ -148,16 +144,16 @@ class ClientCommands(handler: CommandHandler) {
                     sendSystemMessageLocal("afk.end.noAdmin", player.name)
                     return@register
                 }
-                newThreadService({
+                TimeTaskData.PlayerAfkTask = newThreadService({
                     Data.game.playerManage.playerGroup.each(
                         { p: Player -> p.isAdmin }) { i: Player ->
                         i.isAdmin = false
                         player.isAdmin = true
                         upDataGameData()
                         sendSystemMessageLocal("afk.end.ok", player.name)
-                        removeScheduledFutureData("AfkCountdown")
+                        TimeTaskData.stopPlayerAfkTask()
                     }
-                }, 30, TimeUnit.SECONDS, "AfkCountdown")
+                }, 30, TimeUnit.SECONDS)
                 sendMessageLocal(player, "afk.start", player.name)
             }
         }
@@ -296,16 +292,13 @@ class ClientCommands(handler: CommandHandler) {
         }
         handler.register("start", "clientCommands.start") { _: Array<String>?, player: Player ->
             if (isAdmin(player)) {
-                if (getIfScheduledFutureData("AfkCountdown")) {
-                    removeScheduledFutureData("AfkCountdown")
+                if (TimeTaskData.PlayerAfkTask != null) {
+                    TimeTaskData.stopPlayerAfkTask()
                     sendMessageLocal(player, "afk.clear", player.name)
                 }
                 if (Data.config.StartMinPlayerSize > Data.game.playerManage.playerGroup.size()) {
                     player.sendSystemMessage(player.localeUtil.getinput("start.playerNo", Data.config.StartMinPlayerSize))
                     return@register
-                }
-                if (getIfScheduledFutureData("GamePing")) {
-                    removeScheduledFutureData("GamePing")
                 }
                 if (Data.game.maps.mapData != null) {
                     Data.game.maps.mapData!!.readMap()
@@ -343,13 +336,12 @@ class ClientCommands(handler: CommandHandler) {
         }
         handler.register("surrender", "clientCommands.surrender") { _: Array<String>?, player: Player ->
             if (Data.game.isStartGame) {
-                /*
-				if (isBlank(Data.Vote)) {
-					Data.Vote = new Vote(player,"surrender");
-				} else {
-					Data.Vote.toVote(player,"y");
-				}*/
-                player.con!!.sendSurrender()
+                if (Data.vote == null) {
+                    Data.vote = Vote("surrender",player)
+                } else {
+                    Data.vote!!.toVote(player,"y")
+                }
+                //player.con!!.sendSurrender()
             } else {
                 player.sendSystemMessage(player.localeUtil.getinput("err.noStartGame"))
             }
@@ -366,6 +358,8 @@ class ClientCommands(handler: CommandHandler) {
                 player.sendSystemMessage(player.localeUtil.getinput("err.noStartGame"))
             }
         }
+        // TODO Vote
+        /*
         handler.register("vote", "<gameover/kick> [player-site]", "clientCommands.vote") { args: Array<String>, player: Player ->
             when (args[0].lowercase(Locale.getDefault())) {
                 "gameover" -> Data.Vote = Vote(player, args[0])
@@ -377,6 +371,8 @@ class ClientCommands(handler: CommandHandler) {
                 else -> player.sendSystemMessage(player.localeUtil.getinput("err.command"))
             }
         }
+
+         */
         handler.register("move", "<PlayerSerialNumber> <ToSerialNumber> <?>", "HIDE") { args: Array<String>, player: Player ->
             if (Data.game.isStartGame) {
                 player.sendSystemMessage(player.localeUtil.getinput("err.startGame"))
@@ -391,13 +387,13 @@ class ClientCommands(handler: CommandHandler) {
                 val newSite = args[1].toInt() - 1
                 //int newSite = 0;
                 val team = args[2].toInt()
-                if (oldSite < Data.game.maxPlayer && newSite < Data.game.maxPlayer) {
-                    val od = Data.game.playerManage.getPlayerArray(oldSite)
-                    val nw = Data.game.playerManage.getPlayerArray(newSite)
-                    if (od == null) {
-                        return@register
-                    }
-                    if (newSite > -2) {
+                if (newSite >= 0) {
+                    if (oldSite < Data.game.maxPlayer && newSite < Data.game.maxPlayer) {
+                        val od = Data.game.playerManage.getPlayerArray(oldSite)
+                        val nw = Data.game.playerManage.getPlayerArray(newSite)
+                        if (od == null) {
+                            return@register
+                        }
                         if (nw == null) {
                             Data.game.playerManage.removePlayerArray(oldSite)
                             od.site = newSite
@@ -414,7 +410,11 @@ class ClientCommands(handler: CommandHandler) {
                             Data.game.playerManage.setPlayerArray(newSite,od)
                             Data.game.playerManage.setPlayerArray(oldSite,nw)
                         }
+                        sendTeamData()
                     }
+                } else if (newSite == -3) {
+                    val od = Data.game.playerManage.getPlayerArray(oldSite) ?: return@register
+                    od.team = -3
                     sendTeamData()
                 }
             }
@@ -433,17 +433,22 @@ class ClientCommands(handler: CommandHandler) {
             }
             val newSite = args[0].toInt() - 1
             val team = args[1].toInt()
-            if (newSite < Data.game.maxPlayer) {
-                val newSitePlayer = Data.game.playerManage.getPlayerArray(newSite)
-                if (newSitePlayer == null) {
-                    Data.game.playerManage.removePlayerArray(player)
-                    player.site = newSite
-                    if (team > -1) {
-                        player.team = team
+            if (newSite >= 0) {
+                if (newSite < Data.game.maxPlayer) {
+                    val newSitePlayer = Data.game.playerManage.getPlayerArray(newSite)
+                    if (newSitePlayer == null) {
+                        Data.game.playerManage.removePlayerArray(player)
+                        player.site = newSite
+                        if (team > -1) {
+                            player.team = team
+                        }
+                        Data.game.playerManage.setPlayerArray(newSite,player)
+                        sendTeamData()
                     }
-                    Data.game.playerManage.setPlayerArray(newSite,player)
-                    sendTeamData()
                 }
+            } else if (newSite == -3) {
+                player.team = -3
+                sendTeamData()
             }
         }
         handler.register("team", "<PlayerSiteNumber> <ToTeamNumber>", "HIDE") { args: Array<String>, player: Player ->

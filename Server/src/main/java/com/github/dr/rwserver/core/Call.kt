@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -9,9 +9,7 @@
 
 package com.github.dr.rwserver.core
 
-import com.github.dr.rwserver.core.thread.Threads.getIfScheduledFutureData
 import com.github.dr.rwserver.core.thread.Threads.newThreadService
-import com.github.dr.rwserver.core.thread.Threads.removeScheduledFutureData
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
@@ -22,6 +20,7 @@ import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.log.Log.error
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.stream.IntStream
 
@@ -128,11 +127,13 @@ object Call {
 
     @JvmStatic
     fun testPreparationPlayer() {
-        Timer().schedule(RandyTask(), 0, 100)
+        val timer = Timer()
+        timer.schedule(RandyTask(timer), 0, 100)
     }
 
     fun gameOverTask() {
-        Timer().schedule(RandyTask(), 0, 100)
+        val timer = Timer()
+        timer.schedule(RandyTask(timer), 0, 100)
     }
 
     /**
@@ -141,7 +142,7 @@ object Call {
      * @property loadTimeMaxTry 尝试最大次数
      * @property start 是否收到
      */
-    private class RandyTask : TimerTask() {
+    private class RandyTask(private val timer: Timer) : TimerTask() {
         private var loadTime = 0
         private val loadTimeMaxTry = 30
         private var start = true
@@ -158,46 +159,56 @@ object Call {
 
             if (loadTime > loadTimeMaxTry) {
                 sendSystemMessageLocal("start.testNo")
-                Timer().schedule(SendGameTickCommand(), 0, 150)
-                cancel()
+                val timerNew = Timer()
+                timerNew.schedule(SendGameTickCommand(timerNew), 0, 150)
+                stop()
             }
 
             if (start) {
                 sendSystemMessageLocal("start.testYes")
-                Timer().schedule(SendGameTickCommand(), 0, 150)
-                cancel()
+                val timerNew = Timer()
+                timerNew.schedule(SendGameTickCommand(timerNew), 0, 150)
+                stop()
             }
+        }
+
+        private fun stop() {
+            cancel()
+            timer.cancel()
         }
     }
 
-    private class SendGameTickCommand : TimerTask() {
+    private class SendGameTickCommand(private val timer: Timer) : TimerTask() {
         private var time = 0
         private var oneSay = true
+
+        private var gameoverTask: ScheduledFuture<*>? = null
+        @Volatile
+        private var forcedReturn = false
+
         override fun run() {
             // 检测人数是否符合Gameover
-            if (Data.game.playerManage.playerGroup.size() == 0) {
-                Events.fire(GameOverEvent())
-                cancel()
+            val playerSize = Data.game.playerManage.playerGroup.size()
+            if (playerSize == 0) {
+                gr()
                 return
             }
 
-            if (Data.game.playerManage.playerGroup.size() <= 1) {
+            if (playerSize <= 1) {
                 if (oneSay) {
                     oneSay = false
                     sendSystemMessageLocal("gameOver.oneMin")
-                    newThreadService({
-                        Events.fire(GameOverEvent())
-                        cancel()
-                    }, 1, TimeUnit.MINUTES, "Gameover")
+                    gameoverTask = newThreadService({gr()}, 1, TimeUnit.MINUTES)
                 }
             } else {
-                if (getIfScheduledFutureData("Gameover")) {
+                if (gameoverTask != null) {
                     oneSay = true
-                    removeScheduledFutureData("Gameover")
+                    gameoverTask!!.cancel(true)
+                    gameoverTask = null
                 }
             }
 
-            if (Data.game.reConnectBreak) {
+            if (Data.game.reConnectBreak || forcedReturn) {
                 return
             }
 
@@ -228,6 +239,17 @@ object Call {
                     }
                 }
             }
+        }
+
+        fun gr() {
+            forcedReturn = true
+            gameoverTask!!.cancel(true)
+            gameoverTask = null
+
+            cancel()
+            timer.cancel()
+
+            Events.fire(GameOverEvent())
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -28,6 +28,10 @@ internal class NewServerHandler internal constructor(
 
     @Throws(Exception::class)
     override fun channelRead0(ctx: ChannelHandlerContext, msg: Any?) {
+        if (msg == null) {
+            return
+        }
+
         try {
             if (msg is Packet) {
                 val attr = ctx.channel().attr(NETTY_CHANNEL_KEY)
@@ -43,12 +47,10 @@ internal class NewServerHandler internal constructor(
                 }
 
                 ctx.executor().execute {
-                    /*
-                    if (type.isConnectServer) {
-                        type.connectServer!!.send(msg)
+                    if (type.abstractNetConnect.isConnectServer) {
+                        type.abstractNetConnect.connectServer!!.send(msg)
                         return@execute
-                    }*/
-                    //TODO
+                    }
                     try {
                         type.typeConnect(msg)
                     } catch (e: Exception) {
@@ -63,10 +65,14 @@ internal class NewServerHandler internal constructor(
     }
 
     @Throws(Exception::class)
-    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable?) {
         //ctx.close()
-        //error(RuntimeException())
-        error(cause)
+        error(RuntimeException())
+        error(cause == null)
+        error(cause!!)
+        error(cause.message!!)
+        error(cause.localizedMessage!!)
+        error(cause.cause!!)
     }
 
     companion object {

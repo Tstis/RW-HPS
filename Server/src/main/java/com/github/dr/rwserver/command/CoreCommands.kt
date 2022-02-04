@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -12,6 +12,7 @@ package com.github.dr.rwserver.command
 import com.github.dr.rwserver.core.Call
 import com.github.dr.rwserver.core.Core
 import com.github.dr.rwserver.core.thread.Threads
+import com.github.dr.rwserver.core.thread.TimeTaskData
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.plugin.PluginManage
@@ -111,8 +112,8 @@ class CoreCommands(handler: CommandHandler) {
             Log.set(Data.config.Log.uppercase(Locale.getDefault()))
             Data.game = Rules(Data.config)
             Data.game.init()
-            Threads.newThreadService2({ Call.sendTeamData() }, 0, 2, TimeUnit.SECONDS, "GameTeam")
-            Threads.newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS, "GamePing")
+            TimeTaskData.CallTeamTask = Threads.newThreadService2({ Call.sendTeamData() }, 0, 2, TimeUnit.SECONDS)
+            TimeTaskData.CallPingTask = Threads.newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS)
 
             NetStaticData.protocolData.setTypeConnect(TypeRwHps(GameVersionServer(ConnectionAgreement())))
             NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
@@ -150,10 +151,12 @@ class CoreCommands(handler: CommandHandler) {
             Log.set(Data.config.Log.uppercase(Locale.getDefault()))
             Data.game = Rules(Data.config)
             Data.game.init()
-            Threads.newThreadService2({ Call.sendTeamData() }, 0, 2, TimeUnit.SECONDS, "GameTeam")
-            Threads.newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS, "GamePing")
+            TimeTaskData.CallTeamTask = Threads.newThreadService2({ Call.sendTeamData() }, 0, 2, TimeUnit.SECONDS)
+            TimeTaskData.CallPingTask = Threads.newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS)
+
             NetStaticData.protocolData.setTypeConnect(TypeRwHps(GameVersionFFA(ConnectionAgreement())))
             NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
+
             Threads.newThreadCore {
                 val startNet = StartNet()
                 NetStaticData.startNet.add(startNet)

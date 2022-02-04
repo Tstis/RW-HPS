@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -11,8 +11,7 @@ package com.github.dr.rwserver.net.netconnectprotocol.realize
 
 import com.github.dr.rwserver.Main
 import com.github.dr.rwserver.core.Call
-import com.github.dr.rwserver.core.thread.Threads.getIfScheduledFutureData
-import com.github.dr.rwserver.core.thread.Threads.removeScheduledFutureData
+import com.github.dr.rwserver.core.thread.TimeTaskData
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
@@ -35,7 +34,9 @@ import com.github.dr.rwserver.util.game.CommandHandler
 import com.github.dr.rwserver.util.game.CommandHandler.CommandResponse
 import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.log.Log
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.DataInputStream
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -54,7 +55,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
     private val sync = ReentrantLock(true)
 
     /** 玩家连接校验 */
-    protected var connectKey: String? = null
+    private var connectKey: String? = null
 
     /** 玩家  */
     override lateinit var player: Player
@@ -120,18 +121,55 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
 
     override fun sendSurrender() {
         try {
-            ByteArrayOutputStream().use { buffer ->
-                DataOutputStream(buffer).use { stream ->
-                    stream.writeByte(player.site)
-                    val a = ExtractUtil.hexToByteArray("000000ffffffffffffffff0000000000000000ffffffffffffffff00022d3100000001000000000000000000000000640000000000")
-                    for (b in a) {
-                        stream.writeByte(b.toInt())
-                    }
-                    val cmd = GameCommand(player.site, buffer.toByteArray())
-                    Data.game.gameCommandCache.offer(cmd)
-                    Call.sendSystemMessage(Data.localeUtil.getinput("player.surrender", player.name))
-                }
-            }
+            val out = GameOutputStream()
+
+            // Player Site
+            out.writeByte(player.site)
+
+            // Is Unit Action
+            out.writeBoolean(false)
+
+            // unknown booleans
+            out.writeBoolean(false)
+            // Is Cancel the operation
+            out.writeBoolean(false)
+
+            // unknown
+            out.writeInt(-1)
+            out.writeInt(-1)
+            out.writeBoolean(false)
+            out.writeBoolean(false)
+
+            // Unit count
+            out.writeInt(0)
+
+            out.writeBoolean(false)
+            out.writeBoolean(false)
+
+            out.writeLong(-1)
+            // build Unit
+            out.writeString("-1")
+
+            out.writeBoolean(false)
+            // multi person control check code
+            out.writeShort(Data.game.playerManage.sharedControlPlayer.toShort())
+
+            // System action
+            out.writeBoolean(true)
+            out.writeByte(0)
+            out.writeFloat(0)
+            out.writeFloat(0)
+            // action type
+            out.writeInt(100)
+
+            // Unit Count
+            out.writeInt(0)
+            // unknown
+            out.writeBoolean(false)
+
+            val cmd = GameCommand(player.site, out.getByteArray())
+            Data.game.gameCommandCache.offer(cmd)
+            Call.sendSystemMessage(Data.localeUtil.getinput("player.surrender", player.name))
         } catch (ignored: Exception) {
         }
     }
@@ -157,8 +195,8 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
             var message: String? = stream.readString()
             var response: CommandResponse? = null
             Log.clog("[{0}]: {1}", player.name, message)
-            if (player.isAdmin && getIfScheduledFutureData("AfkCountdown")) {
-                removeScheduledFutureData("AfkCountdown")
+            if (player.isAdmin && TimeTaskData.PlayerAfkTask != null) {
+                TimeTaskData.stopPlayerAfkTask()
                 Call.sendMessage(player, Data.localeUtil.getinput("afk.clear", player.name))
             }
             if (message!!.startsWith(".") || message.startsWith("-") || message.startsWith("_")) {

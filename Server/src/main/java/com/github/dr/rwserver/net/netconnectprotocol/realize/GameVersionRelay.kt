@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2021 RW-HPS Team and contributors.
+ * Copyright 2020-2022 RW-HPS Team and contributors.
  *
  * 此源代码的使用受 GNU AFFERO GENERAL PUBLIC LICENSE version 3 许可证的约束, 可以在以下链接找到该许可证.
  * Use of this source code is governed by the GNU AGPLv3 license that can be found through the following link.
@@ -36,6 +36,32 @@ import java.util.function.Consumer
 import java.util.stream.IntStream
 
 /**
+ * Many thanks to them for providing cloud computing for the project
+ * This is essential to complete the RW-HPS Relay test
+ * @Thanks : [SimpFun Cloud](https://vps.tiexiu.xyz)
+ * @Thanks : [Github 1dNDN](https://github.com/1dNDN)
+ *
+ * This test was done on :
+ * Relay-CN (V. 3.2.0)
+ * 2021.11.05 16:30
+ */
+
+/**
+ * Relay protocol implementation
+ * Direct forwarding consumes more bandwidth and the same effect as using VPN forwarding
+ *
+ * @property relay Relay example
+ * @property relayPlayerQQ NO USE
+ * @property site RELAY's internal location
+ * @property connectUUID UUID of this connection
+ * @property cachePacket Cached Package
+ * @property betaGameVersion Is it a beta version
+ * @property netConnectAuthenticate Connection validity verification
+ * @property name player's name
+ * @property registerPlayerId UUID-Hash code after player registration
+ * @property version Protocol version
+ * @constructor
+ *
  * @author Dr
  */
 @MainProtocolImplementation
@@ -257,7 +283,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ ЧИСТЫЙ БАЛАНС 1 >>> z" + relay!!.id + " }}")
+            o.writeString("{{RW-HPS Relay}}.Room ID : " + relay!!.id)
             //
             o.writeBoolean(false)
             sendPacket(o.createPacket(170)) //+108+140
@@ -267,7 +293,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                     Data.localeUtil.getinput(
                         "relay.server.admin.connect",
                         relay!!.id
-                    ), "СЕРВЕР", -1
+                    ), "ADMIN", 5
                 )
             )
             sendPacket(
@@ -275,12 +301,12 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                     Data.localeUtil.getinput(
                         "relay",
                         relay!!.id
-                    ), "СЕРВЕР", -1
+                    ), "ADMIN", 5
                 )
             )
             //ping();
 
-            debug(name)
+            //debug(name)
             if (name.equals("SERVER", ignoreCase = true) || name.equals("RELAY", ignoreCase = true)) {
                 relay!!.groupNet.disconnect() // Close Room
                 disconnect() // Close Connect & Reset Room
@@ -338,7 +364,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             }
             relay!!.setAddSite()
             relay!!.setAbstractNetConnect(this)
-            site = relay!!.site
+            site = relay!!.getSite()
             val o = GameOutputStream()
             o.writeByte(0)
             o.writeInt(site)
@@ -360,7 +386,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                     Data.localeUtil.getinput(
                         "relay",
                         relay!!.id
-                    ), "СЕРВЕР", -1
+                    ), "ADMIN", 5
                 )
             )
         } catch (e: IOException) {
@@ -428,7 +454,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                 if (PacketType.PACKET_KICK == type) {
                     val gameOutputStream = GameOutputStream()
                     gameOutputStream.writeString(GameInputStream(bytes).readString().replace("[0-9]".toRegex(), ""))
-                    abstractNetConnect!!.sendPacket(gameOutputStream.createPacket(type))
+                    abstractNetConnect?.sendPacket(gameOutputStream.createPacket(type))
                     relayPlayerDisconnect()
                     return
                 }
@@ -474,7 +500,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
     }
 
     override fun multicastAnalysis(packet: Packet) {
-        TODO("Not yet implemented")
+        // Protocol not supported
     }
 
     override fun disconnect() {
@@ -496,7 +522,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                 Relay.serverRelayIpData.remove(ip)
                 //relay.groupNet.disconnect();
                 if (relay!!.isStartGame) {
-                    if (relay!!.size > 0) {
+                    if (relay!!.getSize() > 0) {
                         // Move Room Admin
                         adminMoveNew()
                         //Cache.relayAdminCache.addCache(name+ip,BigInteger(1, sha256Array(uuid+Data.core.serverConnectUuid)).toString(16).uppercase(Locale.ROOT))
@@ -507,7 +533,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                 }
             }
             // Log.clog(String.valueOf(relay.getSize()));
-            if (relay!!.size <= 0 && !relay!!.closeRoom) {
+            if (relay!!.getSize() <= 0 && !relay!!.closeRoom) {
                 relay!!.closeRoom = true
                 debug("[Relay] Gameover")
                 relay!!.re()
@@ -521,10 +547,10 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
     private fun idCustom(inId: String) {
         var id = inId
         if (id.isEmpty()) {
-            sendRelayServerType(Data.localeUtil.getinput("relay.server.no", "-0"))
+            sendRelayServerType(Data.localeUtil.getinput("relay.server.no", "空"))
             return
         }
-        if ("z".equals(id[0].toString(), ignoreCase = true)) {
+        if ("R".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
         } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
@@ -556,7 +582,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
         if (IsUtil.notIsBlank(id)) {
             if ("new".equals(id, ignoreCase = true)) {
                 newRelayId(false)
-            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true) || "мод".equals(id, ignoreCase = true) || "моды".equals(id, ignoreCase = true)) {
+            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true)) {
                 newRelayId(true)
             } else {
                 try {
@@ -578,7 +604,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
 
     private fun adminMoveNew() {
         relay!!.updateMinSize()
-        relay!!.getAbstractNetConnect(relay!!.minSize).sendRelayServerId()
+        relay!!.getAbstractNetConnect(relay!!.minSize)!!.sendRelayServerId()
         relay!!.abstractNetConnectIntMap.values()
             .forEach(Consumer { obj: GameVersionRelay -> obj.addReRelayConnect() })
     }
@@ -591,7 +617,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
         relay = if (IsUtil.isBlank(id)) {
             Relay(nanos())
         } else {
-            Relay(nanos(), id)
+            Relay(nanos(), id!!)
         }
         relay!!.isMod = mod
         sendRelayServerId()
