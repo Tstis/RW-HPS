@@ -81,7 +81,7 @@ class Event : AbstractEvent {
     }
 
     override fun registerPlayerLeaveEvent(player: Player) {
-        if (Data.config.OneAdmin && player.isAdmin) {
+        if (Data.config.OneAdmin && player.isAdmin && Data.game.playerManage.playerGroup.size() > 0) {
             try {
                 val p = Data.game.playerManage.playerGroup[0]
                 p.isAdmin = true

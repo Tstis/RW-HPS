@@ -27,11 +27,11 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 - Map location
 
 **Game**
-- Unit movement
+- Basic Game
 - Game reconnection
 - Custom map
 - Load Save Game
-- Load Mods?
+- Mods Support (rwmod cannot be loaded directly)
 
 **Ex**
 - Loading plugins
@@ -45,6 +45,11 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 - Mute Player
 
 </details>
+
+#### Currently to be completed
+- [ ] Analog Layer (technical limitations)
+- [ ] Vote
+- [ ] 1.15.P*
 
 ### Actions that won't be supported
 - Anything related to real money
@@ -108,6 +113,9 @@ If you meet any problem or have any questions, feel free to file an issue. Our g
 
 ## License
 - [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)
+<details>
+  <summary>AGPL-3.0</summary>
+
 ```
 Copyright (C) 2020-2022 RW-HPS Team and contributors.
 
@@ -124,17 +132,30 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ```
-- [EULA](https://github.com/RW-HPS/RW-HPS/blob/master/Server/src/main/resources/eula/Engilsh.md)
+</details>
+
+
+- [EULA](https://github.com/RW-HPS/RW-HPS/blob/master/Server/src/main/resources/eula/China.md)
+<details>
+  <summary>EULA</summary>
+
 ```
-Copyright © 2022 RW-HPS.Team <RW-HPS@der.kim>
+版权所有©2022 RW-HPS.Team <RW-HPS@der.kim>
 
-Permission is granted to each person to copy and distribute a verbatim copy of this license document and to make changes to it while it complies with the CC BY-NC-SA 4.0 agreement, provided that its copyright information is retained with the original author.
+允许在其遵守CC BY-NC-SA 4.0协议的同时，每个人复制和分发此许可证文档的逐字记录副本，且允许对其进行更改，但必须保留其版权信息与原作者。
 
-Please be sure to carefully read and understand all rights and restrictions set forth in the General User Agreement. You are required to carefully read and decide whether to accept or not accept the terms of this Agreement before using it. The Software and its related copies, related program code or related resources may not be downloaded, installed or used on any of your terminals unless or until you accept the terms of this Agreement.
+请务必仔细阅读和理解通用用户协议书中规定的所有权利和限制。在使用前，您需要仔细阅读并决定接受或不接受本协议的条款。除非或直至您接受本协议的条款，否则本软件及其相关副本、相关程序代码或相关资源不得在您的任何终端上下载、安装或使用。
 
-By downloading or using the Software, its related copies, related program code or related resources, you agree to be bound by the terms of this Agreement. If you do not agree to the terms of this Agreement, you shall immediately remove the Software, the Affiliated Resources and their associated source code.
+您一旦下载、使用本软件及其相关副本、相关程序代码或相关资源，即表示您同意接受本协议各项条款的约束。如您不同意本协议中的条款，您则应当立即删除本软件、附属资源及其相关源代码。
 
-The rights in the Software are licensed, not sold.
+本软件权利只许可使用，而不出售。
 
-This Agreement and the GNU Affero General Public License (i.e., the AGPL Agreement) together constitute the agreement between the Software and you, and any conflict between this Agreement and the AGPL Agreement shall be governed by this Agreement. You must agree to and abide by both this Agreement and the AGPL Agreement, or you shall immediately uninstall and remove the Software, the Auxiliary Resources, and their associated source code.
+本协议与GNU Affero通用公共许可证(即AGPL协议)共同作为本软件与您的协议，且本协议与AGPL协议的冲突部分均按照本协议约束。您必须同时同意并遵守本协议与AGPL协议，否则，您应立即卸载、删除本软件、附属资源及其相关源代码。
 ```
+</details>
+
+<details>
+  <summary>FOSSA Status</summary>
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS?ref=badge_large)
+</details>

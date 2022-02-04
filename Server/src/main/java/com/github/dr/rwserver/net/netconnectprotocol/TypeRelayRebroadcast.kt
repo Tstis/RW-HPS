@@ -30,7 +30,8 @@ class TypeRelayRebroadcast(val con: GameVersionRelayRebroadcast) : TypeConnect(c
         // CPU branch prediction
         if (IntStream.of(175, 176).noneMatch { i: Int -> i == packet.type }) {
             con.setlastSentPacket(packet)
-        } else if (packet.type == 175) {
+        }
+        if (packet.type == 175) {
             con.addRelaySend(packet)
         } else if (packet.type == 176) {
             con.multicastAnalysis(packet)

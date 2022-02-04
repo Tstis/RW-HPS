@@ -9,6 +9,7 @@
 
 package com.github.dr.rwserver.data.global
 
+import com.github.dr.rwserver.command.ex.Vote
 import com.github.dr.rwserver.core.Application
 import com.github.dr.rwserver.data.base.BaseConfig
 import com.github.dr.rwserver.game.Rules
@@ -72,4 +73,6 @@ object Data {
      */
     lateinit var localeUtil: LocaleUtil
     lateinit var game: Rules
+
+    var vote: Vote? = null
 }

@@ -133,7 +133,7 @@ class Relay {
         return abstractNetConnectIntMap[site]
     }
 
-    fun setAbstractNetConnect(abstractNetConnect: GameVersionRelay): GameVersionRelay {
+    fun setAbstractNetConnect(abstractNetConnect: GameVersionRelay): GameVersionRelay? {
         return abstractNetConnectIntMap.put(site.get(), abstractNetConnect)
     }
 
@@ -178,7 +178,7 @@ class Relay {
         size.decrementAndGet()
     }
 
-    fun getRandAdmin(): GameVersionRelay {
+    fun getRandAdmin(): GameVersionRelay? {
         return abstractNetConnectIntMap.values().toArray().random()
     }
 
