@@ -25,7 +25,6 @@ import com.github.dr.rwserver.util.encryption.Sha;
 import com.github.dr.rwserver.util.file.FileUtil;
 import com.github.dr.rwserver.util.log.Log;
 import com.github.dr.rwserver.util.zip.zip.ZipDecoder;
-import kotlin.jvm.Volatile;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -62,7 +61,7 @@ public class Rules {
     /** AFK */
     public boolean isAfk = true;
     /** 重连暂停 */
-    public boolean reConnectBreak = false;
+    public boolean gamePaused = false;
     /** 重连缓存 GameSave */
     public volatile Packet gameSaveCache = null;
     /** PlayerManage */
@@ -98,6 +97,10 @@ public class Rules {
         income = Data.config.getDefIncome();
     }
 
+    public int getMaxPlayer() {
+        return maxPlayer;
+    }
+
     public void init() {
         new CustomEvent();
     }
@@ -111,7 +114,7 @@ public class Rules {
         sharedControl = false;
 
         gameSaveCache = null;
-        reConnectBreak = false;
+        gamePaused = false;
     }
 
     public void checkMaps() {

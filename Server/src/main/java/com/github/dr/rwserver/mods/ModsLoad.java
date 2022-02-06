@@ -42,7 +42,7 @@ import static com.github.dr.rwserver.mods.ModsLoadUtil.checkForInclusion;
  */
 @NeedHelp
 @DidNotFinish
-@Deprecated(forRemoval = false)
+@Deprecated
 public class ModsLoad {
     public ModsLoad(FileUtil fileUtil) throws Exception {
         Seq<String> list = FileUtil.readFileListString(Objects.requireNonNull(Main.class.getResourceAsStream("/unitData-114")));

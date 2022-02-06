@@ -15,6 +15,7 @@ import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 import io.netty.handler.timeout.IdleState
 import io.netty.handler.timeout.IdleStateEvent
+import java.net.SocketException
 import java.util.concurrent.atomic.AtomicInteger
 
 @Sharable
@@ -40,8 +41,7 @@ internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : Channe
 
     @Throws(Exception::class)
     override fun channelInactive(ctx: ChannelHandlerContext) {
-        //warn("断开一个链接", ctx.channel().id().asLongText())
-
+        //warn("break a link", ctx.channel().id().asLongText())
         startNet.clear(ctx)
     }
 
@@ -56,6 +56,14 @@ internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : Channe
             }
         } else {
             super.userEventTriggered(ctx, evt)
+        }
+    }
+
+    @Throws(Exception::class)
+    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable?) {
+        // The remote host forcibly closed an existing connection
+        if (cause is SocketException) {
+            startNet.clear(ctx)
         }
     }
 }

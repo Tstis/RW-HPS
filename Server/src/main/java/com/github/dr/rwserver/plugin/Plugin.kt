@@ -9,6 +9,7 @@
 
 package com.github.dr.rwserver.plugin
 
+import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.plugin.PluginData
 import com.github.dr.rwserver.plugin.event.AbstractEvent
 import com.github.dr.rwserver.util.game.CommandHandler
@@ -20,14 +21,38 @@ abstract class Plugin {
     @JvmField
     val pluginData = PluginData()
 
+    /**
+     * 提供语言注入
+     * @param lang String
+     * @param k String
+     * @param v String
+     * @return 是否成功
+     */
+    fun loadLang(lang: String,k: String, v: String): Boolean {
+        return Data.localeUtilMap[lang]?.addLang(k,v) == true
+    }
+
     /** 最先执行 可以进行Plugin的数据读取  -1  */
     open fun onEnable() {}
 
-    /** 注册要在服务器端使用的任何命令，例如从控制台 -2  */
-    open fun registerServerCommands(handler: CommandHandler?) {}
+    /**
+     * 注册要在服务器端使用的Core命令，例如从控制台
+     * 这里注册的命令无论启动什么协议 都会存在
+     */
+    open fun registerCoreCommands(handler: CommandHandler) {}
+    /**
+     * 注册要在服务器端使用的Server命令，例如从控制台-Server
+     * 这里注册的命令只有启动Server协议 才会存在
+     */
+    open fun registerServerCommands(handler: CommandHandler) {}
+    /**
+     * 注册要在服务器端使用的Relay命令，例如从控制台0Relay
+     * 这里注册的命令只有启动Relay协议 才会存在
+     */
+    open fun registerRelayCommands(handler: CommandHandler) {}
 
     /** 注册要在客户端使用的任何命令，例如来自游戏内玩家 -3  */
-    open fun registerClientCommands(handler: CommandHandler?) {}
+    open fun registerClientCommands(handler: CommandHandler) {}
 
     /**
      * 注册事件

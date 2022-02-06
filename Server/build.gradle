@@ -1,6 +1,7 @@
 plugins {
 	id 'maven-publish'
 }
+
 /**
  * 这里全部采用的compileOnly 为了适配idea 但是编译的时候会切到implementation
  * 需要帮助!
@@ -25,7 +26,7 @@ dependencies {
 		exclude group: "org.jetbrains.kotlin"
 	}
 
-	compileOnly group: 'commons-io', name: 'commons-io', version: '2.11.0'
+	//compileOnly group: 'commons-io', name: 'commons-io', version: '2.11.0'
 	//compileOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.69'
 
 	//compileOnly fileTree(dir:'libs',include:['*.jar'])

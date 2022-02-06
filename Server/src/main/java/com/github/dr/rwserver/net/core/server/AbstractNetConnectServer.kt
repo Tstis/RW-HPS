@@ -135,11 +135,6 @@ interface AbstractNetConnectServer {
     fun sendErrorPasswd()
 
     /**
-     * Trick the client to send the Save package
-     */
-    fun getGameSave()
-
-    /**
      * Send reconnect packet
      * @param packet ByteBuf
      */
@@ -152,6 +147,9 @@ interface AbstractNetConnectServer {
         } catch (e: IOException) {
             Log.error("(", e)
         }
+    }
+
+    fun sync() {
     }
 
 

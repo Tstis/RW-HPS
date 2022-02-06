@@ -12,7 +12,6 @@ package com.github.dr.rwserver.io.input
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import java.util.*
 import kotlin.math.min
 
 open class DisableSyncByteArrayInputStream : InputStream {
@@ -145,7 +144,7 @@ open class DisableSyncByteArrayInputStream : InputStream {
      */
     override fun read(b: ByteArray, off: Int, len: Int): Int {
         var readLen = len
-        Objects.checkFromIndexSize(off, readLen, b.size)
+        checkFromIndexSize(off, readLen, b.size)
         if (pos >= count) {
             return -1
         }
@@ -161,13 +160,13 @@ open class DisableSyncByteArrayInputStream : InputStream {
         return readLen
     }
 
-    override fun readAllBytes(): ByteArray {
+    fun readAllBytes(): ByteArray {
         val result = buf.copyOfRange(pos, count)
         pos = count
         return result
     }
 
-    override fun readNBytes(len: Int): ByteArray {
+    fun readNBytes(len: Int): ByteArray {
         if ((count - pos) >= len) {
             val result = buf.copyOfRange(pos, pos+len)
             pos += len
@@ -177,13 +176,13 @@ open class DisableSyncByteArrayInputStream : InputStream {
         }
     }
 
-    override fun readNBytes(b: ByteArray, off: Int, len: Int): Int {
+    fun readNBytes(b: ByteArray, off: Int, len: Int): Int {
         val n = read(b, off, len)
         return if (n == -1) 0 else n
     }
 
     @Throws(IOException::class)
-    override fun transferTo(out: OutputStream): Long {
+    fun transferTo(out: OutputStream): Long {
         val len = count - pos
         out.write(buf, pos, len)
         pos = count
@@ -281,5 +280,13 @@ open class DisableSyncByteArrayInputStream : InputStream {
      */
     @Throws(IOException::class)
     override fun close() {
+    }
+
+    private fun checkFromIndexSize(fromIndex: Int,size: Int,length: Int): Int {
+        if (length or fromIndex or size < 0 || size > length - fromIndex) {
+            throw Exception("outOfBoundsCheckFromIndexSize : fromIndex:$fromIndex, size:$size, length:$length")
+        }
+        return fromIndex
+
     }
 }
