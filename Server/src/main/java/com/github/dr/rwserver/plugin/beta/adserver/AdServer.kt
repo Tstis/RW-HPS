@@ -7,8 +7,15 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.util.log.exp
+package com.github.dr.rwserver.plugin.beta.adserver
 
-open class ImplementedException(string: String) : Exception(string) {
-    class VoteImplementedException(type: String) : ImplementedException(type)
+import com.github.dr.rwserver.plugin.Plugin
+
+/**
+ * AD Server 特化服务
+ * 暂时不对外 我也懒得动手
+ * @author Dr
+ */
+class AdServer : Plugin() {
+
 }

@@ -228,13 +228,24 @@ class ClientCommands(handler: CommandHandler) {
                 if (kickPlayer != null) {
                     kickPlayer.kickTime = getTimeFutureMillis(60 * 1000L)
                     try {
-                        kickPlayer.con!!.sendKick(localeUtil.getinput("kick.you"))
+                        kickPlayer.kickPlayer(localeUtil.getinput("kick.you"))
                     } catch (e: IOException) {
                         error("[Player] Send Kick Player Error", e)
                     }
                 }
             }
         }
+        handler.register("sync",  "clientCommands.sync") { _: Array<String>?, player: Player ->
+            run {
+                if (Data.game.playerManage.playerGroup.size() == 1) {
+                    player.sendSystemMessage("Only one player, Ban Sync")
+                } else {
+                    player.sync()
+                }
+            }
+        }
+
+
         handler.register("i", "<i...>", "HIDE") { _: Array<String>?, _: Player -> }
 
         /* QC */
@@ -336,11 +347,11 @@ class ClientCommands(handler: CommandHandler) {
         }
         handler.register("surrender", "clientCommands.surrender") { _: Array<String>?, player: Player ->
             if (Data.game.isStartGame) {
-                if (Data.vote == null) {
-                    Data.vote = Vote("surrender",player)
-                } else {
-                    Data.vote!!.toVote(player,"y")
-                }
+				if (Data.vote == null) {
+					Data.vote = Vote("surrender",player)
+				} else {
+					Data.vote!!.toVote(player,"y")
+				}
                 //player.con!!.sendSurrender()
             } else {
                 player.sendSystemMessage(player.localeUtil.getinput("err.noStartGame"))

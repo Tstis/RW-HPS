@@ -11,10 +11,12 @@ package com.github.dr.rwserver.data.plugin
 
 import com.github.dr.rwserver.data.plugin.PluginEventManage.Companion.add
 import com.github.dr.rwserver.func.Cons
+import com.github.dr.rwserver.plugin.Plugin
+import com.github.dr.rwserver.plugin.PluginsLoad.Companion.addPluginClass
 import com.github.dr.rwserver.plugin.PluginsLoad.Companion.resultPluginData
 import com.github.dr.rwserver.plugin.PluginsLoad.PluginLoadData
+import com.github.dr.rwserver.plugin.event.AbstractEvent
 import com.github.dr.rwserver.struct.Seq
-import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.alone.annotations.DidNotFinish
 import com.github.dr.rwserver.util.file.FileUtil
 import com.github.dr.rwserver.util.game.CommandHandler
@@ -38,19 +40,34 @@ object PluginManage {
         pluginData = resultPluginData(fileUtil)
     }
 
+    @JvmStatic
+    fun addPluginClass(name: String,author: String,description: String, version: String, main: Plugin) {
+        addPluginClass(name,author,description,version,main, pluginData!!)
+    }
+
     /** 最先执行 可以进行Plugin的数据读取  -1  */
     @JvmStatic
     fun runOnEnable() {
         pluginData!!.each { e: PluginLoadData -> e.main.onEnable() }
     }
 
-    /** 注册要在服务器端使用的任何命令，例如从控制台 -2  */
+    /** 注册要在服务器端使用的任何命令，例如从控制台 */
+    @JvmStatic
+    fun runRegisterCoreCommands(handler: CommandHandler) {
+        pluginData!!.each { e: PluginLoadData -> e.main.registerCoreCommands(handler) }
+    }
+    /** 注册要在服务器端使用的任何命令，例如从控制台-Server */
     @JvmStatic
     fun runRegisterServerCommands(handler: CommandHandler) {
         pluginData!!.each { e: PluginLoadData -> e.main.registerServerCommands(handler) }
     }
+    /** 注册要在服务器端使用的任何命令，例如从控制台-Relay */
+    @JvmStatic
+    fun runRegisterRelayCommands(handler: CommandHandler) {
+        pluginData!!.each { e: PluginLoadData -> e.main.registerRelayCommands(handler) }
+    }
 
-    /** 注册要在客户端使用的任何命令，例如来自游戏内玩家 -3  */
+    /** 注册要在客户端使用的任何命令，例如来自游戏内玩家 */
     @JvmStatic
     fun runRegisterClientCommands(handler: CommandHandler) {
         pluginData!!.each { e: PluginLoadData -> e.main.registerClientCommands(handler) }
@@ -60,10 +77,8 @@ object PluginManage {
     @JvmStatic
     fun runRegisterEvents() {
         pluginData!!.each { e: PluginLoadData ->
-            val abstractEvent = e.main.registerEvents()
-            if (IsUtil.notIsBlank(abstractEvent)) {
-                add(abstractEvent!!)
-            }
+            val abstractEvent: AbstractEvent? = e.main.registerEvents()
+            abstractEvent?.let { add(it)}
         }
     }
 

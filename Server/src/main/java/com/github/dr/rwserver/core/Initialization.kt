@@ -21,6 +21,7 @@ import com.github.dr.rwserver.util.log.Log
  */
 class Initialization {
     private fun initMaps() {
+        
         with (Data.MapsMap) {
             put("Beachlanding(2p)[byhxyy]", "Beach landing (2p) [by hxyy]@[p2]")
             put("BigIsland(2p)", "Big Island (2p)@[p2]")

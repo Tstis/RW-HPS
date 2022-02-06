@@ -6,9 +6,9 @@ allprojects {
 	apply plugin: "java"
 	apply plugin: "org.jetbrains.kotlin.jvm"
 
-	/* 使用Java11做标准语法并编译 */
-	sourceCompatibility = JavaVersion.VERSION_11
-	targetCompatibility = JavaVersion.VERSION_11
+	/* 使用Java8做标准语法并编译 */
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 
 	repositories{
 		maven{ url "https://maven.aliyun.com/nexus/content/groups/public/"}

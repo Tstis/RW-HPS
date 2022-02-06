@@ -7,8 +7,15 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.util.log.exp
+package com.github.dr.rwserver.game.simulation
 
-open class ImplementedException(string: String) : Exception(string) {
-    class VoteImplementedException(type: String) : ImplementedException(type)
+import com.github.dr.rwserver.util.alone.annotations.NeedHelp
+
+// 也许知道这终是徒劳，却还要做临死前的挣扎
+// Maybe you know it's futile, but you still have to fight before you die
+/**
+ * @author Dr
+ */
+@NeedHelp
+class GameEnvironmentSimulation {
 }

@@ -68,6 +68,25 @@ class LocaleUtil {
         }
     }
 
+    private fun core(input: String, params: Array<Any?>?): String {
+        return params?.let { language(input, it) } ?: language(input, null)
+    }
+
+    /**
+     * 向本地语言中加入自定义
+     * @param k String
+     * @param v String
+     * @return 是否成功
+     */
+    internal fun addLang(k: String, v: String): Boolean {
+        return if (languageData.containsKey(k)) {
+            false
+        } else {
+            languageData.put(k, v)
+            true
+        }
+    }
+
     /**
      * 传多参
      * @param      input   语言目标
@@ -92,7 +111,5 @@ class LocaleUtil {
         return core(input, ps)
     }
 
-    private fun core(input: String, params: Array<Any?>?): String {
-        return params?.let { language(input, it) } ?: language(input, null)
-    }
+
 }

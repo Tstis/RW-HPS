@@ -105,7 +105,7 @@ class Json {
         @JvmStatic
         fun <T> stringToClass(fileUtil: FileUtil,clazz: Class<T>): Any {
             val gson = Gson()
-            val json = fileUtil.readFileStringData();
+            val json = fileUtil.readFileStringData()
             return gson.fromJson(if (IsUtil.notIsBlank(json)) json else "{}", clazz.javaClass)
         }
 

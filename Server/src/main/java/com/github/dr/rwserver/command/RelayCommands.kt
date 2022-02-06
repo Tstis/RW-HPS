@@ -11,6 +11,7 @@ package com.github.dr.rwserver.command
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.Relay
+import com.github.dr.rwserver.data.plugin.PluginManage
 import com.github.dr.rwserver.func.StrCons
 import com.github.dr.rwserver.util.ExtractUtil.ipToLong
 import com.github.dr.rwserver.util.IsUtil.isBlank
@@ -77,5 +78,7 @@ class RelayCommands(handler: CommandHandler) {
 
     init {
         registerRelayCommand(handler)
+
+        PluginManage.runRegisterRelayCommands(handler)
     }
 }

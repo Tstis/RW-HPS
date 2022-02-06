@@ -39,23 +39,17 @@ object Call {
 
     @JvmStatic
     fun sendMessageLocal(player: Player, text: String, vararg obj: Any) {
-        Data.game.playerManage.playerGroup.each { e: Player ->
-            e.sendMessage(player, e.localeUtil.getinput(text, *obj))
-        }
+        Data.game.playerManage.playerGroup.each { e: Player -> e.sendMessage(player, e.localeUtil.getinput(text, *obj)) }
     }
 
     @JvmStatic
     fun sendTeamMessage(team: Int, player: Player, text: String) {
-        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player ->
-            p.sendMessage(player, "[TEAM] $text")
-        }
+        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player -> p.sendMessage(player, "[TEAM] $text") }
     }
 
     @JvmStatic
     fun sendSystemTeamMessageLocal(team: Int, text: String, vararg obj: Any) {
-        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player ->
-            p.sendSystemMessage("[TEAM] " + p.localeUtil.getinput(text, *obj))
-        }
+        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == team }) { p: Player -> p.sendSystemMessage("[TEAM] " + p.localeUtil.getinput(text, *obj)) }
     }
 
     @JvmStatic
@@ -69,20 +63,17 @@ object Call {
 
     @JvmStatic
     fun sendSystemMessageLocal(text: String, vararg obj: Any) {
-        Data.game.playerManage.playerGroup.each { e: Player -> e.sendSystemMessage(e.localeUtil.getinput(text, *obj))
-        }
+        Data.game.playerManage.playerGroup.each { e: Player -> e.sendSystemMessage(e.localeUtil.getinput(text, *obj)) }
     }
 
     @JvmStatic
     fun sendSystemMessage(text: String, vararg obj: Any) {
-        Data.game.playerManage.playerGroup.each { e: Player ->
-            e.sendSystemMessage(e.localeUtil.getinput(text, *obj))
-        }
+        Data.game.playerManage.playerGroup.each { e: Player -> e.sendSystemMessage(e.localeUtil.getinput(text, *obj)) }
     }
 
     @JvmStatic
     fun sendTeamData() {
-        if (Data.game.reConnectBreak) {
+        if (Data.game.gamePaused) {
             return
         }
         try {
@@ -131,11 +122,6 @@ object Call {
         timer.schedule(RandyTask(timer), 0, 100)
     }
 
-    fun gameOverTask() {
-        val timer = Timer()
-        timer.schedule(RandyTask(timer), 0, 100)
-    }
-
     /**
      * 检测玩家是否全部收到StartGame-Packet
      * @property loadTime 失败次数
@@ -178,11 +164,21 @@ object Call {
         }
     }
 
+    // Welcome to Bugs RW-HPS ! ---- 来自于 1.2.0-M2到5.2.0-M1-DEV才被修复的Bug
+    /**
+     *
+     * @property timer Timer
+     * @property time Int
+     * @property oneSay Boolean
+     * @property gameOverTask ScheduledFuture<*>?
+     * @property forcedReturn Boolean
+     * @constructor
+     */
     private class SendGameTickCommand(private val timer: Timer) : TimerTask() {
         private var time = 0
         private var oneSay = true
 
-        private var gameoverTask: ScheduledFuture<*>? = null
+        private var gameOverTask: ScheduledFuture<*>? = null
         @Volatile
         private var forcedReturn = false
 
@@ -198,17 +194,17 @@ object Call {
                 if (oneSay) {
                     oneSay = false
                     sendSystemMessageLocal("gameOver.oneMin")
-                    gameoverTask = newThreadService({gr()}, 1, TimeUnit.MINUTES)
+                    gameOverTask = newThreadService({gr()}, 1, TimeUnit.MINUTES)
                 }
             } else {
-                if (gameoverTask != null) {
+                if (gameOverTask != null) {
                     oneSay = true
-                    gameoverTask!!.cancel(true)
-                    gameoverTask = null
+                    gameOverTask!!.cancel(true)
+                    gameOverTask = null
                 }
             }
 
-            if (Data.game.reConnectBreak || forcedReturn) {
+            if (Data.game.gamePaused || forcedReturn) {
                 return
             }
 
@@ -242,9 +238,15 @@ object Call {
         }
 
         fun gr() {
+            if (forcedReturn) {
+                cancel()
+                timer.cancel()
+                return
+            }
+
             forcedReturn = true
-            gameoverTask!!.cancel(true)
-            gameoverTask = null
+            gameOverTask?.cancel(true)
+            gameOverTask = null
 
             cancel()
             timer.cancel()

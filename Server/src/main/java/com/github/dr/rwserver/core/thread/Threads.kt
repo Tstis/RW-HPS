@@ -36,7 +36,7 @@ object Threads {
         PLAYER_HEAT_THREAD.shutdownNow()
     }
 
-    fun closeNet() {
+    internal fun closeNet() {
         CORE_NET_THREAD.shutdownNow()
     }
 
