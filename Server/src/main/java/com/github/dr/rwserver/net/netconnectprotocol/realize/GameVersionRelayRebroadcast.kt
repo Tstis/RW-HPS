@@ -82,6 +82,12 @@ class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : Ga
             //ping();
 
             val nnn = StringFilteringUtil.filterChines(name)
+
+            // 人即像树，树枝越向往光明的天空，树根越伸向阴暗的地底
+            /**
+             * 禁止玩家使用 Server/Relay 做玩家名
+             * 禁止玩家使用带 eess 做玩家名 (色情网站)
+             */
             if (nnn.lowercase(Locale.getDefault()).contains("server") || nnn.lowercase(Locale.getDefault()).contains("relay") || nnn.lowercase(Locale.getDefault()).contains("eess")) {
                 relay!!.groupNet.disconnect() // Close Room
                 disconnect() // Close Connect & Reset Room

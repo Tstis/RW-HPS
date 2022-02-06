@@ -30,6 +30,9 @@ object TimeTaskData {
     @JvmField
     var GameWinOrLoseCheckTask: ScheduledFuture<*>? = null
 
+    @JvmField
+    var AutoReLoadMapTask: ScheduledFuture<*>? = null
+
 
     /*
      * 这一块为永久区
@@ -37,8 +40,6 @@ object TimeTaskData {
      */
     @JvmField
     var BlackListCheckTask: ScheduledFuture<*>? = null
-    @JvmField
-    var AutoReLoadMapTask: ScheduledFuture<*>? = null
     @JvmField
     var ServerUploadDataTask: ScheduledFuture<*>? = null
     @JvmField
@@ -78,6 +79,11 @@ object TimeTaskData {
         UpServerListNewTask?.cancel(true)
         if (IsUtil.isNull(UpServerListNewTask)) run?.run()
         UpServerListNewTask = null
+    }
+    @JvmStatic
+    fun stopAutoReLoadMapTask() {
+        AutoReLoadMapTask?.cancel(true)
+        AutoReLoadMapTask = null
     }
 
     @JvmStatic

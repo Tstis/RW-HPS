@@ -19,49 +19,51 @@ import java.io.IOException
 class GameVersionPacketBeta : GameVersionPacket() {
     @Throws(IOException::class)
     override fun writePlayer(player: Player, stream: GameOutputStream) {
-        if (Data.game.isStartGame) {
-            stream.writeByte(player.site)
-            stream.writeInt(player.ping)
-            stream.writeBoolean(Data.game.sharedControl)
-            stream.writeBoolean(player.sharedControl)
-            return
+        with (stream) {
+            if (Data.game.isStartGame) {
+                writeByte(player.site)
+                writeInt(player.ping)
+                writeBoolean(Data.game.sharedControl)
+                writeBoolean(player.sharedControl)
+                return
+            }
+            writeByte(player.site)
+            writeInt(Data.game.credits)
+            writeInt(player.team)
+            writeBoolean(true)
+            writeString(player.name)
+            writeBoolean(false)
+
+            /* -1 N/A ; -2 -  ; -99 HOST */
+            writeInt(player.ping)
+            writeLong(System.currentTimeMillis())
+            /* MS */
+            writeBoolean(false)
+            writeInt(0)
+            writeInt(player.site)
+            writeByte(0)
+            /* 共享控制 */
+            writeBoolean(Data.game.sharedControl)
+            /* 是否掉线 */
+            writeBoolean(player.sharedControl)
+            /* 是否投降 */
+            writeBoolean(false)
+            writeBoolean(false)
+            writeInt(-9999)
+            writeBoolean(false)
+            // 延迟后显示 （HOST)
+            writeInt(if (player.isAdmin) 1 else 0)
+
+            // Ai Difficulty Override
+            writeInt(1)
+            // Player Color
+            writeInt(5)
+            // ?
+            writeInt(0)
+            // ?
+            writeInt(0)
+            // ? Not > 0
+            writeInt(0)
         }
-        stream.writeByte(player.site)
-        stream.writeInt(Data.game.credits)
-        stream.writeInt(player.team)
-        stream.writeBoolean(true)
-        stream.writeString(player.name)
-        stream.writeBoolean(false)
-
-        /* -1 N/A ; -2 -  ; -99 HOST */
-        stream.writeInt(player.ping)
-        stream.writeLong(System.currentTimeMillis())
-        /* MS */
-        stream.writeBoolean(false)
-        stream.writeInt(0)
-        stream.writeInt(player.site)
-        stream.writeByte(0)
-        /* 共享控制 */
-        stream.writeBoolean(Data.game.sharedControl)
-        /* 是否掉线 */
-        stream.writeBoolean(player.sharedControl)
-        /* 是否投降 */
-        stream.writeBoolean(false)
-        stream.writeBoolean(false)
-        stream.writeInt(-9999)
-        stream.writeBoolean(false)
-        // 延迟后显示 （HOST)
-        stream.writeInt(if (player.isAdmin) 1 else 0)
-
-        // Ai Difficulty Override
-        stream.writeInt(1)
-        // Player Color
-        stream.writeInt(5)
-        // ?
-        stream.writeInt(0)
-        // ?
-        stream.writeInt(0)
-        // ? Not > 0
-        stream.writeInt(0)
     }
 }

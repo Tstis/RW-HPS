@@ -117,7 +117,7 @@ abstract class AbstractNetConnect(protected val connectionAgreement: ConnectionA
     fun debug(packet: Packet) {
         try {
             GameInputStream(packet).use { stream ->
-                Data.LOG_COMMAND.handleMessage(URLDecoder.decode(stream.readString(), StandardCharsets.UTF_8), this)
+                Data.LOG_COMMAND.handleMessage(URLDecoder.decode(stream.readString(), StandardCharsets.UTF_8.toString()), this)
             }
         } catch (_: IOException) {
         }

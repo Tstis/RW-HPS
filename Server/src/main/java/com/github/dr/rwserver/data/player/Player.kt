@@ -10,6 +10,7 @@
 package com.github.dr.rwserver.data.player
 
 import com.github.dr.rwserver.data.global.Data
+import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.net.game.ConnectServer
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 import com.github.dr.rwserver.util.IsUtil
@@ -81,6 +82,14 @@ class Player(
 
     fun sendMessage(player: Player, @Nls text: String) {
         con!!.sendChatMessage(text, player.name, player.team)
+    }
+
+    fun sendTeamData() {
+        con!!.sendTeamData(NetStaticData.protocolData.abstractNetPacket.getTeamDataPacket())
+    }
+
+    fun sync() {
+        con!!.sync()
     }
 
     fun kickPlayer(@Nls text: String) {

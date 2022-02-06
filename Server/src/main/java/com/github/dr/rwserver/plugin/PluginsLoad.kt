@@ -156,7 +156,7 @@ class PluginsLoad {
          * @return Seq<PluginLoadData>
          */
         @JvmStatic
-        fun resultPluginData(f: FileUtil): Seq<PluginLoadData> {
+        internal fun resultPluginData(f: FileUtil): Seq<PluginLoadData> {
             val jarFileList = Seq<File>()
             val list = f.fileList
             for (file in list) {
@@ -165,6 +165,11 @@ class PluginsLoad {
                 }
             }
             return PluginsLoad().loadJar(jarFileList)
+        }
+
+        @JvmStatic
+        internal fun addPluginClass(name: String,author: String,description: String, version: String, main: Plugin,list: Seq<PluginLoadData>) {
+            list.add(PluginLoadData(name, author, description, version, main))
         }
     }
 }

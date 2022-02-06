@@ -48,7 +48,7 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 
 #### Currently to be completed
 - [ ] Analog Layer (technical limitations)
-- [ ] Vote
+- [x] Vote
 - [ ] 1.15.P*
 
 ### Actions that won't be supported

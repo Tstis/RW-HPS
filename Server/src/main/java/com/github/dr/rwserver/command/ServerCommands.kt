@@ -18,6 +18,7 @@ import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.Data.LINE_SEPARATOR
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
+import com.github.dr.rwserver.data.plugin.PluginManage
 import com.github.dr.rwserver.func.StrCons
 import com.github.dr.rwserver.game.EventType.GameOverEvent
 import com.github.dr.rwserver.game.EventType.PlayerBanEvent
@@ -133,7 +134,7 @@ class ServerCommands(handler: CommandHandler) {
                     arg[1].toInt() * 1000L
                 ) else getTimeFutureMillis(60 * 1000L)
                 try {
-                    player.con!!.sendKick(localeUtil.getinput("kick.you"))
+                    player.kickPlayer(localeUtil.getinput("kick.you"))
                 } catch (e: IOException) {
                     error("[Player] Send Kick Player Error", e)
                 }
@@ -144,7 +145,7 @@ class ServerCommands(handler: CommandHandler) {
                 Data.game.isAfk = "on" == arg[0]
             }
         }
-        handler.register("maplock", "<off/on>", "serverCommands.isAfk") { arg: Array<String>, _: StrCons ->
+        handler.register("maplock", "<off/on>", "serverCommands.maplock") { arg: Array<String>, _: StrCons ->
             Data.game.mapLock = "on" == arg[0]
         }
         handler.register("kill", "<PlayerSerialNumber>", "serverCommands.kill") { arg: Array<String>, log: StrCons ->
@@ -218,5 +219,7 @@ class ServerCommands(handler: CommandHandler) {
     init {
         registerPlayerCommand(handler)
         registerPlayerStatusCommand(handler)
+
+        PluginManage.runRegisterServerCommands(handler)
     }
 }

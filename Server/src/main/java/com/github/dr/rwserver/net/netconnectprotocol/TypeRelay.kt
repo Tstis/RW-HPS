@@ -35,42 +35,40 @@ class TypeRelay(val con: GameVersionRelay) : TypeConnect(con) {
                     con.addGroup(packet)
                     con.getPingData(packet)
                 }
-                else -> {
-                    when (packet.type) {
-                        PacketType.PACKET_PREREGISTER_CONNECTION -> {
-                            con.setCachePacket(packet)
-                            con.sendRelayServerInfo()
-                            con.sendRelayServerCheck()
-                        }
-                        152 -> {
-                            if (con.receiveRelayServerCheck(packet)) {
-                                if (!Data.config.SingleUserRelay) {
-                                    con.relayDirectInspection()
-                                } else {
-                                    NetStaticData.relay.setAddSize()
-                                    if (NetStaticData.relay.admin == null) {
-                                        con.sendRelayServerId()
-                                    } else {
-                                        con.addRelayConnect()
-                                    }
-                                }
+
+                PacketType.PACKET_PREREGISTER_CONNECTION -> {
+                    con.setCachePacket(packet)
+                    con.sendRelayServerInfo()
+                    con.sendRelayServerCheck()
+                }
+                152 -> {
+                    if (con.receiveRelayServerCheck(packet)) {
+                        if (!Data.config.SingleUserRelay) {
+                            con.relayDirectInspection()
+                        } else {
+                            NetStaticData.relay.setAddSize()
+                            if (NetStaticData.relay.admin == null) {
+                                con.sendRelayServerId()
                             } else {
-                                con.disconnect()
+                                con.addRelayConnect()
                             }
                         }
-
-                        118 -> con.sendRelayServerTypeReply(packet)
-                        176 -> {
-                        }
-                        112 -> {
-                            con.relay!!.isStartGame = true
-                            con.sendResultPing(packet)
-                        }
-                        PacketType.PACKET_DISCONNECT -> con.disconnect()
-                        PacketType.PACKET_SERVER_DEBUG -> con.debug(packet)
-                        else -> con.sendResultPing(packet)
+                    } else {
+                        con.disconnect()
                     }
                 }
+
+                118 -> con.sendRelayServerTypeReply(packet)
+                176 -> {
+                }
+                112 -> {
+                    con.relay!!.isStartGame = true
+                    con.sendResultPing(packet)
+                }
+                PacketType.PACKET_DISCONNECT -> con.disconnect()
+                PacketType.PACKET_SERVER_DEBUG -> con.debug(packet)
+                else -> con.sendResultPing(packet)
+
         }
 
         }

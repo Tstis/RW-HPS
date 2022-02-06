@@ -108,6 +108,8 @@ class StartNet {
             bossGroup.shutdownGracefully()
             workerGroup.shutdownGracefully()
         }
+
+        error("END")
     }
 
     fun startUdp(port: Int) {
@@ -133,6 +135,10 @@ class StartNet {
         connectChannel.each { obj: Channel -> obj.close() }
     }
 
+    /**
+     * 清理连接 释放资源
+     * @param ctx ChannelHandlerContext
+     */
     fun clear(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
         try {
@@ -145,7 +151,7 @@ class StartNet {
                 ctx.close()
             }
         } finally {
-            OVER_MAP.remove(channel.id().asLongText())
+            //OVER_MAP.remove(channel.id().asLongText())
         }
     }
 

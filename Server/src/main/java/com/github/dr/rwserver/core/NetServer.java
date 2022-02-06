@@ -9,7 +9,6 @@
 
 package com.github.dr.rwserver.core;
 
-import com.github.dr.rwserver.core.thread.Threads;
 import com.github.dr.rwserver.core.thread.TimeTaskData;
 import com.github.dr.rwserver.data.global.Data;
 import com.github.dr.rwserver.data.global.NetStaticData;
@@ -27,7 +26,10 @@ public class NetServer {
     public static void closeServer() {
         if (Data.game != null) {
             NetStaticData.startNet.each(StartNet::stop);
-            Threads.close();
+            //Threads.newThreadCoreNet();
+            TimeTaskData.stopGameWinOrLoseCheckTask();
+
+
             Data.game.playerManage.playerGroup.clear();
             Data.game.playerManage.playerAll.clear();
             Data.game = null;

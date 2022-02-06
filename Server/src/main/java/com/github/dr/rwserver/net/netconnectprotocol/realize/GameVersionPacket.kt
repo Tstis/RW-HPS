@@ -159,6 +159,21 @@ open class GameVersionPacket : AbstractNetPacket {
         }
     }
 
+    override fun deceiveGetGameSave(): Packet {
+        val o = GameOutputStream()
+        o.writeByte(0)
+        o.writeInt(0)
+        o.writeInt(0)
+        o.writeFloat(0f)
+        o.writeFloat(0f)
+        o.writeBoolean(true)
+        o.writeBoolean(false)
+        val gzipEncoder = CompressOutputStream.getGzipOutputStream("gameSave", false)
+        gzipEncoder.writeString("This is RW-HPS [Deceive Get GameSave]!")
+        o.flushEncodeData(gzipEncoder)
+        return o.createPacket(35)
+    }
+
     @Throws(IOException::class)
     override fun getExitPacket(): Packet {
         val cPacket: Packet? = Cache.packetCache["getExitPacket"]
@@ -185,6 +200,7 @@ open class GameVersionPacket : AbstractNetPacket {
             return
         }
         stream.writeByte(player.site)
+        // 并没有什么用
         stream.writeInt(Data.game.credits)
         stream.writeInt(player.team)
         stream.writeBoolean(true)
@@ -194,21 +210,26 @@ open class GameVersionPacket : AbstractNetPacket {
         /* -1 N/A  -2 -   -99 HOST */
         stream.writeInt(player.ping)
         stream.writeLong(System.currentTimeMillis())
-        /* MS */
+
+        /* Is AI */
         stream.writeBoolean(false)
+        /* AI Difficu */
         stream.writeInt(0)
+
         stream.writeInt(player.site)
         stream.writeByte(0)
+
         /* 共享控制 */
         stream.writeBoolean(Data.game.sharedControl)
         /* 是否掉线 */
         stream.writeBoolean(player.sharedControl)
+
         /* 是否投降 */
         stream.writeBoolean(false)
         stream.writeBoolean(false)
         stream.writeInt(-9999)
         stream.writeBoolean(false)
-        // 延迟后显示 （HOST)
+        // 延迟后显示 （HOST) [房主]
         stream.writeInt(if (player.isAdmin) 1 else 0)
     }
 

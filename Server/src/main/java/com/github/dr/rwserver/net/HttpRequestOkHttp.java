@@ -40,7 +40,7 @@ public class HttpRequestOkHttp {
 				.build();
 		try (Response response = CLIENT.newCall(request).execute()) {
 			return Objects.requireNonNull(response.body()).string();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			Log.error(e);
 		}
 		return "";
@@ -75,8 +75,15 @@ public class HttpRequestOkHttp {
 		return getHttpResultString(request);
 	}
 
-
 	private static String getHttpResultString(Request request) {
+		try {
+			return getHttpResultString(request,false);
+		} catch (Exception exception) {
+			Log.error("getHttpResultString",exception);
+		}
+		return "";
+	}
+	private static String getHttpResultString(Request request,Boolean resultError) throws Exception {
 		String result = "";
 		try (Response response = CLIENT.newCall(request).execute()) {
 			if (!response.isSuccessful()) {
@@ -84,8 +91,6 @@ public class HttpRequestOkHttp {
 			}
 			result = Objects.requireNonNull(response.body()).string();
 			Objects.requireNonNull(response.body()).close();
-		} catch (IOException e) {
-			Log.error(e);
 		}
 		return result;
 	}
@@ -104,7 +109,12 @@ public class HttpRequestOkHttp {
 				.addHeader("Connection","close")
 				.post(formBody.build())
 				.build();
-		return getHttpResultString(request);
+		try {
+			return getHttpResultString(request,true);
+		} catch (Exception e) {
+			Log.error("[UpList Error] CF CDN Error? (Ignorable)");
+		}
+		return "";
 	}
 
 	public static boolean downUrl(final String url,final File file) {

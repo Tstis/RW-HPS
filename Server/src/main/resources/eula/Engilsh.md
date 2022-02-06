@@ -95,5 +95,5 @@ This Agreement and the GNU Affero General Public License (i.e., the AGPL Agreeme
     2. Subject to the above terms and conditions, the license granted herein shall be valid for the duration of statutory copyright protection. Notwithstanding the foregoing, the author reserves the right to distribute the Software under other license terms and to cease distribution of the Software at any time; however, the author's aforementioned right cannot be used to revoke this license or any other license granted or required to be granted under the terms of this license, and this license shall remain in full force and effect except for the termination specified in subparagraph a. of this Article.
 
 
-Translated with DeepL
-RW-HPS Project & RW-HPS Team
+Translated with DeepL  
+RW-HPS Project & RW-HPS Team  

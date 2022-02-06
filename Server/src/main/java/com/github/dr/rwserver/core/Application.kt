@@ -92,6 +92,7 @@ class Application {
     val pid: Long
         // 唯一的到Java11理由
         // get() = ProcessHandle.current().pid()
+        // 现在理由它没了
         get() = jvmPid()
 
 

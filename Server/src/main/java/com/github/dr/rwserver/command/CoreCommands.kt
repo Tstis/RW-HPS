@@ -33,6 +33,9 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * @author Dr
+ */
 class CoreCommands(handler: CommandHandler) {
     private fun registerCore(handler: CommandHandler) {
         handler.register("help", "serverCommands.help") { _: Array<String>?, log: StrCons ->
@@ -49,14 +52,15 @@ class CoreCommands(handler: CommandHandler) {
                 }
             }
         }
-
         /*
-        @DidNotFinish
+        @NeedHelp
         handler.register("stop", "serverCommands.stop") { _: Array<String>?, log: StrCons ->
-            log["Stop Server. end"]
+            if (NetStaticData.startNet.size() == 0) {
+                log["Server does not start"]
+                return@register
+            }
             NetServer.closeServer()
-        }
-         */
+        }*/
 
         handler.register("version", "serverCommands.version") { _: Array<String>?, log: StrCons ->
             log[localeUtil.getinput("status.versionS", Data.core.javaHeap / 1024 / 1024, Data.SERVER_CORE_VERSION)]
@@ -122,13 +126,13 @@ class CoreCommands(handler: CommandHandler) {
             NetStaticData.protocolData.setNetConnectProtocol(GameVersionServerBeta(ConnectionAgreement()),157);
             NetStaticData.protocolData.setNetConnectPacket(GameVersionPacketBeta(),"3.0.0");*/
             //NetStaticData.protocolData.setNetConnectProtocol(new GameVersionFFA(null),151);
-            Threads.newThreadCore {
+            Threads.newThreadCoreNet {
                 val startNet = StartNet()
                 NetStaticData.startNet.add(startNet)
                 startNet.openPort(Data.config.Port)
             }
             if (Data.config.UDPSupport) {
-                Threads.newThreadCore {
+                Threads.newThreadCoreNet {
                     try {
                         val startNet = StartNet()
                         NetStaticData.startNet.add(startNet)
@@ -157,13 +161,13 @@ class CoreCommands(handler: CommandHandler) {
             NetStaticData.protocolData.setTypeConnect(TypeRwHps(GameVersionFFA(ConnectionAgreement())))
             NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
 
-            Threads.newThreadCore {
+            Threads.newThreadCoreNet {
                 val startNet = StartNet()
                 NetStaticData.startNet.add(startNet)
                 startNet.openPort(Data.config.Port)
             }
             if (Data.config.UDPSupport) {
-                Threads.newThreadCore {
+                Threads.newThreadCoreNet {
                     try {
                         val startNet = StartNet()
                         NetStaticData.startNet.add(startNet)
@@ -192,9 +196,9 @@ class CoreCommands(handler: CommandHandler) {
 
             val startNetTcp = StartNet()
             NetStaticData.startNet.add(startNetTcp)
-            Threads.newThreadCore { startNetTcp.openPort(Data.config.Port, 5201, 5500) }
+            Threads.newThreadCoreNet { startNetTcp.openPort(Data.config.Port, 5201, 5500) }
             if (Data.config.UDPSupport) {
-                Threads.newThreadCore {
+                Threads.newThreadCoreNet {
                     try {
                         val startNet = StartNet()
                         NetStaticData.startNet.add(startNet)
@@ -218,15 +222,14 @@ class CoreCommands(handler: CommandHandler) {
             Data.game = Rules(Data.config)
             Data.game.init()
 
-            NetStaticData.protocolData.setTypeConnect(TypeRelayRebroadcast(GameVersionRelayRebroadcast(
-                ConnectionAgreement())))
+            NetStaticData.protocolData.setTypeConnect(TypeRelayRebroadcast(GameVersionRelayRebroadcast(ConnectionAgreement())))
             NetStaticData.protocolData.setNetConnectPacket(GameVersionPacket(), "2.0.0")
 
             val startNetTcp = StartNet()
             NetStaticData.startNet.add(startNetTcp)
-            Threads.newThreadCore { startNetTcp.openPort(Data.config.Port, 5200, 5500) }
+            Threads.newThreadCoreNet { startNetTcp.openPort(Data.config.Port, 5200, 5500) }
             if (Data.config.UDPSupport) {
-                Threads.newThreadCore {
+                Threads.newThreadCoreNet {
                     try {
                         val startNet = StartNet()
                         NetStaticData.startNet.add(startNet)

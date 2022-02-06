@@ -17,6 +17,7 @@ import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType
 import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.game.Events
+import com.github.dr.rwserver.util.log.exp.ImplementedException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -24,14 +25,14 @@ import kotlin.math.ceil
 
 
 /**
- * Vote
+ * Vote 为游戏提供一个默认的Vote接口
  * @author Dr
  * @Date 2022/02/04 15:00:05
  */
 class Vote {
     private val command: String
-    private val player: Player
-    private val targetPlayer: Player?
+    val player: Player
+    val targetPlayer: Player?
     private var isTeam: Boolean = false
 
     private var require: Int = 0
@@ -108,12 +109,8 @@ class Vote {
 
     private fun preprocessing() {
         // 预处理
-        when (command) {
-            "gameover" -> normalDistribution()
-            "surrender" -> {
-                isTeam = true
-                teamOnly()
-            }
+        when {
+            commandStartData.contains(command) -> commandStartData[command]!!.invoke(this)
             else -> {
                 player.sendSystemMessage(player.localeUtil.getinput("vote.end.err", command))
                 clearUp()
@@ -184,6 +181,7 @@ class Vote {
     }
 
     private fun end() {
+        var error: ImplementedException.VoteImplementedException? = null
         if (this.pass >= this.require) {
             endYesMsg()
 
@@ -192,15 +190,20 @@ class Vote {
             countDownTask = null
             voteTimeTask = null
 
-            when (command) {
-                "gameover" -> gameover()
-                "surrender" -> surrender()
-                else -> {}
+            when {
+                commandEndData.contains(command) -> commandEndData[command]!!.invoke(this)
+                else -> {
+                    error = ImplementedException.VoteImplementedException("[Vote End] Server does not implement command: $command")
+                    clearUp()
+                }
             }
         } else {
             endNoMsg()
         }
         clearUp()
+        if (error != null) {
+            throw error
+        }
     }
 
     /**
@@ -215,16 +218,40 @@ class Vote {
         Data.vote = null
     }
 
-    private fun gameover() {
-        Events.fire(EventType.GameOverEvent())
-    }
-
-    private fun surrender() {
-        Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == player.team }) { p: Player -> p.con!!.sendSurrender() }
-    }
-
-
     private fun stopTask(task: ScheduledFuture<*>?) {
         task?.cancel(true)
+    }
+
+    companion object {
+        private val commandStartData = mutableMapOf<String, (vote: Vote)->Unit>()
+        private val commandEndData = mutableMapOf<String, (vote: Vote)->Unit>()
+
+        init {
+            commandStartData["gameover"] = { it.normalDistribution() }
+            commandStartData["surrender"] = { it.isTeam = true ; it.teamOnly() }
+
+            commandEndData["gameover"] = { Events.fire(EventType.GameOverEvent()) }
+            commandEndData["surrender"] = { Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == it.player.team }) { p: Player -> p.con!!.sendSurrender() } }
+        }
+
+        @JvmStatic
+        fun addVoteFullParticipation(command: String,run: (vote: Vote)->Unit): Boolean {
+            return if (commandStartData.contains(command)) {
+                false
+            } else {
+                commandStartData[command] = { run(it) ; it.normalDistribution()}
+                true
+            }
+        }
+
+        @JvmStatic
+        fun addVoteTeamOnly(command: String,run: (vote: Vote)->Unit): Boolean {
+            return if (commandStartData.contains(command)) {
+                false
+            } else {
+                commandStartData[command] = { run(it) ; it.isTeam = true ; it.teamOnly() }
+                true
+            }
+        }
     }
 }

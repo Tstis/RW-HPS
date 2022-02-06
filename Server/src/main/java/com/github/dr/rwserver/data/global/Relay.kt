@@ -6,6 +6,7 @@
  *
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
+
 package com.github.dr.rwserver.data.global
 
 import com.github.dr.rwserver.data.global.Data.LINE_SEPARATOR
@@ -14,6 +15,7 @@ import com.github.dr.rwserver.net.GroupNet
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionRelay
 import com.github.dr.rwserver.struct.IntMap
 import com.github.dr.rwserver.struct.Seq
+import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.IsUtil.isNumeric
 import com.github.dr.rwserver.util.log.Log.debug
 import java.io.IOException
@@ -26,18 +28,18 @@ class Relay {
     @JvmField
     val groupNet: GroupNet
     val abstractNetConnectIntMap = IntMap<GameVersionRelay>()
-    val serverUuid = UUID.randomUUID().toString()
 
-    //private final String serverUuid = Data.core.serverConnectUuid;
     var admin: GameVersionRelay? = null
     var closeRoom = false
+
+    val serverUuid = UUID.randomUUID().toString()
     val id: String
     var isMod = false
     var minSize = 1
         private set
     var isStartGame: Boolean = false
         set(value) {
-            if (value) {
+            if (field) {
                 return
             }
             field = value
@@ -137,9 +139,9 @@ class Relay {
         return abstractNetConnectIntMap.put(site.get(), abstractNetConnect)
     }
 
-    fun sendMsg(msg: String?) {
+    fun sendMsg(msg: String) {
         try {
-            admin!!.sendPacket(NetStaticData.protocolData.abstractNetPacket.getSystemMessagePacket(msg!!))
+            admin!!.sendPacket(NetStaticData.protocolData.abstractNetPacket.getSystemMessagePacket(msg))
             groupNet.broadcast(NetStaticData.protocolData.abstractNetPacket.getSystemMessagePacket(msg), null)
         } catch (e: IOException) {
             e.printStackTrace()
@@ -189,14 +191,14 @@ class Relay {
         }
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) {
             return true
         }
-        if (o == null || javaClass != o.javaClass) {
+        if (other == null || javaClass != other.javaClass) {
             return false
         }
-        val relay = o as Relay
+        val relay = other as Relay
         return id == relay.id
     }
 
@@ -231,11 +233,15 @@ class Relay {
 
         @JvmStatic
         fun getRelay(id: String): Relay? {
-            return serverRelayData[id.toInt()]
+            if (IsUtil.isNumeric(id)) {
+                return serverRelayData[id.toInt()]
+            } else {
+                return null
+            }
         }
 
         @JvmStatic
-        fun sendAllMsg(msg: String?) {
+        fun sendAllMsg(msg: String) {
             serverRelayData.values().forEach(Consumer { e: Relay -> e.sendMsg(msg) })
         }
     }

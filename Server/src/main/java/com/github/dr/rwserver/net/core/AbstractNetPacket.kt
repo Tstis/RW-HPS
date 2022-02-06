@@ -116,6 +116,12 @@ interface AbstractNetPacket {
     fun getPacketMapName(bytes: ByteArray): String
 
     /**
+     * 欺骗客户端获取同步包
+     * @return Packet
+     */
+    fun deceiveGetGameSave(): Packet
+
+    /**
      * 退出
      * @return Packet
      * @throws IOException err
