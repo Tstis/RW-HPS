@@ -7,28 +7,17 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.code.rudp
 
-import com.github.dr.rwserver.io.Packet
-import com.github.dr.rwserver.util.log.Log.warn
-import io.netty.buffer.ByteBuf
-import io.netty.channel.ChannelHandlerContext
-import io.netty.handler.codec.ByteToMessageDecoder
-import io.netty.util.ReferenceCountUtil
+import com.github.dr.rwserver.io.input.ClearableAndReusableDisableSyncByteArrayInputStream
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.rudp.PackagingSocket
+import com.github.dr.rwserver.util.log.Log
+import java.io.EOFException
+import java.io.IOException
+import java.util.concurrent.ThreadPoolExecutor
 
-/**
- * Parse game packets
- * @author Dr
- */
-/**
- *    1 2 3 4  5  6  7  8  ...
- *   +-+-+-+-+-+-+-+-+---------------+
- *   |0|0|0|0| 0| 0| 0| 0| Data|
- *   +-+-+-+-+-+-+-+-+---------------+
- *   |  Type |Data length| Data
- *   +---------------+---------------+
- */
-internal class PacketDecoder : ByteToMessageDecoder() {
+internal class PacketDecoder(private val socket: PackagingSocket) {
     companion object {
         /** Packet header data length */
         private const val HEADER_SIZE = 8
@@ -36,16 +25,17 @@ internal class PacketDecoder : ByteToMessageDecoder() {
         private const val MAX_CONTENT_LENGTH = 52428800
     }
 
-    @Throws(Exception::class)
-    override fun decode(ctx: ChannelHandlerContext, bufferIn: ByteBuf?, out: MutableList<Any>) {
-        if (bufferIn == null) {
-            return
-        }
+    private val inputStream = ClearableAndReusableDisableSyncByteArrayInputStream()
 
-        val readableBytes = bufferIn.readableBytes()
+    @Throws(Exception::class)
+    fun decode(bytes: ByteArray, length: Int,group: ThreadPoolExecutor) {
+        inputStream.addBytes(bytes,length)
+
+        val readableBytes = inputStream.count()
         if (readableBytes < HEADER_SIZE) {
             return
         }
+
         /*
         val addSock = ctx.channel().remoteAddress().toString()
         val ip = addSock.substring(1, addSock.indexOf(':'))
@@ -63,27 +53,43 @@ internal class PacketDecoder : ByteToMessageDecoder() {
          * Maximum accepted single package size = 50 MB
          */
         if (readableBytes > MAX_CONTENT_LENGTH) {
-            warn("Package size exceeds maximum")
-            ReferenceCountUtil.release(bufferIn)
+            Log.warn("Package size exceeds maximum")
+            inputStream.close()
             /*
             NetStaticData.blackList.addBlackList(ip)
             debug("Add BlackList", ip)
              */
-            ctx.close()
+            socket.close()
             return
         }
-        val readerIndex = bufferIn.readerIndex()
-        val contentLength = bufferIn.readInt()
-        val type = bufferIn.readInt()
+
+        inputStream.mark()
+
+        val contentLength = readInt()
+        val type = readInt()
+
         /*
          * Insufficient data length, reset the identification bit and read again
          */
-        if (bufferIn.readableBytes() < contentLength) {
-            bufferIn.readerIndex(readerIndex)
+        if (readableBytes < contentLength) {
+            inputStream.reset()
             return
         }
-        val b = ByteArray(contentLength)
-        bufferIn.readBytes(b)
-        out.add(Packet(type, b))
+
+        val packet = Packet(type,inputStream.readNBytes(contentLength))
+
+        inputStream.removeOldRead()
+
+        group.execute { this.socket.type!!.typeConnect(packet) }
+    }
+
+    @Throws(IOException::class)
+    private fun readInt(): Int {
+        val ch1: Int = inputStream.read()
+        val ch2: Int = inputStream.read()
+        val ch3: Int = inputStream.read()
+        val ch4: Int = inputStream.read()
+        if (ch1 or ch2 or ch3 or ch4 < 0) throw EOFException()
+        return (ch1 shl 24) + (ch2 shl 16) + (ch3 shl 8) + (ch4 shl 0)
     }
 }

@@ -10,13 +10,14 @@
 package com.github.dr.rwserver.command.ex
 
 import com.github.dr.rwserver.core.Call
-import com.github.dr.rwserver.core.thread.Threads.newThreadService
 import com.github.dr.rwserver.core.thread.Threads.newThreadService2
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType
 import com.github.dr.rwserver.struct.Seq
+import com.github.dr.rwserver.util.Time.concurrentSecond
 import com.github.dr.rwserver.util.game.Events
+import com.github.dr.rwserver.util.log.Log
 import com.github.dr.rwserver.util.log.exp.ImplementedException
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -47,7 +48,6 @@ class Vote {
 
 
     private var countDownTask: ScheduledFuture<*>? = null
-    private var voteTimeTask: ScheduledFuture<*>? = null
 
     private val playerList = Seq<String>()
 
@@ -125,7 +125,7 @@ class Vote {
         require = Data.game.playerManage.playerGroup.size()
         endNoMsg = { Call.sendSystemMessageLocal("vote.done.no", command + " " + (targetPlayer?.name ?:""), pass, this.require) }
         endYesMsg = { Call.sendSystemMessageLocal("vote.ok") }
-        votePlayerIng = { Call.sendSystemMessage("vote.y.ing", command,pass,reciprocal) }
+        votePlayerIng = { Call.sendSystemMessage("vote.y.ing", command,pass,this.require) }
         voteIng = { Call.sendSystemMessage("vote.ing", reciprocal) }
         start { Call.sendSystemMessage("vote.start", player.name, command + " " + (targetPlayer?.name ?:"")) }
     }
@@ -139,7 +139,7 @@ class Vote {
         this.require = require.get()
         endNoMsg = { Call.sendSystemTeamMessageLocal(player.team, "vote.done.no", command + " " + (targetPlayer?.name ?:""),pass,this.require) }
         endYesMsg = { Call.sendSystemTeamMessageLocal(player.team, "vote.ok") }
-        votePlayerIng = { Call.sendSystemTeamMessageLocal(player.team,"vote.y.ing", command,pass,reciprocal) }
+        votePlayerIng = { Call.sendSystemTeamMessageLocal(player.team,"vote.y.ing", command,pass,this.require) }
         voteIng = { Call.sendSystemTeamMessageLocal(player.team, "vote.ing", reciprocal) }
         start { Call.sendSystemTeamMessageLocal(player.team, "vote.start", player.name, command + " " + (targetPlayer?.name ?:"")) }
     }
@@ -165,11 +165,11 @@ class Vote {
             countDownTask = newThreadService2(Runnable {
                 this.reciprocal -= 10
                 voteIng()
+                if (this.reciprocal <= 0) {
+                    end()
+                    countDownTask?.cancel(true)
+                }
             }, 10, 10, TimeUnit.SECONDS)
-            voteTimeTask = newThreadService(Runnable {
-                countDownTask!!.cancel(true)
-                end()
-            }, 58, TimeUnit.SECONDS)
             run()
         }
     }
@@ -181,15 +181,12 @@ class Vote {
     }
 
     private fun end() {
+        stopTask(countDownTask)
+        countDownTask = null
+
         var error: ImplementedException.VoteImplementedException? = null
         if (this.pass >= this.require) {
             endYesMsg()
-
-            stopTask(countDownTask)
-            stopTask(voteTimeTask)
-            countDownTask = null
-            voteTimeTask = null
-
             when {
                 commandEndData.contains(command) -> commandEndData[command]!!.invoke(this)
                 else -> {
@@ -202,7 +199,7 @@ class Vote {
         }
         clearUp()
         if (error != null) {
-            throw error
+            Log.error(error)
         }
     }
 
@@ -211,15 +208,22 @@ class Vote {
      */
     private fun clearUp() {
         playerList.clear()
-        endNoMsg = {}
-        endYesMsg = {}
-        votePlayerIng = {}
-        voteIng = {}
+        val nullVal: ()->Unit = {}
+        endNoMsg = nullVal
+        endYesMsg = nullVal
+        votePlayerIng = nullVal
+        voteIng = nullVal
         Data.vote = null
     }
 
     private fun stopTask(task: ScheduledFuture<*>?) {
         task?.cancel(true)
+    }
+
+    fun stopVote() {
+        stopTask(countDownTask)
+        countDownTask = null
+        clearUp()
     }
 
     companion object {
@@ -231,7 +235,18 @@ class Vote {
             commandStartData["surrender"] = { it.isTeam = true ; it.teamOnly() }
 
             commandEndData["gameover"] = { Events.fire(EventType.GameOverEvent()) }
-            commandEndData["surrender"] = { Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == it.player.team }) { p: Player -> p.con!!.sendSurrender() } }
+            commandEndData["surrender"] = { Log.clog("Surrender") ; Data.game.playerManage.playerGroup.eachBooleanIfs({ e: Player -> e.team == it.player.team }) { p: Player -> p.con!!.sendSurrender() } }
+        }
+
+        fun testVoet(player: Player): Boolean {
+            val checkTime = player.lastVoteTime + 60
+            return if (checkTime > concurrentSecond()) {
+                true
+            } else {
+                player.lastVoteTime = concurrentSecond()
+                false
+            }
+
         }
 
         @JvmStatic

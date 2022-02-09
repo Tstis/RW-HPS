@@ -10,12 +10,12 @@
 package com.github.dr.rwserver.net.core.server
 
 import com.github.dr.rwserver.data.global.Data
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.GroupNet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.game.ConnectServer
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.util.Time
 import com.github.dr.rwserver.util.log.Log
 import java.io.IOException
@@ -72,7 +72,7 @@ abstract class AbstractNetConnect(protected val connectionAgreement: ConnectionA
      * last time to Received Packet
      * @return Time
      */
-    var lastReceivedTime: Long = 0
+    var lastReceivedTime: Long = Time.concurrentMillis()
         private set
 
     fun lastReceivedTime() {
@@ -105,8 +105,10 @@ abstract class AbstractNetConnect(protected val connectionAgreement: ConnectionA
         try {
             connectionAgreement.send(packet)
         } catch (e: Exception) {
-            Log.error("[${connectionAgreement.useAgreement}] SendError - 本消息单独出现无妨 连续多次出现请debug", e)
             disconnect()
+            if (connectionAgreement.useAgreement != "UDP") {
+                Log.error("[${connectionAgreement.useAgreement}] SendError - 本消息单独出现无妨 连续多次出现请debug", e)
+            }
         }
     }
 

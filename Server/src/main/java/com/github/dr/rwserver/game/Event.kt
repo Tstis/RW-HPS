@@ -109,12 +109,6 @@ class Event : AbstractEvent {
     }
 
     override fun registerGameOverEvent() {
-        /*
-        if (getIfScheduledFutureData("UpServerList")) {
-            NetServer.removeServerList()
-            removeScheduledFutureData("UpServerList")
-        }
-        */
         if (Data.game.maps.mapData != null) {
             Data.game.maps.mapData!!.clean()
         }

@@ -9,8 +9,8 @@
 
 package com.github.dr.rwserver.io.output
 
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.input.GameInputStream
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.util.IsUtil
 import java.io.DataOutputStream
 import java.io.IOException

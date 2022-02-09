@@ -7,17 +7,17 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.core
 
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.GroupNet
-import com.github.dr.rwserver.util.RandomUtil.generateStr
+import com.github.dr.rwserver.net.rudp.PackagingSocket
+import com.github.dr.rwserver.util.log.Log
 import io.netty.channel.ChannelHandlerContext
-import net.udp.ReliableSocket
 import java.io.DataOutputStream
 import java.io.IOException
 import java.net.InetSocketAddress
-import java.net.Socket
+import java.net.SocketException
 import java.util.*
 
 /**
@@ -26,32 +26,32 @@ import java.util.*
  */
 class ConnectionAgreement {
     private val protocolType: ((packet: Packet) -> Unit)
-    private val startNet: StartNet?
     private val objectOutStream: Any
     private val udpDataOutputStream: DataOutputStream?
+
+    val isClosed: ()->Boolean
     val useAgreement: String
     @JvmField
     val ip: String
     internal val localPort: Int
-    val id: String
+    val id: String = UUID.randomUUID().toString()
 
     /**
      * TCP Send
      * @param channelHandlerContext Netty-ChannelHandlerContext
      */
-    constructor(channelHandlerContext: ChannelHandlerContext, startNet: StartNet) {
+    internal constructor(channelHandlerContext: ChannelHandlerContext) {
         protocolType = { packet: Packet ->
             channelHandlerContext.writeAndFlush(packet)
         }
-        this.startNet = startNet
         objectOutStream = channelHandlerContext
         udpDataOutputStream = null
         useAgreement = "TCP"
+        isClosed = { false }
 
         val channel = channelHandlerContext.channel()
         ip = convertIp(channel.remoteAddress().toString())
         localPort = (channel.localAddress() as InetSocketAddress).port
-        id = generateStr(5)
     }
 
     /**
@@ -59,38 +59,38 @@ class ConnectionAgreement {
      * @param socket Socket
      * @throws IOException Error
      */
-    constructor(socket: Socket, startNet: StartNet) {
-        val socketStream = DataOutputStream(socket.getOutputStream())
+    internal constructor(socket: PackagingSocket) {
+        val socketStream = DataOutputStream(socket.outputStream)
         protocolType = { packet: Packet ->
             socketStream.writeInt(packet.bytes.size)
             socketStream.writeInt(packet.type)
             socketStream.write(packet.bytes)
             socketStream.flush()
         }
-        this.startNet = startNet
         objectOutStream = socket
         udpDataOutputStream = socketStream
         useAgreement = "UDP"
-        ip = convertIp(socket.remoteSocketAddress.toString())
+        isClosed = { socket.isClosed }
+
+        ip = convertIp(socket.remoteSocketAddressString)
         localPort = socket.localPort
-        id = generateStr(5)
     }
 
     constructor() {
         protocolType = {}
-        startNet = null
         objectOutStream = ""
         udpDataOutputStream = null
         useAgreement = "Test"
+        isClosed = { false }
+
         ip = ""
         localPort = 0
-        id = generateStr(5)
     }
 
     fun add(groupNet: GroupNet) {
         if (objectOutStream is ChannelHandlerContext) {
             groupNet.add(objectOutStream.channel())
-        } else if (objectOutStream is ReliableSocket) {
+        } else if (objectOutStream is PackagingSocket) {
             groupNet.add(this)
         }
     }
@@ -111,17 +111,20 @@ class ConnectionAgreement {
         if (groupNet != null) {
             if (objectOutStream is ChannelHandlerContext) {
                 groupNet.remove(objectOutStream.channel())
-            } else if (objectOutStream is ReliableSocket) {
+            } else if (objectOutStream is PackagingSocket) {
                 groupNet.remove(this)
             }
         }
         if (objectOutStream is ChannelHandlerContext) {
             objectOutStream.channel().close()
             objectOutStream.close()
-        } else if (objectOutStream is ReliableSocket) {
-            udpDataOutputStream!!.close()
-            objectOutStream.close()
-            startNet!!.OVER_MAP.remove(objectOutStream.remoteSocketAddress.toString())
+        } else if (objectOutStream is PackagingSocket) {
+            try {
+                udpDataOutputStream!!.close()
+                objectOutStream.close()
+            } catch (e : SocketException) {
+                Log.debug("[RUDP Close] Passive")
+            }
         }
     }
 
@@ -138,7 +141,7 @@ class ConnectionAgreement {
         return Objects.hash(id)
     }
 
-    fun convertIp(ipString: String): String {
+    private fun convertIp(ipString: String): String {
         return ipString.substring(1, ipString.indexOf(':'))
     }
 }

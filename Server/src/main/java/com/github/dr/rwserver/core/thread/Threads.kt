@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
  */
 object Threads {
     private val CORE_THREAD: ExecutorService = GetNewThreadPool.getNewFixedThreadPool(6, "Core-")
-    private val CORE_NET_THREAD: ExecutorService = GetNewThreadPool.getNewFixedThreadPool(1, "Core-Net-")
+    private val CORE_NET_THREAD: ExecutorService = GetNewThreadPool.getNewFixedThreadPool(2, "Core-Net-")
     private val SERVICE = GetNewThreadPool.getNewScheduledThreadPool(10, "ScheduledExecutorPool-")
     private val PLAYER_HEAT_THREAD = GetNewThreadPool.getNewFixedThreadPool(10, "Core-Heat-")
 

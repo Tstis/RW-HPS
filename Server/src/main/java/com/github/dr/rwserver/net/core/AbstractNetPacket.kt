@@ -10,10 +10,10 @@
 package com.github.dr.rwserver.net.core
 
 import com.github.dr.rwserver.data.player.Player
-import com.github.dr.rwserver.game.GameCommand
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
+import com.github.dr.rwserver.io.packet.GameCommandPacket
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.struct.Seq
 import java.io.IOException
 
@@ -69,7 +69,7 @@ interface AbstractNetPacket {
      * @throws IOException err
      */
     @Throws(IOException::class)
-    fun getGameTickCommandPacket(tick: Int, cmd: GameCommand): Packet
+    fun getGameTickCommandPacket(tick: Int, cmd: GameCommandPacket): Packet
 
     /**
      * 获取时刻包
@@ -79,7 +79,7 @@ interface AbstractNetPacket {
      * @throws IOException err
      */
     @Throws(IOException::class)
-    fun getGameTickCommandsPacket(tick: Int, cmd: Seq<GameCommand>): Packet
+    fun getGameTickCommandsPacket(tick: Int, cmd: Seq<GameCommandPacket>): Packet
 
     /**
      * 获取队伍包
@@ -119,7 +119,7 @@ interface AbstractNetPacket {
      * 欺骗客户端获取同步包
      * @return Packet
      */
-    fun deceiveGetGameSave(): Packet
+    fun getDeceiveGameSave(): Packet
 
     /**
      * 退出

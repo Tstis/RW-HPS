@@ -7,9 +7,9 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.code.tcp
 
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
 import io.netty.buffer.ByteBuf
 import io.netty.channel.ChannelHandlerContext
 import io.netty.handler.codec.MessageToByteEncoder

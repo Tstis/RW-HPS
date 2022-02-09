@@ -18,8 +18,8 @@ import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.plugin.PluginManage
 import com.github.dr.rwserver.func.StrCons
 import com.github.dr.rwserver.game.Rules
-import com.github.dr.rwserver.net.game.ConnectionAgreement
-import com.github.dr.rwserver.net.game.StartNet
+import com.github.dr.rwserver.net.StartNet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.netconnectprotocol.TypeRelay
 import com.github.dr.rwserver.net.netconnectprotocol.TypeRelayRebroadcast
 import com.github.dr.rwserver.net.netconnectprotocol.TypeRwHps
@@ -138,7 +138,7 @@ class CoreCommands(handler: CommandHandler) {
                         NetStaticData.startNet.add(startNet)
                         startNet.startUdp(Data.config.Port)
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.error(e)
                     }
                 }
             }

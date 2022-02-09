@@ -35,44 +35,35 @@ class Player(
 	@JvmField
 	var isAdmin = false
     /** Team number  */
-	@JvmField
 	var team = 0
     /** List position  */
-	@JvmField
 	var site = 0
     /** */
     private val credits = Data.game.credits
     /** Shared control  */
-	@JvmField
 	var sharedControl = false
     /** (Markers)  */
-	@JvmField
 	var start = false
     /** Whether the player is dead  */
-	@JvmField
 	var dead = false
     /** Last move time  */
-    @JvmField
 	@Volatile
     var lastMoveTime: Long = 0
     /** Mute expiration time */
-    @JvmField
 	var muteTime: Long = 0
     /** Kick expiration time */
-    @JvmField
 	var kickTime: Long = 0
-    @JvmField
 	var timeTemp: Long = 0
     /** Ping */
-    @JvmField
 	var ping = 50
+	@JvmField
+    var lastMessageTime: Long = 0
     @JvmField
-	var lastMessageTime: Long = 0
-    @JvmField
-	var lastSentMessage = ""
-    @JvmField
+    var lastSentMessage = ""
 	var noSay = false
     var watch = false
+
+    var lastVoteTime: Int = 0
 
     private var connectServer: ConnectServer? = null
 

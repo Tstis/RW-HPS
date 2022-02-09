@@ -10,7 +10,7 @@
 package com.github.dr.rwserver.net.core.server
 
 import com.github.dr.rwserver.data.global.Relay
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
 import java.io.IOException
 
 /**

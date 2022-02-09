@@ -348,7 +348,11 @@ class ClientCommands(handler: CommandHandler) {
         handler.register("surrender", "clientCommands.surrender") { _: Array<String>?, player: Player ->
             if (Data.game.isStartGame) {
 				if (Data.vote == null) {
-					Data.vote = Vote("surrender",player)
+                    if (Vote.testVoet(player)) {
+                        Data.vote = Vote("surrender",player)
+                    } else {
+                        player.sendSystemMessage("[警告] 您正在尝试投降, 如果您确认要进行投票进行投降, 那么 请再点击一次投降")
+                    }
 				} else {
 					Data.vote!!.toVote(player,"y")
 				}
@@ -446,7 +450,7 @@ class ClientCommands(handler: CommandHandler) {
             val team = args[1].toInt()
             if (newSite >= 0) {
                 if (newSite < Data.game.maxPlayer) {
-                    val newSitePlayer = Data.game.playerManage.getPlayerArray(newSite)
+                val newSitePlayer = Data.game.playerManage.getPlayerArray(newSite)
                     if (newSitePlayer == null) {
                         Data.game.playerManage.removePlayerArray(player)
                         player.site = newSite

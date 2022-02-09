@@ -9,7 +9,7 @@
 
 package com.github.dr.rwserver.net.netconnectprotocol.realize
 
-import com.github.dr.rwserver.net.game.ConnectionAgreement
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 
 /**
  * @author Dr

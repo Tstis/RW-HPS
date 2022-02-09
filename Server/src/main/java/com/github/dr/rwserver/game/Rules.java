@@ -16,7 +16,8 @@ import com.github.dr.rwserver.data.base.BaseConfig;
 import com.github.dr.rwserver.data.global.Data;
 import com.github.dr.rwserver.data.global.NetStaticData;
 import com.github.dr.rwserver.data.player.PlayerManage;
-import com.github.dr.rwserver.io.Packet;
+import com.github.dr.rwserver.io.packet.GameCommandPacket;
+import com.github.dr.rwserver.io.packet.GameSavePacket;
 import com.github.dr.rwserver.struct.OrderedMap;
 import com.github.dr.rwserver.struct.Seq;
 import com.github.dr.rwserver.util.IsUtil;
@@ -57,13 +58,13 @@ public class Rules {
     /** 密码 */
     public final String passwd;
     /** 按键包缓存 */
-    public final LinkedBlockingQueue<GameCommand> gameCommandCache = new LinkedBlockingQueue<>();
+    public final LinkedBlockingQueue<GameCommandPacket> gameCommandCache = new LinkedBlockingQueue<>();
     /** AFK */
     public boolean isAfk = true;
     /** 重连暂停 */
-    public boolean gamePaused = false;
+    public volatile boolean gamePaused = false;
     /** 重连缓存 GameSave */
-    public volatile Packet gameSaveCache = null;
+    public volatile GameSavePacket gameSaveCache = null;
     /** PlayerManage */
     public final PlayerManage playerManage;
     /** Mpa Lock */

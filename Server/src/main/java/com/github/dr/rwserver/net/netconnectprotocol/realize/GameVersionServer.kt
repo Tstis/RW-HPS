@@ -16,14 +16,14 @@ import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.*
-import com.github.dr.rwserver.game.GameCommand
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
+import com.github.dr.rwserver.io.packet.GameCommandPacket
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.server.AbstractNetConnect
 import com.github.dr.rwserver.net.core.server.AbstractNetConnectServer
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.util.ExtractUtil
 import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.PacketType
@@ -167,7 +167,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
             // unknown
             out.writeBoolean(false)
 
-            val cmd = GameCommand(player.site, out.getByteArray())
+            val cmd = GameCommandPacket(player.site, out.getByteArray())
             Data.game.gameCommandCache.offer(cmd)
             Call.sendSystemMessage(Data.localeUtil.getinput("player.surrender", player.name))
         } catch (ignored: Exception) {
@@ -291,7 +291,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                 inStream.readShort()
                 outStream.writeShort(Data.game.playerManage.sharedControlPlayer.toShort())
                 outStream.transferTo(inStream)
-                Data.game.gameCommandCache.offer(GameCommand(player.site, outStream.getPacketBytes()))
+                Data.game.gameCommandCache.offer(GameCommandPacket(player.site, outStream.getPacketBytes()))
             }
         } catch (e: Exception) {
             Log.error(e)
@@ -541,21 +541,25 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
     }
 
     override fun sync() {
+        if (Data.game.gamePaused) {
+            player.sendSystemMessage("目前已有同步任务 请等待")
+            return
+        }
         try {
             Data.game.gamePaused = true
             Call.sendSystemMessage("玩家同步中 请耐心等待 不要退出 期间会短暂卡住！！ 需要30s-60s")
             val executorService = Executors.newFixedThreadPool(1)
             val future = executorService.submit {
                 // 批量诱骗
-                NetStaticData.groupNet.broadcast(NetStaticData.protocolData.abstractNetPacket.deceiveGetGameSave())
+                NetStaticData.groupNet.broadcast(NetStaticData.protocolData.abstractNetPacket.getDeceiveGameSave())
 
-                while (Data.game.gameSaveCache == null || Data.game.gameSaveCache.type == 0) {
+                while (Data.game.gameSaveCache == null) {
                     if (Thread.interrupted()) {
                         return@submit
                     }
                 }
                 try {
-                    NetStaticData.groupNet.broadcast(NetStaticData.protocolData.abstractNetPacket.convertGameSaveDataPacket(Data.game.gameSaveCache))
+                    NetStaticData.groupNet.broadcast(Data.game.gameSaveCache.convertGameSaveDataPacket())
                 } catch (e: IOException) {
                     Log.error(e)
                 }

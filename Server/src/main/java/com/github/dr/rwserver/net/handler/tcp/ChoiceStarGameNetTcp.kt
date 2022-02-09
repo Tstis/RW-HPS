@@ -6,7 +6,9 @@
  *
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
+package com.github.dr.rwserver.net.handler.tcp
 
-package com.github.dr.rwserver.net
+import com.github.dr.rwserver.net.StartNet
+import com.github.dr.rwserver.net.core.AbstractNet
 
-class NetData 
+class ChoiceStarGameNetTcp(startNet: StartNet) : AbstractNet(startNet)

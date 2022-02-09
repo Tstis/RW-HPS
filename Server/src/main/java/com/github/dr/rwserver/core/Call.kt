@@ -14,7 +14,7 @@ import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.GameOverEvent
-import com.github.dr.rwserver.game.GameCommand
+import com.github.dr.rwserver.io.packet.GameCommandPacket
 import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.log.Log.error
@@ -226,8 +226,8 @@ object Call {
                     }
                 }
                 else -> {
-                    val comm = Seq<GameCommand>(size)
-                    IntStream.range(0, size).mapToObj { Data.game.gameCommandCache.poll() }.forEach { value: GameCommand -> comm.add(value) }
+                    val comm = Seq<GameCommandPacket>(size)
+                    IntStream.range(0, size).mapToObj { Data.game.gameCommandCache.poll() }.forEach { value: GameCommandPacket -> comm.add(value) }
                     try {
                         NetStaticData.groupNet.broadcast(NetStaticData.protocolData.abstractNetPacket.getGameTickCommandsPacket(time, comm))
                     } catch (e: IOException) {

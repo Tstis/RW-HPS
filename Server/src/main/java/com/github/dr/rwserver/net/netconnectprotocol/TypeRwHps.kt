@@ -10,9 +10,10 @@
 package com.github.dr.rwserver.net.netconnectprotocol
 
 import com.github.dr.rwserver.data.global.Data
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.GameSavePacket
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 import com.github.dr.rwserver.util.PacketType
 import com.github.dr.rwserver.util.Time.millis
@@ -46,7 +47,7 @@ class TypeRwHps(val con: GameVersionServer) : TypeConnect(con) {
                     PacketType.PACKET_ACCEPT_START_GAME -> con.player.start = true
                     PacketType.PACKET_SERVER_DEBUG -> con.debug(packet)
                     // 竞争 谁先到就用谁
-                    PacketType.PACKET_SYNC -> if (Data.game.gameSaveCache == null) Data.game.gameSaveCache = packet
+                    PacketType.PACKET_SYNC -> if (Data.game.gameSaveCache == null) Data.game.gameSaveCache = GameSavePacket(packet)
 
                     //118 -> con.sendRelayServerTypeReply(packet)
 

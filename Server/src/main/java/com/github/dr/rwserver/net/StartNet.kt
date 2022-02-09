@@ -7,17 +7,22 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.net.core.AbstractNet
-import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.struct.OrderedMap
+import com.github.dr.rwserver.net.handler.tcp.StartGameNetTcp
+import com.github.dr.rwserver.net.rudp.PackagingSocket
+import com.github.dr.rwserver.net.rudp.StartGameNetUdp
 import com.github.dr.rwserver.struct.Seq
+import com.github.dr.rwserver.util.log.Log
 import com.github.dr.rwserver.util.log.Log.clog
 import com.github.dr.rwserver.util.log.Log.error
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.*
+import io.netty.channel.Channel
+import io.netty.channel.ChannelOption
+import io.netty.channel.EventLoopGroup
+import io.netty.channel.ServerChannel
 import io.netty.channel.epoll.Epoll
 import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.epoll.EpollServerSocketChannel
@@ -39,9 +44,6 @@ class StartNet {
     private var serverSocket: ServerSocket? = null
     private var startGameNetUdp: StartGameNetUdp? = null
     private val start: AbstractNet
-
-    @JvmField
-    val OVER_MAP = OrderedMap<String, TypeConnect>(16)
 
     internal val ioGroup: EventExecutorGroup = DefaultEventExecutorGroup(32)
 
@@ -113,13 +115,15 @@ class StartNet {
     }
 
     fun startUdp(port: Int) {
-        startGameNetUdp = StartGameNetUdp(this)
+        Log.warn("[BETA 警告]","您正在尝试使用测试功能 可能存在未知问题")
+        Log.warn("[BETA warning]","You are trying to use the test function There may be an unknown problem")
         try {
             ReliableServerSocket(port).use { serverSocket ->
                 this.serverSocket = serverSocket
+                startGameNetUdp = StartGameNetUdp(serverSocket)
                 do {
                     val socket = serverSocket.accept() as ReliableSocket
-                    startGameNetUdp!!.run(socket as ReliableServerSocket.ReliableClientSocket)
+                    startGameNetUdp!!.run(PackagingSocket(socket as ReliableServerSocket.ReliableClientSocket))
                 } while (true)
             }
         } catch (ignored: Exception) {
@@ -133,26 +137,6 @@ class StartNet {
 
     fun stop() {
         connectChannel.each { obj: Channel -> obj.close() }
-    }
-
-    /**
-     * 清理连接 释放资源
-     * @param ctx ChannelHandlerContext
-     */
-    fun clear(ctx: ChannelHandlerContext) {
-        val channel = ctx.channel()
-        try {
-            val attr = channel.attr(NewServerHandler.NETTY_CHANNEL_KEY)
-            val con = attr.get()
-            if (con != null) {
-                con.abstractNetConnect.disconnect()
-            } else {
-                channel.close()
-                ctx.close()
-            }
-        } finally {
-            //OVER_MAP.remove(channel.id().asLongText())
-        }
     }
 
     private fun getEventLoopGroup(size: Int = 0): EventLoopGroup {

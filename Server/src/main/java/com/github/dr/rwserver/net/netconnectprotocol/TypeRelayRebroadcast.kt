@@ -11,9 +11,9 @@ package com.github.dr.rwserver.net.netconnectprotocol
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionRelayRebroadcast
 import com.github.dr.rwserver.util.PacketType
 import java.util.stream.IntStream
@@ -27,10 +27,11 @@ class TypeRelayRebroadcast(val con: GameVersionRelayRebroadcast) : TypeConnect(c
     override fun typeConnect(packet: Packet) {
         con.lastReceivedTime()
 
-        // CPU branch prediction
         if (IntStream.of(175, 176).noneMatch { i: Int -> i == packet.type }) {
             con.setlastSentPacket(packet)
         }
+
+        // CPU branch prediction
         if (packet.type == 175) {
             con.addRelaySend(packet)
         } else if (packet.type == 176) {

@@ -13,12 +13,12 @@ import com.github.dr.rwserver.data.global.Cache
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.global.Relay
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.server.AbstractNetConnect
 import com.github.dr.rwserver.net.core.server.AbstractNetConnectRelay
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.PacketType
 import com.github.dr.rwserver.util.RandomUtil.generateMixStr
@@ -26,6 +26,7 @@ import com.github.dr.rwserver.util.StringFilteringUtil.cutting
 import com.github.dr.rwserver.util.Time.nanos
 import com.github.dr.rwserver.util.alone.annotations.MainProtocolImplementation
 import com.github.dr.rwserver.util.encryption.Sha
+import com.github.dr.rwserver.util.log.Log
 import com.github.dr.rwserver.util.log.Log.debug
 import com.github.dr.rwserver.util.log.Log.error
 import java.io.IOException
@@ -594,6 +595,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
                         sendRelayServerType(Data.localeUtil.getinput("relay.server.no", id))
                     }
                 } catch (e: Exception) {
+                    Log.debug(e)
                     sendRelayServerType(Data.localeUtil.getinput("relay.server.no", id))
                 }
             }

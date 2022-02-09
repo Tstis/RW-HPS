@@ -12,7 +12,7 @@ package com.github.dr.rwserver.core;
 import com.github.dr.rwserver.core.thread.TimeTaskData;
 import com.github.dr.rwserver.data.global.Data;
 import com.github.dr.rwserver.data.global.NetStaticData;
-import com.github.dr.rwserver.net.game.StartNet;
+import com.github.dr.rwserver.net.StartNet;
 import com.github.dr.rwserver.util.file.FileUtil;
 import com.github.dr.rwserver.util.log.Log;
 
@@ -39,9 +39,17 @@ public class NetServer {
 
     public static void reLoadServer() {
         TimeTaskData.stopGameWinOrLoseCheckTask();
+        if (Data.vote!= null) {
+            Data.vote.stopVote();
+        }
         Call.killAllPlayer();
         Data.game.re();
         Data.game.isStartGame = false;
+
+        synchronized (net.udp.Data.waitData) {
+            net.udp.Data.waitData.notify();
+        }
+
         FileUtil fileUtil = FileUtil.getFolder(Data.Plugin_Log_Path).toFile("Log.txt");
         fileUtil.writeFile(Log.getLogCache(), fileUtil.getFile().length() <= 1024 * 1024);
 

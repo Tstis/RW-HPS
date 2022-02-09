@@ -7,8 +7,9 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.handler.tcp
 
+import com.github.dr.rwserver.net.StartNet
 import com.github.dr.rwserver.net.core.AbstractNet
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.socket.SocketChannel

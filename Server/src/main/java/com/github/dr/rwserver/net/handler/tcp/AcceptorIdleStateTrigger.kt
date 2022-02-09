@@ -7,9 +7,10 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.handler.tcp
 
 import com.github.dr.rwserver.net.core.TypeConnect
+import com.github.dr.rwserver.net.rudp.TimeoutDetection
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
@@ -19,7 +20,7 @@ import java.net.SocketException
 import java.util.concurrent.atomic.AtomicInteger
 
 @Sharable
-internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : ChannelInboundHandlerAdapter() {
+internal class AcceptorIdleStateTrigger : ChannelInboundHandlerAdapter() {
     val connectNum: AtomicInteger = AtomicInteger()
 
     @Throws(Exception::class)
@@ -42,7 +43,7 @@ internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : Channe
     @Throws(Exception::class)
     override fun channelInactive(ctx: ChannelHandlerContext) {
         //warn("break a link", ctx.channel().id().asLongText())
-        startNet.clear(ctx)
+        clear(ctx)
     }
 
     @Throws(Exception::class)
@@ -51,7 +52,7 @@ internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : Channe
             if (evt.state() == IdleState.WRITER_IDLE) {
                 val con: TypeConnect? = ctx.channel().attr(NewServerHandler.NETTY_CHANNEL_KEY).get()
                 if (TimeoutDetection.checkTimeoutDetection(con?.abstractNetConnect)) {
-                    startNet.clear(ctx)
+                    clear(ctx)
                 }
             }
         } else {
@@ -63,7 +64,27 @@ internal class AcceptorIdleStateTrigger(private val startNet: StartNet) : Channe
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable?) {
         // The remote host forcibly closed an existing connection
         if (cause is SocketException) {
-            startNet.clear(ctx)
+            clear(ctx)
+        }
+    }
+
+    /**
+     * 清理连接 释放资源
+     * @param ctx ChannelHandlerContext
+     */
+    private fun clear(ctx: ChannelHandlerContext) {
+        val channel = ctx.channel()
+        try {
+            val attr = channel.attr(NewServerHandler.NETTY_CHANNEL_KEY)
+            val con = attr.get()
+            if (con != null) {
+                con.abstractNetConnect.disconnect()
+            } else {
+                channel.close()
+                ctx.close()
+            }
+        } finally {
+            //OVER_MAP.remove(channel.id().asLongText())
         }
     }
 }

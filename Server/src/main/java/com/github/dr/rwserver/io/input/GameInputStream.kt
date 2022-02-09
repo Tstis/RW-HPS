@@ -9,7 +9,7 @@
 
 package com.github.dr.rwserver.io.input
 
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
 import java.io.Closeable
 import java.io.DataInputStream
 import java.io.IOException

@@ -11,9 +11,9 @@ package com.github.dr.rwserver.net.netconnectprotocol
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionRelay
 import com.github.dr.rwserver.util.PacketType
 

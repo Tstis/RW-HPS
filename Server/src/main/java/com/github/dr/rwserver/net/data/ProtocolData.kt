@@ -7,7 +7,7 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.data
 
 import com.github.dr.rwserver.net.core.AbstractNetPacket
 import com.github.dr.rwserver.net.core.TypeConnect

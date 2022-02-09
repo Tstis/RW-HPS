@@ -12,12 +12,12 @@ package com.github.dr.rwserver.net.netconnectprotocol.realize
 import com.github.dr.rwserver.data.global.Cache
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.player.Player
-import com.github.dr.rwserver.game.GameCommand
 import com.github.dr.rwserver.game.GameMaps
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
+import com.github.dr.rwserver.io.packet.GameCommandPacket
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.core.AbstractNetPacket
 import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.IsUtil
@@ -69,24 +69,24 @@ open class GameVersionPacket : AbstractNetPacket {
     }
 
     @Throws(IOException::class)
-    override fun getGameTickCommandPacket(tick: Int, cmd: GameCommand): Packet {
+    override fun getGameTickCommandPacket(tick: Int, cmd: GameCommandPacket): Packet {
         val o = GameOutputStream()
         o.writeInt(tick)
         o.writeInt(1)
         val enc = CompressOutputStream.getGzipOutputStream("c", false)
-        enc.writeBytes(cmd.arr)
+        enc.writeBytes(cmd.bytes)
         o.flushEncodeData(enc)
         return o.createPacket(PacketType.PACKET_TICK)
     }
 
     @Throws(IOException::class)
-    override fun getGameTickCommandsPacket(tick: Int, cmd: Seq<GameCommand>): Packet {
+    override fun getGameTickCommandsPacket(tick: Int, cmd: Seq<GameCommandPacket>): Packet {
         val o = GameOutputStream()
         o.writeInt(tick)
         o.writeInt(cmd.size())
         for (c in cmd) {
             val enc = CompressOutputStream.getGzipOutputStream("c", false)
-            enc.writeBytes(c.arr)
+            enc.writeBytes(c.bytes)
             o.flushEncodeData(enc)
         }
         return o.createPacket(PacketType.PACKET_TICK)
@@ -159,19 +159,28 @@ open class GameVersionPacket : AbstractNetPacket {
         }
     }
 
-    override fun deceiveGetGameSave(): Packet {
+    override fun getDeceiveGameSave(): Packet {
+        val cPacket: Packet? = Cache.packetCache["getDeceiveGameSave"]
+        if (IsUtil.notIsBlank(cPacket)) {
+            return cPacket!!
+        }
+
         val o = GameOutputStream()
         o.writeByte(0)
         o.writeInt(0)
         o.writeInt(0)
-        o.writeFloat(0f)
-        o.writeFloat(0f)
+        o.writeFloat(0)
+        o.writeFloat(0)
         o.writeBoolean(true)
         o.writeBoolean(false)
         val gzipEncoder = CompressOutputStream.getGzipOutputStream("gameSave", false)
         gzipEncoder.writeString("This is RW-HPS [Deceive Get GameSave]!")
         o.flushEncodeData(gzipEncoder)
-        return o.createPacket(35)
+
+        val cachePacket = o.createPacket(PacketType.PACKET_SYNC)
+        Cache.packetCache.put("getDeceiveGameSave",cachePacket)
+
+        return cachePacket
     }
 
     @Throws(IOException::class)

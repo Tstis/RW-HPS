@@ -10,8 +10,8 @@
 package com.github.dr.rwserver.net.core.server
 
 import com.github.dr.rwserver.data.player.Player
-import com.github.dr.rwserver.io.Packet
 import com.github.dr.rwserver.io.output.CompressOutputStream
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.util.log.Log
 import org.intellij.lang.annotations.JdkConstants
 import org.jetbrains.annotations.Nls

@@ -2,20 +2,32 @@ plugins {
 	id 'maven-publish'
 }
 
+apply plugin: "org.jetbrains.kotlin.jvm"
+
+ext{
+	//Netty Version
+	nettyVersion = '4.1.73.Final'
+}
+
 /**
  * 这里全部采用的compileOnly 为了适配idea 但是编译的时候会切到implementation
  * 需要帮助!
  */
 dependencies {
-	//testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.8.2'
-	//implementation project(":Net")
+	implementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.6.10'
+
+	//implementation project(":RUDP")
 	//implementation 'cn.hutool:hutool-socket:5.7.5'
 
-	implementation group: 'io.netty', name: 'netty-all', version: '4.1.73.Final'
+	implementation group: 'io.netty', name: 'netty-buffer', version: "$nettyVersion"
+	implementation group: 'io.netty', name: 'netty-codec', version: "$nettyVersion"
+	implementation group: 'io.netty', name: 'netty-handler', version: "$nettyVersion"
+	implementation group: 'io.netty', name: 'netty-transport', version: "$nettyVersion"
+	implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: "$nettyVersion"
 
 	//implementation fileTree(dir:'libs',include:['ChainMarket-23fc7f989f.jar'])
 
-	implementation 'com.github.deng-rui:RUDP:1.0.0'
+	implementation 'com.github.deng-rui:RUDP:2.0.0'
 	implementation 'com.github.deng-rui:Compress-Zip:1.0.0'
 
 	implementation group: 'com.google.code.gson', name: 'gson', version: '2.8.9'
@@ -26,7 +38,7 @@ dependencies {
 		exclude group: "org.jetbrains.kotlin"
 	}
 
-	//compileOnly group: 'commons-io', name: 'commons-io', version: '2.11.0'
+	compileOnly group: 'commons-io', name: 'commons-io', version: '2.11.0'
 	//compileOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.69'
 
 	//compileOnly fileTree(dir:'libs',include:['*.jar'])

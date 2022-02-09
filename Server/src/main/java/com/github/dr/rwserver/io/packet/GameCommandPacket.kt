@@ -7,25 +7,24 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.io
+package com.github.dr.rwserver.io.packet
 
 import com.github.dr.rwserver.util.ExtractUtil
 
 /**
  * @author Dr
  */
-class Packet(@JvmField val type: Int, @JvmField val bytes: ByteArray) {
-
+class GameCommandPacket(val sendBy: Int, val bytes: ByteArray) {
     /**
      * Return detailed Packet data
      * @return Packet String
      */
     override fun toString(): String {
         return  """
-                Packet{
+                GameCommandPacket {
                     Bytes=${bytes.contentToString()}
                     BytesHex=${ExtractUtil.bytesToHex(bytes)}
-                    type=${type}
+                    sendBy=${sendBy}
                 }
                 """.trimIndent()
     }

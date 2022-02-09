@@ -9,7 +9,11 @@
 
 package com.github.dr.rwserver.net.core
 
-import com.github.dr.rwserver.net.game.*
+import com.github.dr.rwserver.net.StartNet
+import com.github.dr.rwserver.net.code.tcp.PacketDecoder
+import com.github.dr.rwserver.net.code.tcp.PacketEncoder
+import com.github.dr.rwserver.net.handler.tcp.AcceptorIdleStateTrigger
+import com.github.dr.rwserver.net.handler.tcp.NewServerHandler
 import com.github.dr.rwserver.util.log.exp.ImplementedException
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelInitializer
@@ -20,8 +24,8 @@ import java.util.concurrent.TimeUnit
 
 @Sharable
 open class AbstractNet(protected val startNet: StartNet): ChannelInitializer<SocketChannel>() {
-    private val idleStateTrigger: AcceptorIdleStateTrigger = AcceptorIdleStateTrigger(startNet)
-    private var newServerHandler: NewServerHandler = NewServerHandler(startNet)
+    private val idleStateTrigger: AcceptorIdleStateTrigger = AcceptorIdleStateTrigger()
+    private var newServerHandler: NewServerHandler = NewServerHandler()
 
     protected fun addTimeOut(channelPipeline: ChannelPipeline) {
         channelPipeline.addLast(IdleStateHandler(0, 5, 0, TimeUnit.SECONDS))

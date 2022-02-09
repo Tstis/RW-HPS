@@ -10,8 +10,8 @@
 package com.github.dr.rwserver.data.global
 
 import com.github.dr.rwserver.net.GroupNet
-import com.github.dr.rwserver.net.game.ProtocolData
-import com.github.dr.rwserver.net.game.StartNet
+import com.github.dr.rwserver.net.StartNet
+import com.github.dr.rwserver.net.data.ProtocolData
 import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.alone.BlackList
 

@@ -9,9 +9,8 @@
 
 package com.github.dr.rwserver.net.core
 
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.core.server.AbstractNetConnect
-import com.github.dr.rwserver.net.game.ConnectionAgreement
 
 /**
  * Parser, parse each game package

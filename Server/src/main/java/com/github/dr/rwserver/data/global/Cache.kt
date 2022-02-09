@@ -10,7 +10,7 @@
 package com.github.dr.rwserver.data.global
 
 import com.github.dr.rwserver.data.global.cache.ExistenceCache
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.struct.ObjectMap
 
 object Cache {

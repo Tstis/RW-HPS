@@ -7,11 +7,12 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.net.game
+package com.github.dr.rwserver.net.handler.tcp
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
-import com.github.dr.rwserver.io.Packet
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.TypeConnect
 import com.github.dr.rwserver.util.ExtractUtil
 import com.github.dr.rwserver.util.log.Log.debug
@@ -22,9 +23,7 @@ import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.util.AttributeKey
 
 @Sharable
-internal class NewServerHandler internal constructor(
-    private val startNet: StartNet
-) : SimpleChannelInboundHandler<Any?>() {
+internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
 
     @Throws(Exception::class)
     override fun channelRead0(ctx: ChannelHandlerContext, msg: Any?) {
@@ -38,7 +37,7 @@ internal class NewServerHandler internal constructor(
                 var type = attr.get()
 
                 if (type == null) {
-                    type = NetStaticData.protocolData.typeConnect.getTypeConnect(ConnectionAgreement(ctx, startNet))
+                    type = NetStaticData.protocolData.typeConnect.getTypeConnect(ConnectionAgreement(ctx))
                     attr.setIfAbsent(type)
                 }
                 if (Data.core.admin.bannedIP24.contains(ExtractUtil.ipToLong(type.abstractNetConnect.ip))) {
