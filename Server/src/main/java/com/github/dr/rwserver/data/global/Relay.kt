@@ -50,7 +50,7 @@ class Relay {
     constructor(a: Long) {
         val stringId: String
         while (true) {
-            val intId = rand.random(1000, 100000)
+            val intId = rand.random(100, 149)
             if (!serverRelayData.containsKey(intId)) {
                 serverRelayData.put(intId, this)
                 stringId = intId.toString()
@@ -71,7 +71,7 @@ class Relay {
     constructor(i: String?, up: Boolean, playerName: Array<String>, isMod: Boolean, betaGameVersion: Boolean) {
         val stringId: String
         while (true) {
-            val intId = rand.random(1000, 100000)
+            val intId = rand.random(150, 199)
             if (!serverRelayData.containsKey(intId)) {
                 serverRelayData.put(intId, this)
                 stringId = intId.toString()
@@ -100,22 +100,23 @@ class Relay {
         get() {
             val str = StringBuilder(10)
             str.append(LINE_SEPARATOR)
+				.append("--->	")
                 .append(admin!!.name)
                 .append(" / ")
                 .append("IP: ").append(admin!!.ip)
                 .append(" / ")
                 .append("Protocol: ").append(admin!!.useConnectionAgreement)
                 .append(" / ")
-                .append("Admin: true")
+                .append("	ADMIN")
             abstractNetConnectIntMap.values().forEach(Consumer { e: GameVersionRelay ->
                 str.append(LINE_SEPARATOR)
+					.append("--->	")
                     .append(e.name)
                     .append(" / ")
                     .append("IP: ").append(e.ip)
                     .append(" / ")
                     .append("Protocol: ").append(e.useConnectionAgreement)
                     .append(" / ")
-                    .append("Admin: false")
             })
             return str.toString()
         }

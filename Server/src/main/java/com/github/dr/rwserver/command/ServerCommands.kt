@@ -41,6 +41,7 @@ class ServerCommands(handler: CommandHandler) {
                 val data = StringBuilder()
                 for (player in Data.game.playerManage.playerGroup) {
                     data.append(LINE_SEPARATOR)
+						.append("--->	")
                         .append(player.name)
                         .append(" / ")
                         .append("ID: ").append(player.uuid)

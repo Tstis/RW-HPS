@@ -20,11 +20,11 @@ import com.github.dr.rwserver.util.game.CommandHandler
 class RelayCommands(handler: CommandHandler) {
     private fun registerRelayCommand(handler: CommandHandler) {
         handler.register("players", "serverCommands.players") { _: Array<String>?, log: StrCons ->
-            if (Relay.serverRelayIpData.size() == 0) {
-                log["No players are currently in the server."]
-            } else {
+            //if (Relay.serverRelayIpData.size() < 0) {
+            //    log["No players are currently in the server."]
+            //} else {
                 log[Relay.relayAllIP]
-            }
+            //}
         }
         handler.register("banrelay", "<id>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
             val relay = Relay.getRelay(arg[0])
@@ -41,20 +41,42 @@ class RelayCommands(handler: CommandHandler) {
 
         }
 
-        handler.register("unbanrelay", "<ip>", "serverCommands.unBanrelay") { arg: Array<String>, log: StrCons ->
+        handler.register("unban", "<ip>", "serverCommands.unBanrelay") { arg: Array<String>, log: StrCons ->
             val ip = arg[0]
             Data.core.admin.bannedIP24.remove(ipToLong(ip))
             log["OK!  $ip The *.*.*.0 segment is unDisabled"]
         }
+    
+    
+    //own
+        handler.register("banip", "<ip>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
+            val ip = arg[0]
+            Data.core.admin.bannedIP24.add(ipToLong(ip))
+            //bannedIP24.disconnect(ipToLong(ip))
+            log["OK!  $ip The *.*.*.0 segment is disabled"]
+        }
+    
+        handler.register("kickrelay", "<id>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
+            val relay = Relay.getRelay(arg[0])
+            relay!!.groupNet.disconnect()
+            relay.admin!!.disconnect()
+            log["OK!  The room segment is kicked"]
+        }
+        
+        handler.register("kickip", "<ip>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
+            val ip = arg[0]
+            Data.core.admin.bannedIP24.add(ipToLong(ip))
+            Thread.sleep(500)
+            Data.core.admin.bannedIP24.remove(ipToLong(ip))
+            log["OK!  $ip The *.*.*.0 segment is kicked"]
+        }
     }
-
+        
     companion object {
         private val localeUtil = Data.localeUtil
     }
 
     init {
         registerRelayCommand(handler)
-
-        PluginManage.runRegisterRelayCommands(handler)
     }
 }
