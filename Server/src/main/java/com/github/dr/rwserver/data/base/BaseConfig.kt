@@ -91,7 +91,5 @@ data class BaseConfig(
             val json = fileUtil.readFileStringData();
             return gson.fromJson(if (IsUtil.notIsBlank(json)) json else "{}", BaseConfig::class.java)
         }
-
-
     }
 }

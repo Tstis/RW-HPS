@@ -12,6 +12,7 @@ package com.github.dr.rwserver.net.core
 import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.GroupNet
 import com.github.dr.rwserver.net.rudp.PackagingSocket
+import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.log.Log
 import io.netty.channel.ChannelHandlerContext
 import java.io.DataOutputStream
@@ -108,6 +109,7 @@ class ConnectionAgreement {
 
     @Throws(IOException::class)
     fun close(groupNet: GroupNet?) {
+        IPData.remove(ip)
         if (groupNet != null) {
             if (objectOutStream is ChannelHandlerContext) {
                 groupNet.remove(objectOutStream.channel())
@@ -143,5 +145,9 @@ class ConnectionAgreement {
 
     private fun convertIp(ipString: String): String {
         return ipString.substring(1, ipString.indexOf(':'))
+    }
+
+    companion object {
+        val IPData = Seq<String>()
     }
 }

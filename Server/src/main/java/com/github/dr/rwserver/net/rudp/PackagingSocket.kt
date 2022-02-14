@@ -15,7 +15,7 @@ import net.udp.ReliableSocketInputStream
 import java.io.OutputStream
 
 /**
- * 包装一下 Socket 和Netty一样 加入自定义数据部分
+ * Wrap Socket and add custom data part like Netty
  * @property socket ReliableClientSocket
  * @property remoteSocketAddressString String
  * @property outputStream OutputStream

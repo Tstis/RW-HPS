@@ -44,7 +44,7 @@ class Event : AbstractEvent {
     override fun registerPlayerJoinEvent(player: Player) {
         if (Data.core.admin.bannedUUIDs.contains(player.uuid)) {
             try {
-                player.con!!.sendKick(player.localeUtil.getinput("kick.ban"))
+                player.kickPlayer(player.localeUtil.getinput("kick.ban"))
             } catch (ioException: IOException) {
                 error("[Player] Send Kick Player Error", ioException)
             }
@@ -54,7 +54,7 @@ class Event : AbstractEvent {
             val info = Data.core.admin.playerDataCache[player.uuid]
             if (info.timesKicked > millis()) {
                 try {
-                    player.con!!.sendKick(player.localeUtil.getinput("kick.you.time"))
+                    player.kickPlayer(player.localeUtil.getinput("kick.you.time"))
                 } catch (ioException: IOException) {
                     error("[Player] Send Kick Player Error", ioException)
                 }
@@ -120,7 +120,7 @@ class Event : AbstractEvent {
         Data.core.admin.bannedUUIDs.add(player.uuid)
         Data.core.admin.bannedIPs.add(player.con!!.ip)
         try {
-            player.con!!.sendKick(player.localeUtil.getinput("kick.ban"))
+            player.kickPlayer(player.localeUtil.getinput("kick.ban"))
         } catch (ioException: IOException) {
             error("[Player] Send Kick Player Error", ioException)
         }
@@ -130,7 +130,7 @@ class Event : AbstractEvent {
     override fun registerPlayerIpBanEvent(player: Player) {
         Data.core.admin.bannedIPs.add(player.con!!.ip)
         try {
-            player.con!!.sendKick("kick.ban")
+            player.kickPlayer("kick.ban")
         } catch (ioException: IOException) {
             error("[Player] Send Kick Player Error", ioException)
         }

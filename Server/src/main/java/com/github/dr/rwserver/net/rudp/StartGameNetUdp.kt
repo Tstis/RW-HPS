@@ -6,44 +6,31 @@
  *
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
+
 package com.github.dr.rwserver.net.rudp
 
+import com.github.dr.rwserver.core.thread.Threads
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.net.code.rudp.PacketDecoder
 import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.util.log.Log
-import com.github.dr.rwserver.util.threads.ThreadFactoryName.nameThreadFactory
 import net.udp.ReliableServerSocket
 import net.udp.ReliableSocketInputStream
 import okhttp3.internal.wait
-import java.io.IOException
 import java.net.SocketException
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 
 /**
  * RUDP
  * @property udpSocket ReliableServerSocket
  * @property rudpDataList ConcurrentHashMap<String, RudpData>
- * @property group ThreadPoolExecutor
  * @constructor
  * @author Dr
  */
 internal class StartGameNetUdp(
     private val udpSocket: ReliableServerSocket
 ) {
-    val rudpDataList = ConcurrentHashMap<String, RudpData>()
-
-    private val work = ThreadPoolExecutor(1, 1, 1L, TimeUnit.MINUTES, LinkedBlockingQueue(), nameThreadFactory("UDP-"))
-    private val group = ThreadPoolExecutor(4, 8, 1L, TimeUnit.MINUTES, LinkedBlockingQueue(), nameThreadFactory("UDP-"))
-
-    @Throws(IOException::class)
-    protected fun close() {
-        work.shutdownNow()
-        group.shutdownNow()
-    }
+    private val rudpDataList = ConcurrentHashMap<String, RudpData>()
 
     @Throws(Exception::class)
     internal fun run(socket: PackagingSocket) {
@@ -58,11 +45,10 @@ internal class StartGameNetUdp(
     }
 
     /**
-     * 包装一下
+     * wrap it up
      * @property socket PackagingSocket
      * @property input ReliableSocketInputStream
      * @property decoder PacketDecoder
-     * @property lastReadPacket Long
      * @constructor
      * @author Dr
      */
@@ -71,7 +57,7 @@ internal class StartGameNetUdp(
     }
 
     init {
-        work.execute {
+        Threads.newThreadCoreNet {
             while (!udpSocket.isClosed) {
                 synchronized (net.udp.Data.waitData) {
                     rudpDataList.values.forEach {
@@ -87,15 +73,15 @@ internal class StartGameNetUdp(
                         }
 
                         try {
-                            // 尝试读取Stream数据
+                            // Attempt to read Stream data
                             val length = it.input.readsDataLength
 
                             /*
-                             * 如果读取到了数据
-                             * 那么把它写入解码器 由解码器尝试解码
+                             * If data is read
+                             * then write it to the decoder and the decoder will try to decode it
                              */
                             if (length > 0) {
-                                it.decoder.decode(it.input.readsData,length,group)
+                                it.decoder.decode(it.input.readsData,length)
                             }
                         } catch (e : SocketException) {
                             Log.debug("RUDP Close")
@@ -103,7 +89,7 @@ internal class StartGameNetUdp(
                             rudpDataList.remove(it.socket.remoteSocketAddressString)
                         }
                     }
-                    net.udp.Data.waitData.wait();
+                    net.udp.Data.waitData.wait()
                 }
             }
 

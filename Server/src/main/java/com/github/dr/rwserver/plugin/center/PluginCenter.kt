@@ -21,6 +21,8 @@ import com.github.dr.rwserver.util.game.CommandHandler
 class PluginCenter {
     private val PluginCommand = CommandHandler("")
     private var pluginCenterData: PluginCenterData
+    private val url: String = Data.urlData.readString("Get.Plugin.Core")
+
 
     fun command(str: String?, log: StrCons) {
         val response = PluginCommand.handleMessage(str, log)
@@ -94,7 +96,6 @@ class PluginCenter {
 
     companion object {
         val pluginCenter = PluginCenter()
-        private const val url = "https://plugin.data.der.kim/"
     }
 
     init {

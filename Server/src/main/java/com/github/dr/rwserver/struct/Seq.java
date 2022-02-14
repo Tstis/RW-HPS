@@ -13,7 +13,7 @@ import com.github.dr.rwserver.func.BooleanIf;
 import com.github.dr.rwserver.func.Cons;
 import com.github.dr.rwserver.math.Mathf;
 import com.github.dr.rwserver.math.Rand;
-import com.github.dr.rwserver.util.log.exp.VariableException.ArrayRuntimeException;
+import com.github.dr.rwserver.util.log.exp.VariableException;
 
 import java.util.*;
 
@@ -121,11 +121,11 @@ public class Seq<T> implements Iterable<T> {
 
     public <T> Seq<T> withList(Object list){
         Seq<T> result = new Seq<>();
-        if(list instanceof List<?>){
+        if (list instanceof List<?>){
             for(Object a : (List<?>)list){
-                if(a instanceof Seq){
+                if (a instanceof Seq){
                     result.addAll((Seq<? extends T>) a);
-                }else{
+                } else {
                     result.add((T)a);
                 }
             }
@@ -136,9 +136,9 @@ public class Seq<T> implements Iterable<T> {
     public static <T> Seq<T> withArrays(Object... arrays){
         Seq<T> result = new Seq<>();
         for(Object a : arrays){
-            if(a instanceof Seq){
+            if (a instanceof Seq){
                 result.addAll((Seq<? extends T>) a);
-            }else{
+            } else {
                 result.add((T)a);
             }
         }
@@ -176,7 +176,7 @@ public class Seq<T> implements Iterable<T> {
 
     public <E extends T> void each(BooleanIf<? super T> pred, Cons<E> consumer) {
         for (int i = 0; i < size; i++) {
-            if(pred.get(items[i])) {
+            if (pred.get(items[i])) {
                 consumer.get((E)items[i]);
                 return;
             }
@@ -185,7 +185,7 @@ public class Seq<T> implements Iterable<T> {
 
     public <E extends T> void each(BooleanIf<? super T> pred, BooleanIf<? super T> pred2, Cons<E> consumer) {
         for (int i = 0; i < size; i++) {
-            if(pred.get(items[i]) && pred2.get(items[i])) {
+            if (pred.get(items[i]) && pred2.get(items[i])) {
                 consumer.get((E)items[i]);
                 return;
             }
@@ -194,7 +194,7 @@ public class Seq<T> implements Iterable<T> {
 
     public <E extends T> void neach(BooleanIf<? super T> pred, Cons<E> consumer, Runnable run) {
         for (int i = 0; i < size; i++) {
-            if(pred.get(items[i])) {
+            if (pred.get(items[i])) {
                 consumer.get((E)items[i]);
                 return;
             }
@@ -204,7 +204,7 @@ public class Seq<T> implements Iterable<T> {
 
     public <E extends T> void eachBooleanIfs(BooleanIf<? super T> pred, Cons<E> consumer) {
         for (int i = 0; i < size; i++) {
-            if(pred.get(items[i])) {
+            if (pred.get(items[i])) {
                 consumer.get((E)items[i]);
             }
         }
@@ -223,7 +223,7 @@ public class Seq<T> implements Iterable<T> {
         T result = null;
         for(int i = 0; i < size; i++){
             T t = items[i];
-            if(result == null || func.compare(result, t) > 0){
+            if (result == null || func.compare(result, t) > 0){
                 result = t;
             }
         }
@@ -234,7 +234,7 @@ public class Seq<T> implements Iterable<T> {
         T result = null;
         for(int i = 0; i < size; i++){
             T t = items[i];
-            if(result == null || func.compare(result, t) < 0){
+            if (result == null || func.compare(result, t) < 0){
                 result = t;
             }
         }
@@ -248,7 +248,7 @@ public class Seq<T> implements Iterable<T> {
 
     public void add(T value){
         T[] items = this.items;
-        if(size == items.length) {
+        if (size == items.length) {
             items = resize(Math.max(8, (int)(size * 1.75f)));
         }
         items[size++] = value;
@@ -256,7 +256,7 @@ public class Seq<T> implements Iterable<T> {
 
     public void add(T value1, T value2){
         T[] items = this.items;
-        if(size + 1 >= items.length) {
+        if (size + 1 >= items.length) {
             items = resize(Math.max(8, (int)(size * 1.75f)));
         }
         items[size] = value1;
@@ -266,7 +266,7 @@ public class Seq<T> implements Iterable<T> {
 
     public void add(T value1, T value2, T value3){
         T[] items = this.items;
-        if(size + 2 >= items.length) {
+        if (size + 2 >= items.length) {
             items = resize(Math.max(8, (int)(size * 1.75f)));
         }
         items[size] = value1;
@@ -277,7 +277,7 @@ public class Seq<T> implements Iterable<T> {
 
     public void add(T value1, T value2, T value3, T value4){
         T[] items = this.items;
-        if(size + 3 >= items.length) {
+        if (size + 3 >= items.length) {
             /* 1.75 isn't enough when size=5 */
             items = resize(Math.max(8, (int)(size * 1.8f)));
         }
@@ -295,7 +295,7 @@ public class Seq<T> implements Iterable<T> {
     }
 
     public Seq<T> addAll(Seq<? extends T> array, int start, int count){
-        if(start + count > array.size) {
+        if (start + count > array.size) {
             throw new IllegalArgumentException("start + count must be <= size: " + start + " + " + count + " <= " + array.size);
         }
         addAll(array.items, start, count);
@@ -312,7 +312,7 @@ public class Seq<T> implements Iterable<T> {
     public Seq<T> addAll(T[] array, int start, int count){
         T[] items = this.items;
         int sizeNeeded = size + count;
-        if(sizeNeeded > items.length) {
+        if (sizeNeeded > items.length) {
             items = resize(Math.max(8, (int)(sizeNeeded * 1.75f)));
         }
         System.arraycopy(array, start, items, size, count);
@@ -322,9 +322,9 @@ public class Seq<T> implements Iterable<T> {
     }
 
     public Seq<T> addAll(Iterable<? extends T> items){
-        if(items instanceof Seq){
+        if (items instanceof Seq){
             addAll((Seq)items);
-        }else{
+        } else {
             for(T t : items){
                 add(t);
             }
@@ -334,7 +334,7 @@ public class Seq<T> implements Iterable<T> {
     }
 
     public T get(int index){
-        if(index >= size) {
+        if (index >= size) {
             throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
         }
         return items[index];
@@ -347,21 +347,21 @@ public class Seq<T> implements Iterable<T> {
     }
 
     public void set(int index, T value){
-        if(index >= size) {
+        if (index >= size) {
             throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
         }
         items[index] = value;
     }
 
     public void insert(int index, T value){
-        if(index > size) {
+        if (index > size) {
             throw new IndexOutOfBoundsException("index can't be > size: " + index + " > " + size);
         }
         T[] items = this.items;
-        if(size == items.length) {
+        if (size == items.length) {
             items = resize(Math.max(8, (int)(size * 1.75f)));
         }
-        if(ordered) {
+        if (ordered) {
             System.arraycopy(items, index, items, index + 1, size - index);
         } else {
             items[size] = items[index];
@@ -371,10 +371,10 @@ public class Seq<T> implements Iterable<T> {
     }
 
     public void swap(int first, int second){
-        if(first >= size) {
+        if (first >= size) {
             throw new IndexOutOfBoundsException("first can't be >= size: " + first + " >= " + size);
         }
-        if(second >= size) {
+        if (second >= size) {
             throw new IndexOutOfBoundsException("second can't be >= size: " + second + " >= " + size);
         }
         T[] items = this.items;
@@ -385,7 +385,7 @@ public class Seq<T> implements Iterable<T> {
 
     public T find(BooleanIf<T> predicate){
         for(int i = 0; i < size; i++){
-            if(predicate.get(items[i])){
+            if (predicate.get(items[i])){
                 return items[i];
             }
         }
@@ -405,15 +405,15 @@ public class Seq<T> implements Iterable<T> {
     public boolean contains(T value, boolean identity){
         T[] items = this.items;
         int i = size - 1;
-        if(identity || value == null){
+        if (identity || value == null){
             while(i >= 0) {
-                if(items[i--] == value) {
+                if (items[i--] == value) {
                     return true;
                 }
             }
-        }else{
+        } else {
             while(i >= 0) {
-                if(value.equals(items[i--])) {
+                if (value.equals(items[i--])) {
                     return true;
                 }
             }
@@ -433,15 +433,15 @@ public class Seq<T> implements Iterable<T> {
      */
     public int indexOf(T value, boolean identity){
         T[] items = this.items;
-        if(identity || value == null){
+        if (identity || value == null){
             for(int i = 0, n = size; i < n; i++) {
-                if(items[i] == value) {
+                if (items[i] == value) {
                     return i;
                 }
             }
-        }else{
+        } else {
             for(int i = 0, n = size; i < n; i++) {
-                if(value.equals(items[i])) {
+                if (value.equals(items[i])) {
                     return i;
                 }
             }
@@ -458,15 +458,15 @@ public class Seq<T> implements Iterable<T> {
      */
     public int lastIndexOf(T value, boolean identity){
         T[] items = this.items;
-        if(identity || value == null){
+        if (identity || value == null){
             for(int i = size - 1; i >= 0; i--) {
-                if(items[i] == value) {
+                if (items[i] == value) {
                     return i;
                 }
             }
-        }else{
+        } else {
             for(int i = size - 1; i >= 0; i--) {
-                if(value.equals(items[i])) {
+                if (value.equals(items[i])) {
                     return i;
                 }
             }
@@ -487,16 +487,16 @@ public class Seq<T> implements Iterable<T> {
      */
     public boolean remove(T value, boolean identity){
         T[] items = this.items;
-        if(identity || value == null){
+        if (identity || value == null){
             for(int i = 0, n = size; i < n; i++){
-                if(items[i] == value){
+                if (items[i] == value){
                     remove(i);
                     return true;
                 }
             }
-        }else{
+        } else {
             for(int i = 0, n = size; i < n; i++){
-                if(value.equals(items[i])){
+                if (value.equals(items[i])){
                     remove(i);
                     return true;
                 }
@@ -507,13 +507,13 @@ public class Seq<T> implements Iterable<T> {
 
     /** Removes and returns the item at the specified index. */
     public T remove(int index){
-        if(index >= size) {
+        if (index >= size) {
             throw new IndexOutOfBoundsException("index can't be >= size: " + index + " >= " + size);
         }
         T[] items = this.items;
         T value = items[index];
         size--;
-        if(ordered) {
+        if (ordered) {
             System.arraycopy(items, index + 1, items, index, size - index);
         } else {
             items[index] = items[size];
@@ -524,15 +524,15 @@ public class Seq<T> implements Iterable<T> {
 
     /** Removes the items between the specified indices, inclusive. */
     public void removeRange(int start, int end){
-        if(end >= size) {
+        if (end >= size) {
             throw new IndexOutOfBoundsException("end can't be >= size: " + end + " >= " + size);
         }
-        if(start > end) {
+        if (start > end) {
             throw new IndexOutOfBoundsException("start can't be > end: " + start + " > " + end);
         }
         T[] items = this.items;
         int count = end - start + 1;
-        if(ordered) {
+        if (ordered) {
             System.arraycopy(items, start + count, items, start, size - (start + count));
         } else{
             int lastIndex = this.size - 1;
@@ -556,22 +556,22 @@ public class Seq<T> implements Iterable<T> {
         int size = this.size;
         int startSize = size;
         T[] items = this.items;
-        if(identity){
+        if (identity){
             for(int i = 0, n = array.size; i < n; i++){
                 T item = array.get(i);
                 for(int ii = 0; ii < size; ii++){
-                    if(item == items[ii]){
+                    if (item == items[ii]){
                         remove(ii);
                         size--;
                         break;
                     }
                 }
             }
-        }else{
+        } else {
             for(int i = 0, n = array.size; i < n; i++){
                 T item = array.get(i);
                 for(int ii = 0; ii < size; ii++){
-                    if(item.equals(items[ii])){
+                    if (item.equals(items[ii])){
                         remove(ii);
                         size--;
                         break;
@@ -584,7 +584,7 @@ public class Seq<T> implements Iterable<T> {
 
     /** Removes and returns the last item. */
     public T pop(){
-        if(size == 0) {
+        if (size == 0) {
             throw new IllegalStateException("Array is empty.");
         }
         --size;
@@ -595,7 +595,7 @@ public class Seq<T> implements Iterable<T> {
 
     /** Returns the last item. */
     public T peek(){
-        if(size == 0) {
+        if (size == 0) {
             throw new IllegalStateException("Array is empty.");
         }
         return items[size - 1];
@@ -603,7 +603,7 @@ public class Seq<T> implements Iterable<T> {
 
     /** Returns the first item. */
     public T first(){
-        if(size == 0) {
+        if (size == 0) {
             throw new IllegalStateException("Array is empty.");
         }
         return items[0];
@@ -634,7 +634,7 @@ public class Seq<T> implements Iterable<T> {
      * @return {@link #items}
      */
     public T[] shrink(){
-        if(items.length != size) {
+        if (items.length != size) {
             resize(size);
         }
         return items;
@@ -646,11 +646,11 @@ public class Seq<T> implements Iterable<T> {
      * @return {@link #items}
      */
     public T[] ensureCapacity(int additionalCapacity){
-        if(additionalCapacity < 0) {
+        if (additionalCapacity < 0) {
             throw new IllegalArgumentException("additionalCapacity must be >= 0: " + additionalCapacity);
         }
         int sizeNeeded = size + additionalCapacity;
-        if(sizeNeeded > items.length) {
+        if (sizeNeeded > items.length) {
             resize(Math.max(8, sizeNeeded));
         }
         return items;
@@ -662,7 +662,7 @@ public class Seq<T> implements Iterable<T> {
      */
     public T[] setSize(int newSize){
         truncate(newSize);
-        if(newSize > items.length) {
+        if (newSize > items.length) {
             resize(Math.max(8, newSize));
         }
         size = newSize;
@@ -709,10 +709,10 @@ public class Seq<T> implements Iterable<T> {
      * taken.
      */
     public void truncate(int newSize){
-        if(newSize < 0) {
+        if (newSize < 0) {
             throw new IllegalArgumentException("newSize must be >= 0: " + newSize);
         }
-        if(size <= newSize) {
+        if (size <= newSize) {
             return;
         }
         for(int i = newSize; i < size; i++) {
@@ -722,7 +722,7 @@ public class Seq<T> implements Iterable<T> {
     }
 
     public T random(Rand rand){
-        if(size == 0) {
+        if (size == 0) {
             return null;
         }
         return items[rand.random(0, size - 1)];
@@ -736,29 +736,37 @@ public class Seq<T> implements Iterable<T> {
     /** Returns a random item from the array, excluding the specified element. If the array is empty, returns null.
      * If this array only has one element, returns that element. */
     public T random(T exclude){
-        if(exclude == null) {
+        if (exclude == null) {
             return random();
         }
-        if(size == 0) {
+        if (size == 0) {
             return null;
         }
-        if(size == 1) {
+        if (size == 1) {
             return first();
         }
 
         int eidx = indexOf(exclude);
         //this item isn't even in the array!
-        if(eidx == -1) {
+        if (eidx == -1) {
             return random();
         }
 
         //shift up the index
         int index = Mathf.random(0, size - 2);
-        if(index >= eidx){
+        if (index >= eidx){
             index ++;
         }
 
         return items[index];
+    }
+    
+    public int size() {
+        return size;
+    }
+
+    public void sort(Comparator<? super T> c){
+        new TimSort().doSort(items, c, 0, size());
     }
 
     /**
@@ -777,7 +785,7 @@ public class Seq<T> implements Iterable<T> {
 
     @Override
     public int hashCode(){
-        if(!ordered) {
+        if (!ordered) {
             return super.hashCode();
         }
         Object[] items = this.items;
@@ -785,7 +793,7 @@ public class Seq<T> implements Iterable<T> {
         for(int i = 0, n = size; i < n; i++){
             h *= 31;
             Object item = items[i];
-            if(item != null) {
+            if (item != null) {
                 h += item.hashCode();
             }
         }
@@ -794,21 +802,21 @@ public class Seq<T> implements Iterable<T> {
 
     @Override
     public boolean equals(Object object){
-        if(object == this) {
+        if (object == this) {
             return true;
         }
-        if(!ordered) {
+        if (!ordered) {
             return false;
         }
-        if(!(object instanceof Seq)) {
+        if (!(object instanceof Seq)) {
             return false;
         }
         Seq array = (Seq)object;
-        if(!array.ordered) {
+        if (!array.ordered) {
             return false;
         }
         int n = size;
-        if(n != array.size) {
+        if (n != array.size) {
             return false;
         }
         Object[] items1 = this.items;
@@ -816,7 +824,7 @@ public class Seq<T> implements Iterable<T> {
         for(int i = 0; i < n; i++){
             Object o1 = items1[i];
             Object o2 = items2[i];
-            if(!(Objects.equals(o1, o2))) {
+            if (!(Objects.equals(o1, o2))) {
                 return false;
             }
         }
@@ -825,7 +833,7 @@ public class Seq<T> implements Iterable<T> {
 
     @Override
     public String toString(){
-        if(size == 0) {
+        if (size == 0) {
             return "[]";
         }
         T[] items = this.items;
@@ -841,15 +849,6 @@ public class Seq<T> implements Iterable<T> {
     }
 
     /**
-     * Returns the number of elements in this list.
-     *
-     * @return the number of elements in this list
-     */
-    public int size() {
-        return size;
-    }
-
-    /**
      * Returns an iterator for the items in the array. Remove is supported. Note that the same iterator instance is returned each
      * time this method is called, unless you are using nested loops.
      * <b>Never, ever</b> access this iterator's method manually, e.g. hasNext()/next().
@@ -857,15 +856,15 @@ public class Seq<T> implements Iterable<T> {
      */
     @Override
     public Iterator<T> iterator(){
-        if(iterable == null) {
+        if (iterable == null) {
             iterable = new SeqIterable<>(this);
         }
         return iterable.iterator();
     }
 
     public static class SeqIterable<T> implements Iterable<T>{
-        private final Seq<T> array;
-        private final boolean allowRemove;
+        final Seq<T> array;
+        final boolean allowRemove;
         private final SeqIterator iterator1 = new SeqIterator();
         private final SeqIterator iterator2 = new SeqIterator();
 
@@ -880,13 +879,13 @@ public class Seq<T> implements Iterable<T> {
 
         @Override
         public Iterator<T> iterator(){
-            if(iterator1.done){
+            if (iterator1.done){
                 iterator1.index = 0;
                 iterator1.done = false;
                 return iterator1;
             }
 
-            if(iterator2.done){
+            if (iterator2.done){
                 iterator2.index = 0;
                 iterator2.done = false;
                 return iterator2;
@@ -897,13 +896,18 @@ public class Seq<T> implements Iterable<T> {
 
         private class SeqIterator implements Iterator<T>{
             int index;
-            boolean done = true; {
+            boolean done = true;
+
+            {
                 iteratorsAllocated ++;
+            }
+
+            SeqIterator(){
             }
 
             @Override
             public boolean hasNext(){
-                if(index >= array.size) {
+                if (index >= array.size) {
                     done = true;
                 }
                 return index < array.size;
@@ -911,7 +915,7 @@ public class Seq<T> implements Iterable<T> {
 
             @Override
             public T next(){
-                if(index >= array.size) {
+                if (index >= array.size) {
                     throw new NoSuchElementException(String.valueOf(index));
                 }
                 return array.items[index++];
@@ -919,8 +923,8 @@ public class Seq<T> implements Iterable<T> {
 
             @Override
             public void remove(){
-                if(!allowRemove) {
-                    throw new ArrayRuntimeException("Remove not allowed.");
+                if (!allowRemove) {
+                    throw new VariableException.ArrayRuntimeException("Remove not allowed.");
                 }
                 index--;
                 array.remove(index);

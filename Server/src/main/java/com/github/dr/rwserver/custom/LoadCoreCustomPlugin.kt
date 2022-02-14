@@ -7,21 +7,15 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.util
+package com.github.dr.rwserver.custom
 
-import com.github.dr.rwserver.struct.Seq
-import com.github.dr.rwserver.struct.Sort
-import java.io.File
+import com.github.dr.rwserver.data.plugin.PluginManage
+import com.github.dr.rwserver.plugin.beta.uplist.UpList
 
-
-/**
- * @author Dr
- */
-object SortList {
-    @JvmStatic
-    fun sortByFileName(list: Seq<File>) {
-        Sort.instance().sort(list) { o1, o2 ->
-            o1.name.compareTo(o2.name)
-        }
+class LoadCoreCustomPlugin {
+    val core = "[Core Plugin]"
+    val coreEx = "[Core Plugin Extend]"
+    init {
+        PluginManage.addPluginClass("UpList","Dr","$core UpList","1.0", UpList())
     }
 }

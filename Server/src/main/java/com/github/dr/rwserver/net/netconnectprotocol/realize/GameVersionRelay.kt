@@ -382,14 +382,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             o1.writeBytes(cachePacket!!.bytes)
             relay!!.admin!!.sendPacket(o1.createPacket(174))
             connectionAgreement.add(relay!!.groupNet)
-            sendPacket(
-                NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(
-                    Data.localeUtil.getinput(
-                        "relay",
-                        relay!!.id
-                    ), "ADMIN", 5
-                )
-            )
+            sendPacket(NetStaticData.protocolData.abstractNetPacket.getChatMessagePacket(Data.localeUtil.getinput("relay", relay!!.id), "ADMIN", 5))
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
@@ -640,7 +633,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
 
         val outcome: String
         val fixedInitial: String = generateMixStr(4)
-        val off: Int = rand.nextInt(0, 100)
+        val off: Int = rand.nextInt(0, 10)
         val maximumNumberOfCalculations: Int = rand.nextInt(0, 10000000)
 
         init {

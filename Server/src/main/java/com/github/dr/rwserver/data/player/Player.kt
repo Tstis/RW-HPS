@@ -11,10 +11,15 @@ package com.github.dr.rwserver.data.player
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
+import com.github.dr.rwserver.data.plugin.Value
+import com.github.dr.rwserver.data.totalizer.TimeAndNumber
+import com.github.dr.rwserver.func.Prov
 import com.github.dr.rwserver.net.game.ConnectServer
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
+import com.github.dr.rwserver.struct.ObjectMap
 import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.LocaleUtil
+import com.github.dr.rwserver.util.Time
 import org.jetbrains.annotations.Nls
 import java.util.*
 
@@ -33,15 +38,18 @@ class Player(
 ) {
     /** is Admin  */
 	@JvmField
-	var isAdmin = false
+    var isAdmin = false
+    var superAdmin = false
     /** Team number  */
 	var team = 0
+        set(value) { watch = (value == -3) ; field = value }
     /** List position  */
 	var site = 0
     /** */
-    private val credits = Data.game.credits
+    val credits = Data.game.credits
     /** Shared control  */
 	var sharedControl = false
+    val controlThePlayer = sharedControl || if (con == null) true else con!!.isDis
     /** (Markers)  */
 	var start = false
     /** Whether the player is dead  */
@@ -62,9 +70,13 @@ class Player(
     var lastSentMessage = ""
 	var noSay = false
     var watch = false
+        private set
 
     var lastVoteTime: Int = 0
 
+    val reConnectData = TimeAndNumber(300,3)
+
+    private val customData = ObjectMap<String, Value<*>>()
     private var connectServer: ConnectServer? = null
 
     fun sendSystemMessage(@Nls text: String) {
@@ -83,8 +95,29 @@ class Player(
         con!!.sync()
     }
 
-    fun kickPlayer(@Nls text: String) {
+    fun kickPlayer(@Nls text: String, time: Int = 0) {
+        kickTime = Time.getTimeFutureMillis(time * 1000L)
         con!!.sendKick(text)
+    }
+
+
+    fun <T> addData(dataName: String, value: T) {
+        customData.put(dataName,Value(value))
+    }
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getData(dataName: String): T? {
+        return customData[dataName]?.data as T
+    }
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getData(dataName: String, defValue: T): T {
+        return (customData[dataName]?.data ?:defValue) as T
+    }
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getData(dataName: String, defProv: Prov<T>): T {
+        return (customData[dataName]?.data ?:defProv.get()) as T
+    }
+    fun removeData(dataName: String) {
+        customData.remove(dataName)
     }
 
     /**

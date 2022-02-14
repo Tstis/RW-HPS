@@ -9,14 +9,13 @@
 
 package com.github.dr.rwserver.net.rudp
 
-import com.github.dr.rwserver.net.StartNet
 import com.github.dr.rwserver.net.core.server.AbstractNetConnect
 import com.github.dr.rwserver.util.Time.concurrentMillis
 
 /**
  * @author Dr
  */
-internal class TimeoutDetection(s: Int, startNet: StartNet) {
+internal class TimeoutDetection {
     companion object {
         internal fun checkTimeoutDetection(abstractNetConnect: AbstractNetConnect?): Boolean {
             if (abstractNetConnect == null) {

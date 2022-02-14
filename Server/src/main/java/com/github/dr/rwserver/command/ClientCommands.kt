@@ -9,7 +9,6 @@
 
 package com.github.dr.rwserver.command
 
-import com.github.dr.rwserver.command.ex.Vote
 import com.github.dr.rwserver.core.Call.sendMessageLocal
 import com.github.dr.rwserver.core.Call.sendSystemMessageLocal
 import com.github.dr.rwserver.core.Call.sendTeamData
@@ -26,7 +25,6 @@ import com.github.dr.rwserver.game.EventType.GameStartEvent
 import com.github.dr.rwserver.game.GameMaps.MapType
 import com.github.dr.rwserver.util.IsUtil.notIsBlank
 import com.github.dr.rwserver.util.IsUtil.notIsNumeric
-import com.github.dr.rwserver.util.Time.getTimeFutureMillis
 import com.github.dr.rwserver.util.game.CommandHandler
 import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.log.Log.error
@@ -209,7 +207,7 @@ class ClientCommands(handler: CommandHandler) {
                     Data.game.playerManage.playerGroup.size(),
                     Data.core.admin.bannedIPs.size(),
                     Data.SERVER_CORE_VERSION,
-                    player.con!!.version
+                    NetStaticData.protocolData.TypeConnectVersion
                 )
             )
         }
@@ -226,9 +224,8 @@ class ClientCommands(handler: CommandHandler) {
                 val site = args[0].toInt() - 1
                 val kickPlayer = Data.game.playerManage.getPlayerArray(site)
                 if (kickPlayer != null) {
-                    kickPlayer.kickTime = getTimeFutureMillis(60 * 1000L)
                     try {
-                        kickPlayer.kickPlayer(localeUtil.getinput("kick.you"))
+                        kickPlayer.kickPlayer(localeUtil.getinput("kick.you"),60)
                     } catch (e: IOException) {
                         error("[Player] Send Kick Player Error", e)
                     }
@@ -242,6 +239,17 @@ class ClientCommands(handler: CommandHandler) {
                 } else {
                     player.sync()
                 }
+            }
+        }
+        handler.register("summon", "<unitName>", "clientCommands.kick") { args: Array<String>, player: Player ->
+            if (!Data.game.isStartGame) {
+                player.sendSystemMessage(player.localeUtil.getinput("err.noStartGame"))
+                return@register
+            }
+            if (player.superAdmin) {
+                val unit = args[0]
+                player.sendSystemMessage("请Ping地图需要生成位置")
+                player.addData("Summon", unit)
             }
         }
 
@@ -330,6 +338,9 @@ class ClientCommands(handler: CommandHandler) {
                 if (Data.config.WinOrLose) {
                 }*/
                 Data.game.isStartGame = true
+                if (Data.game.sharedControl) {
+                    Data.game.playerManage.playerGroup.each { it.sharedControl = true }
+                }
                 Data.game.playerManage.updateControlIdentifier()
                 testPreparationPlayer()
                 Events.fire(GameStartEvent())
@@ -347,7 +358,8 @@ class ClientCommands(handler: CommandHandler) {
         }
         handler.register("surrender", "clientCommands.surrender") { _: Array<String>?, player: Player ->
             if (Data.game.isStartGame) {
-				if (Data.vote == null) {
+                // 我放弃了 建议来人修复这个阴间Vote
+				/*if (Data.vote == null) {
                     if (Vote.testVoet(player)) {
                         Data.vote = Vote("surrender",player)
                     } else {
@@ -355,8 +367,8 @@ class ClientCommands(handler: CommandHandler) {
                     }
 				} else {
 					Data.vote!!.toVote(player,"y")
-				}
-                //player.con!!.sendSurrender()
+				}*/
+                player.con!!.sendSurrender()
             } else {
                 player.sendSystemMessage(player.localeUtil.getinput("err.noStartGame"))
             }

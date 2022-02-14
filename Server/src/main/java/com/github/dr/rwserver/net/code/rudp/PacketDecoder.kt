@@ -9,13 +9,13 @@
 
 package com.github.dr.rwserver.net.code.rudp
 
+import com.github.dr.rwserver.core.thread.Threads
 import com.github.dr.rwserver.io.input.ClearableAndReusableDisableSyncByteArrayInputStream
 import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.rudp.PackagingSocket
 import com.github.dr.rwserver.util.log.Log
 import java.io.EOFException
 import java.io.IOException
-import java.util.concurrent.ThreadPoolExecutor
 
 internal class PacketDecoder(private val socket: PackagingSocket) {
     companion object {
@@ -28,9 +28,13 @@ internal class PacketDecoder(private val socket: PackagingSocket) {
     private val inputStream = ClearableAndReusableDisableSyncByteArrayInputStream()
 
     @Throws(Exception::class)
-    fun decode(bytes: ByteArray, length: Int,group: ThreadPoolExecutor) {
+    fun decode(bytes: ByteArray, length: Int) {
+        // 直接写入InStream
         inputStream.addBytes(bytes,length)
 
+        /*
+         * 通用解码部分
+         */
         val readableBytes = inputStream.count()
         if (readableBytes < HEADER_SIZE) {
             return
@@ -80,7 +84,7 @@ internal class PacketDecoder(private val socket: PackagingSocket) {
 
         inputStream.removeOldRead()
 
-        group.execute { this.socket.type!!.typeConnect(packet) }
+        Threads.newThreadPlayerHeat { this.socket.type!!.typeConnect(packet) }
     }
 
     @Throws(IOException::class)

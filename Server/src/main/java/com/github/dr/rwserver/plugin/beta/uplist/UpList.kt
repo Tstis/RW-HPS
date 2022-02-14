@@ -49,7 +49,7 @@ class UpList : Plugin() {
         handler.removeCommand("upserverlist")
         handler.removeCommand("upserverlistnew")
 
-        handler.register("uplist","<command...>","serverCommands.upserverlist") { args: Array<String>?, log: StrCons ->
+        handler.register("uplist","[command...]","serverCommands.upserverlist") { args: Array<String>?, log: StrCons ->
             if (args != null && args.size > 0) {
                 when (args[0]) {
                     "add" -> { if (args.size > 1) add(log,args[1]) else add(log) }
@@ -59,7 +59,7 @@ class UpList : Plugin() {
                     else -> log["Check UpList Command !"]
                 }
             } else {
-                log["Check UpList Command !"]
+                log["Check UpList Command ! use 'uplist help'"]
             }
         }
     }
@@ -73,7 +73,7 @@ class UpList : Plugin() {
         formBody.add("PlayerSize",Data.game.playerManage.playerGroup.size().toString())
         formBody.add("PlayerMaxSize",Data.game.maxPlayer.toString())
 
-        val resultUpList = HttpRequestOkHttp.doPost("https://api.data.der.kim/UpList/v3/upList", formBody)
+        val resultUpList = HttpRequestOkHttp.doPost(Data.urlData.readString("Get.UpListData.Bak"), formBody)
 
         if (resultUpList.startsWith("[-1]")) {
             Log.error("[Get UPLIST Data Error] Please Check API")

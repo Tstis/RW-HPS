@@ -1,4 +1,5 @@
 plugins {
+	id "org.jetbrains.kotlin.jvm" version "1.6.10"
 	id 'maven-publish'
 }
 
@@ -24,6 +25,8 @@ dependencies {
 	implementation group: 'io.netty', name: 'netty-handler', version: "$nettyVersion"
 	implementation group: 'io.netty', name: 'netty-transport', version: "$nettyVersion"
 	implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: "$nettyVersion"
+	implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: "$nettyVersion", classifier: "linux-aarch_64"
+	implementation group: 'io.netty', name: 'netty-transport-native-epoll', version: "$nettyVersion", classifier: "linux-x86_64"
 
 	//implementation fileTree(dir:'libs',include:['ChainMarket-23fc7f989f.jar'])
 
@@ -37,8 +40,6 @@ dependencies {
 	implementation (group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3') {
 		exclude group: "org.jetbrains.kotlin"
 	}
-
-	compileOnly group: 'commons-io', name: 'commons-io', version: '2.11.0'
 	//compileOnly group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.69'
 
 	//compileOnly fileTree(dir:'libs',include:['*.jar'])

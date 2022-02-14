@@ -29,7 +29,6 @@ public class NetServer {
             //Threads.newThreadCoreNet();
             TimeTaskData.stopGameWinOrLoseCheckTask();
 
-
             Data.game.playerManage.playerGroup.clear();
             Data.game.playerManage.playerAll.clear();
             Data.game = null;

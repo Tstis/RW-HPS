@@ -15,7 +15,7 @@ import com.github.dr.rwserver.struct.ObjectMap
 /**
  * @author Dr
  */
-object ColorCodes {
+internal object ColorCodes {
     private const val FLUSH = "\u001b[H\u001b[2J"
     private const val RESET = "\u001B[0m"
     private const val BOLD = "\u001B[1m"
@@ -47,7 +47,7 @@ object ColorCodes {
         val map: ObjectMap<String, String>
         //WIN :(
         if (Data.core.isWindows) {
-            map = ObjectMap.of<String, String>(
+            map = ObjectMap.of(
                 "ff", "",
                 "fr", "",
                 "fb", "",
@@ -74,7 +74,7 @@ object ColorCodes {
                 "bb", ""
             )
         } else {
-            map = ObjectMap.of<String, String>(
+            map = ObjectMap.of(
                 "ff", FLUSH,
                 "fr", RESET,
                 "fb", BOLD,

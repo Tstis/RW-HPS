@@ -16,6 +16,7 @@ import com.github.dr.rwserver.game.Rules
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.struct.ObjectMap
 import com.github.dr.rwserver.util.LocaleUtil
+import com.github.dr.rwserver.util.file.LoadIni
 import com.github.dr.rwserver.util.game.CommandHandler
 import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
@@ -37,7 +38,7 @@ object Data {
 	 */
     /** 自定义包名  */
     const val SERVER_ID = "com.github.dr.rwserver"
-    const val SERVER_CORE_VERSION = "5.2.0-M3-DEV"
+    const val SERVER_CORE_VERSION = "5.2.0-RC"
     /** 单位数据缓存  */
 	@JvmField
 	val utilData = CompressOutputStream.getGzipOutputStream("customUnits", false)
@@ -65,8 +66,11 @@ object Data {
 	val core = Application()
     @JvmField
 	val localeUtilMap = ObjectMap<String, LocaleUtil>(8)
+    @JvmField
+    val urlData: LoadIni
 
     lateinit var config: BaseConfig
+
 
     /**
      * 可控变量
@@ -76,4 +80,8 @@ object Data {
 
     @JvmField
     var vote: Vote? = null
+
+    init {
+        urlData = LoadIni(Data::class.java.getResourceAsStream("/URL.ini")!!)
+    }
 }

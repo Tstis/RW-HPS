@@ -42,6 +42,7 @@ class PlayerManage(private val maxPlayerSize: Int) {
         } else {
             if (Data.core.admin.playerData.contains(player.uuid)) {
                 player.isAdmin = true
+                player.superAdmin = true
             }
         }
         autoPlayerTeam(player)
@@ -74,7 +75,7 @@ class PlayerManage(private val maxPlayerSize: Int) {
         var int3 = 0
         for (i in 0 until maxPlayerSize) {
             val player1 = playerData[i]
-            if (player1 != null) {
+            if (player1 != null && player1.controlThePlayer) {
                 if (player1.sharedControl || Data.game.sharedControl) {
                     int3 = int3 or 1 shl i
                 }

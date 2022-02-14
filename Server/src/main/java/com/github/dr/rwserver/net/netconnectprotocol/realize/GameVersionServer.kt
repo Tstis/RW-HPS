@@ -16,6 +16,7 @@ import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.*
+import com.github.dr.rwserver.game.GameUnitType
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
@@ -119,6 +120,42 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
         sendPacket(o.createPacket(PacketType.PACKET_SERVER_INFO))
     }
 
+    override fun sendTeamData(gzip: CompressOutputStream) {
+        try {
+            val o = GameOutputStream()
+            /* Player position */
+            o.writeInt(player.site)
+            o.writeBoolean(Data.game.isStartGame)
+            /* Largest player */
+            o.writeInt(Data.game.getMaxPlayer())
+            o.flushEncodeData(gzip)
+            /* 迷雾 */
+            o.writeInt(Data.game.mist)
+            o.writeInt(Data.game.credits)
+            o.writeBoolean(true)
+            /* AI Difficulty ?*/
+            o.writeInt(1)
+            o.writeByte(5)
+            o.writeInt(Data.config.MaxUnit)
+            o.writeInt(Data.config.MaxUnit)
+            /* 初始单位 */
+            o.writeInt(Data.game.initUnit)
+            /* 倍速 */
+            o.writeFloat(Data.game.income)
+            /* NO Nukes */
+            o.writeBoolean(Data.game.noNukes)
+            o.writeBoolean(false)
+            o.writeBoolean(false)
+            /* 共享控制 */
+            o.writeBoolean(Data.game.sharedControl)
+            /* 游戏暂停 */
+            o.writeBoolean(false)
+            sendPacket(o.createPacket(PacketType.PACKET_TEAM_LIST))
+        } catch (e: IOException) {
+            Log.error("Team", e)
+        }
+    }
+
     override fun sendSurrender() {
         try {
             val out = GameOutputStream()
@@ -181,11 +218,20 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
         disconnect()
     }
 
-    override fun ping() {
+    override fun sendPing() {
         try {
             sendPacket(NetStaticData.protocolData.abstractNetPacket.getPingPacket(player))
         } catch (e: IOException) {
             numberOfRetries++
+        }
+    }
+
+    @Throws(IOException::class)
+    override fun sendStartGame() {
+        sendServerInfo(true)
+        sendPacket(NetStaticData.protocolData.abstractNetPacket.getStartGamePacket())
+        if (IsUtil.notIsBlank(Data.config.StartAd)) {
+            sendSystemMessage(Data.config.StartAd)
         }
     }
 
@@ -225,15 +271,15 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                 }
             } else if (response.type != CommandHandler.ResponseType.valid) {
                 val text: String =  when (response.type) {
-                                        CommandHandler.ResponseType.manyArguments -> {
-                                            "Too many arguments. Usage: " + response.command.text + " " + response.command.paramText
-                                        }
-                                        CommandHandler.ResponseType.fewArguments -> {
-                                            "Too few arguments. Usage: " + response.command.text + " " + response.command.paramText
-                                        }
-                                        else -> {
-                                            "Unknown command. Check .help"
-                                    }
+                    CommandHandler.ResponseType.manyArguments -> {
+                        "Too many arguments. Usage: " + response.command.text + " " + response.command.paramText
+                    }
+                    CommandHandler.ResponseType.fewArguments -> {
+                        "Too few arguments. Usage: " + response.command.text + " " + response.command.paramText
+                    }
+                    else -> {
+                        "Unknown command. Check .help"
+                    }
                 }
                 player.sendSystemMessage(text)
             } else {
@@ -255,9 +301,12 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                 if (boolean1) {
                     outStream.writeInt(inStream.readInt())
                     val int1 = inStream.readInt()
+                    //Log.error(int1)
                     outStream.writeInt(int1)
                     if (int1 == -2) {
-                        outStream.writeString(inStream.readString())
+                        val nameUnit = inStream.readString()
+                        //Log.error(nameUnit)
+                        outStream.writeString(nameUnit)
                     }
                     outStream.transferToFixedLength(inStream,28)
                     outStream.writeIsString(inStream)
@@ -282,7 +331,13 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                 val boolean5 = inStream.readBoolean()
                 outStream.writeBoolean(boolean5)
                 if (boolean5) {
-                    outStream.transferToFixedLength(inStream,8)
+                    if (player.getData<String>("Summon") != null) {
+                        gameSummon(player.getData<String>("Summon")!!,inStream.readFloat(),inStream.readFloat())
+                        player.removeData("Summon")
+                        return
+                    } else {
+                        outStream.transferToFixedLength(inStream,8)
+                    }
                 }
                 outStream.transferToFixedLength(inStream,8)
                 outStream.writeString(inStream.readString())
@@ -315,51 +370,6 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
             stream.readBoolean()
             stream.readString()
             return stream.readStreamBytes()
-        }
-    }
-
-    @Throws(IOException::class)
-    override fun sendStartGame() {
-        sendServerInfo(true)
-        sendPacket(NetStaticData.protocolData.abstractNetPacket.getStartGamePacket())
-        if (IsUtil.notIsBlank(Data.config.StartAd)) {
-            sendSystemMessage(Data.config.StartAd)
-        }
-    }
-
-    override fun sendTeamData(gzip: CompressOutputStream) {
-        try {
-            val o = GameOutputStream()
-            /* Player position */
-            o.writeInt(player.site)
-            o.writeBoolean(Data.game.isStartGame)
-            /* Largest player */
-            o.writeInt(Data.game.getMaxPlayer())
-            o.flushEncodeData(gzip)
-            /* 迷雾 */
-            o.writeInt(Data.game.mist)
-            o.writeInt(Data.game.credits)
-            o.writeBoolean(true)
-            /* AI Difficulty ?*/
-            o.writeInt(1)
-            o.writeByte(5)
-            o.writeInt(Data.config.MaxUnit)
-            o.writeInt(Data.config.MaxUnit)
-            /* 初始单位 */
-            o.writeInt(Data.game.initUnit)
-            /* 倍速 */
-            o.writeFloat(Data.game.income)
-            /* NO Nukes */
-            o.writeBoolean(Data.game.noNukes)
-            o.writeBoolean(false)
-            o.writeBoolean(false)
-            /* 共享控制 */
-            o.writeBoolean(Data.game.sharedControl)
-            /* 游戏暂停 */
-            o.writeBoolean(false)
-            sendPacket(o.createPacket(PacketType.PACKET_TEAM_LIST))
-        } catch (e: IOException) {
-            Log.error("Team", e)
         }
     }
 
@@ -491,6 +501,82 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
         }
     }
 
+    override fun gameSummon(unit: String, x: Float, y: Float) {
+        sync.lock()
+        try {
+            val outStream = GameOutputStream()
+            outStream.writeByte(player.site)
+            outStream.writeBoolean(true)
+            // 建造
+            outStream.writeInt(2)
+
+            var unitID = -2
+            if (IsUtil.notIsNumeric(unit)) {
+                GameUnitType.GameUnits.values().forEach {
+                    if (it.name == unit) {
+                        unitID = it.ordinal
+                        return@forEach
+                    }
+                }
+            } else {
+                unitID = unit.toInt()
+            }
+            if (unitID == -2) {
+                outStream.writeString(unit)
+            } else {
+                outStream.writeInt(unitID)
+            }
+            // X
+            outStream.writeFloat(x)
+            // Y
+            outStream.writeFloat(y)
+            // Tager
+            outStream.writeLong(-1L)
+            //?
+            outStream.writeByte(42)
+            outStream.writeFloat(1)
+            outStream.writeFloat(1)
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+
+            //
+            outStream.writeInt(-1)
+            outStream.writeInt(-1)
+
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+
+            outStream.writeInt(0)
+
+            outStream.writeBoolean(false)
+            outStream.writeBoolean(false)
+
+
+            outStream.writeLong(-1)
+            outStream.writeString("-1")
+            outStream.writeBoolean(false)
+            outStream.writeShort(Data.game.playerManage.sharedControlPlayer.toShort())
+            // System action
+            outStream.writeBoolean(true)
+            outStream.writeByte(0)
+            outStream.writeFloat(0f)
+            outStream.writeFloat(0f)
+            //action type
+            outStream.writeInt(5)
+            outStream.writeInt(0)
+            outStream.writeBoolean(false)
+            Data.game.gameCommandCache.offer(GameCommandPacket(player.site, outStream.getPacketBytes()))
+        } catch (e: Exception) {
+            Log.error(e)
+        } finally {
+            sync.unlock()
+        }
+    }
+
     /**
      *
      */
@@ -532,6 +618,11 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                 sendKick("不支持重连 # Does not support reconnection")
                 return
             }
+            if (player.reConnectData.checkStatus()) {
+                player.kickPlayer("不要一直尝试重连",300)
+                return
+            }
+            player.reConnectData.count++
             super.isDis = false
             sendPacket(NetStaticData.protocolData.abstractNetPacket.getStartGamePacket())
             sync()

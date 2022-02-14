@@ -12,7 +12,6 @@ package com.github.dr.rwserver.util.file
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.IsUtil
-import com.github.dr.rwserver.util.SortList
 import com.github.dr.rwserver.util.io.IoOutConversion.fileToOutStream
 import com.github.dr.rwserver.util.io.IoOutConversion.fileToStream
 import com.github.dr.rwserver.util.io.IoRead.readFileToByteArray
@@ -72,15 +71,12 @@ class FileUtil {
         file = File(filepath)
     }
 
-    private constructor(file: File, filepath: String) {
+    private constructor(file: File, filepath: String, ismkdir: Boolean = false) {
         this.file = file
         this.path = filepath
-    }
-
-    private constructor(file: File, filepath: String, air: String) {
-        this.file = file
-        this.path = filepath
-        file.mkdirs()
+        if (ismkdir) {
+            file.mkdirs()
+        }
     }
 
     fun exists(): Boolean {
@@ -106,7 +102,7 @@ class FileUtil {
         } else {
             this.path + "/" + filename
         }
-        return FileUtil(File(to),to,"")
+        return FileUtil(File(to),to,true)
     }
 
     val fileList: Seq<File>
@@ -136,7 +132,9 @@ class FileUtil {
     val fileListNotNullSizeSort: Seq<File>
         get() {
             val list = fileListNotNullSize
-            SortList.sortByFileName(list)
+            list.sort() { o1, o2 ->
+                o1.name.compareTo(o2.name)
+            }
             return list
         }
 
@@ -306,7 +304,7 @@ class FileUtil {
             } else {
                 defaultFilePath + to
             }
-            return FileUtil(File(filepath), filepath,"")
+            return FileUtil(File(filepath), filepath,true)
         }
 
         @JvmStatic

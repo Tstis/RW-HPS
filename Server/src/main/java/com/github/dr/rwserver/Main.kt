@@ -13,7 +13,7 @@ import com.github.dr.rwserver.command.CoreCommands
 import com.github.dr.rwserver.command.LogCommands
 import com.github.dr.rwserver.core.Initialization
 import com.github.dr.rwserver.core.thread.Threads.newThreadCore
-import com.github.dr.rwserver.custom.LoadCustomPlugin
+import com.github.dr.rwserver.custom.LoadCoreCustomPlugin
 import com.github.dr.rwserver.data.base.BaseConfig
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
@@ -92,7 +92,7 @@ object Main {
 
         /* 初始化Plugin */
         init(getFolder(Data.Plugin_Plugins_Path))
-        LoadCustomPlugin()
+        LoadCoreCustomPlugin()
 
         runOnEnable()
         runRegisterEvents()

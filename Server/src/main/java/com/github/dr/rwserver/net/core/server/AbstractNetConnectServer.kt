@@ -54,6 +54,12 @@ interface AbstractNetConnectServer {
     fun sendServerInfo(utilData: Boolean)
 
     /**
+     * Send team pack
+     * @param gzip GzipPacket
+     */
+    fun sendTeamData(gzip: CompressOutputStream)
+
+    /**
      * send Surrender
      */
     fun sendSurrender()
@@ -69,16 +75,27 @@ interface AbstractNetConnectServer {
     /**
      * Ping
      */
-    fun ping()
+    fun sendPing()
 
     /**
-     * Extract the GameSave package
-     * @param packet packet
-     * @return 包
+     * Send game start package
      * @throws IOException Error
      */
     @Throws(IOException::class)
-    fun getGameSaveData(packet: Packet): ByteArray
+    fun sendStartGame()
+
+    /**
+     * wrong password
+     * @throws IOException err
+     */
+    @Throws(IOException::class)
+    fun sendErrorPasswd()
+
+    /**
+     * Send reconnect packet
+     * @param packet ByteBuf
+     */
+    fun sendGameSave(packet: Packet)
 
     /**
      * Accept language pack
@@ -97,17 +114,13 @@ interface AbstractNetConnectServer {
     fun receiveCommand(p: Packet)
 
     /**
-     * Send game start package
+     * Extract the GameSave package
+     * @param packet packet
+     * @return 包
      * @throws IOException Error
      */
     @Throws(IOException::class)
-    fun sendStartGame()
-
-    /**
-     * Send team pack
-     * @param gzip GzipPacket
-     */
-    fun sendTeamData(gzip: CompressOutputStream)
+    fun getGameSaveData(packet: Packet): ByteArray
 
     /**
      * Get player information and register
@@ -127,18 +140,7 @@ interface AbstractNetConnectServer {
     @Throws(IOException::class)
     fun registerConnection(p: Packet)
 
-    /**
-     * wrong password
-     * @throws IOException err
-     */
-    @Throws(IOException::class)
-    fun sendErrorPasswd()
-
-    /**
-     * Send reconnect packet
-     * @param packet ByteBuf
-     */
-    fun sendGameSave(packet: Packet)
+    fun gameSummon(unit: String, x: Float, y: Float)
 
 
     fun reConnect() {

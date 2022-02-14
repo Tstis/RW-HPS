@@ -155,6 +155,22 @@ open class GameInputStream : Closeable {
         return this.buffer.readAllBytes()
     }
 
+    @Throws(IOException::class)
+    fun readStreamBytes(): ByteArray {
+        return buffer.readNBytes(readInt())
+    }
+
+    @Throws(IOException::class)
+    fun readStreamBytesNew(): ByteArray {
+        readInt() // Relay type
+        return readStreamBytes()
+    }
+
+    @Throws(IOException::class)
+    open fun readEnum(clazz: Class<*>): Enum<*>? {
+        return clazz.enumConstants[readInt()] as Enum<*>
+    }
+
     /**
      * Write this stream from the current position to the new stream
      * @param out OutputStream
@@ -175,18 +191,6 @@ open class GameInputStream : Closeable {
         this.buffer.transferToFixedLength(out,length)
     }
 
-
-    @Throws(IOException::class)
-    fun readStreamBytes(): ByteArray {
-        return buffer.readNBytes(readInt())
-    }
-
-    @Throws(IOException::class)
-    fun readStreamBytesNew(): ByteArray {
-        readInt() // Relay type
-        return readStreamBytes()
-    }
-
     @Throws(IOException::class)
     fun getDecodeStream(bl: Boolean): GameInputStream {
         readString()
@@ -205,7 +209,6 @@ open class GameInputStream : Closeable {
         readString()
         return readStreamBytes()
     }
-
 
     override fun toString(): String {
         return "GameInputStream{" +

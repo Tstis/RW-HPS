@@ -15,7 +15,6 @@ import com.github.dr.rwserver.net.GroupNet
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionRelay
 import com.github.dr.rwserver.struct.IntMap
 import com.github.dr.rwserver.struct.Seq
-import com.github.dr.rwserver.util.IsUtil
 import com.github.dr.rwserver.util.IsUtil.isNumeric
 import com.github.dr.rwserver.util.log.Log.debug
 import java.io.IOException
@@ -233,10 +232,10 @@ class Relay {
 
         @JvmStatic
         fun getRelay(id: String): Relay? {
-            if (IsUtil.isNumeric(id)) {
-                return serverRelayData[id.toInt()]
+            return if (isNumeric(id)) {
+                serverRelayData[id.toInt()]
             } else {
-                return null
+                null
             }
         }
 

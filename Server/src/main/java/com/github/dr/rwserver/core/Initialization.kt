@@ -115,7 +115,7 @@ class Initialization {
          */
         private fun initServerLanguage(pluginData: PluginData) {
             val serverCountry = pluginData.getData("serverCountry") {
-                val country = HttpRequestOkHttp.doGet("https://api.data.der.kim/IP/getCountry")
+                val country = HttpRequestOkHttp.doGet(Data.urlData.readString("Get.ServerLanguage.Bak"))
 
                 when {
                     country.contains("香港") -> "HK"

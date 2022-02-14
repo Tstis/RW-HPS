@@ -115,7 +115,11 @@ open class DisableSyncByteArrayInputStream : InputStream {
      * stream has been reached.
      */
     override fun read(): Int {
-        return if (pos < count) buf[pos++].toInt() and 0xff else -1
+        return if (pos < count) {
+            buf[pos++].toInt() and 0xff
+        } else {
+            -1
+        }
     }
 
     /**

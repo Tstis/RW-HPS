@@ -205,12 +205,12 @@ open class GameVersionPacket : AbstractNetPacket {
             stream.writeByte(player.site)
             stream.writeInt(player.ping)
             stream.writeBoolean(Data.game.sharedControl)
-            stream.writeBoolean(player.sharedControl)
+            stream.writeBoolean(player.controlThePlayer)
             return
         }
         stream.writeByte(player.site)
         // 并没有什么用
-        stream.writeInt(Data.game.credits)
+        stream.writeInt(player.credits)
         stream.writeInt(player.team)
         stream.writeBoolean(true)
         stream.writeString(player.name)

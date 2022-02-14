@@ -7,9 +7,7 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package com.github.dr.rwserver.plugin.beta.nostopcommand
+package com.github.dr.rwserver.game.replay.block
 
-import com.github.dr.rwserver.plugin.Plugin
-
-class NoStopCommandPlugin : Plugin() {
+class PointF(val x: Float, val y: Float) {
 }

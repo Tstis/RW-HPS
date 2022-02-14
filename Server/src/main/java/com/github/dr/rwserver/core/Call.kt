@@ -86,7 +86,7 @@ object Call {
 
     @JvmStatic
     fun sendPlayerPing() {
-        Data.game.playerManage.playerGroup.each { e: Player -> e.con!!.ping() }
+        Data.game.playerManage.playerGroup.each { e: Player -> e.con!!.sendPing() }
     }
 
     @JvmStatic
@@ -243,7 +243,6 @@ object Call {
                 timer.cancel()
                 return
             }
-
             forcedReturn = true
             gameOverTask?.cancel(true)
             gameOverTask = null
