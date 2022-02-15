@@ -116,7 +116,6 @@ class Relay {
                     .append("IP: ").append(e.ip)
                     .append(" / ")
                     .append("Protocol: ").append(e.useConnectionAgreement)
-                    .append(" / ")
             })
             return str.toString()
         }
