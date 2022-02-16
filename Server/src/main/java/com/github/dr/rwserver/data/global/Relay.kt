@@ -100,7 +100,7 @@ class Relay {
         get() {
             val str = StringBuilder(10)
             str.append(LINE_SEPARATOR)
-				.append("--->	")
+				.append("---	")
                 .append(admin!!.name)
                 .append(" / ")
                 .append("IP: ").append(admin!!.ip)
@@ -110,7 +110,7 @@ class Relay {
                 .append("ADMIN!")
             abstractNetConnectIntMap.values().forEach(Consumer { e: GameVersionRelay ->
                 str.append(LINE_SEPARATOR)
-					.append("--->	")
+					.append("---	")
                     .append(e.name)
                     .append(" / ")
                     .append("IP: ").append(e.ip)
@@ -217,7 +217,7 @@ class Relay {
                 val str = StringBuilder(10)
                 serverRelayData.values().forEach(Consumer { e: Relay ->
                     str.append(LINE_SEPARATOR)
-                        .append("> > > > >	").append(e.id).append("	< < < < <")
+                        .append("> > > > >  ").append(e.id)
                         .append(e.allIP)
                 })
                 return str.toString()
