@@ -19,6 +19,7 @@ import kotlin.math.min
  */
 object IsUtil {
     private val PATTERN = Pattern.compile("[0-9]*")
+    private val PATTERNNegativeNumber = Pattern.compile("[-+]?[0-9]*")
     private val IPV4_PATTERN = Pattern.compile("^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$")
     private const val IPV4_MAX_OCTET_VALUE = 255
 
@@ -54,6 +55,10 @@ object IsUtil {
     @JvmStatic
 	fun isNumeric(string: String): Boolean {
         return PATTERN.matcher(string).matches()
+    }
+    @JvmStatic
+    fun isNumericNegative(string: String): Boolean {
+        return PATTERNNegativeNumber.matcher(string).matches()
     }
 
     @JvmStatic

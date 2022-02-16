@@ -122,6 +122,15 @@ interface AbstractNetPacket {
     fun getDeceiveGameSave(): Packet
 
     /**
+     * 获取单位生成包
+     * @param index Byte
+     * @param unit String
+     * @param x Float
+     * @param y Float
+     */
+    fun gameSummonPacket(index: Int, unit: String, x: Float, y: Float): GameCommandPacket
+
+    /**
      * 退出
      * @return Packet
      * @throws IOException err

@@ -9,6 +9,7 @@
 
 package com.github.dr.rwserver.data.plugin
 
+import com.github.dr.rwserver.net.Administration.PlayerAdminInfo
 import com.github.dr.rwserver.net.Administration.PlayerInfo
 import com.github.dr.rwserver.struct.ObjectMap
 import com.github.dr.rwserver.struct.OrderedMap
@@ -241,6 +242,20 @@ internal object DefaultSerializers {
                 objectData.timeMute = stream.readLong()
                 objectData.admin = stream.readBoolean()
                 return objectData
+            }
+        })
+
+        AbstractPluginData.setSerializer(PlayerAdminInfo::class.java, object : TypeSerializer<PlayerAdminInfo> {
+            @Throws(IOException::class)
+            override fun write(stream: DataOutput, objectData: PlayerAdminInfo) {
+                stream.writeUTF(objectData.uuid)
+                stream.writeBoolean(objectData.admin)
+                stream.writeBoolean(objectData.superAdmin)
+            }
+
+            @Throws(IOException::class)
+            override fun read(stream: DataInput): PlayerAdminInfo {
+                return PlayerAdminInfo(stream.readUTF(), stream.readBoolean(), stream.readBoolean())
             }
         })
     }
