@@ -16,7 +16,6 @@ import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.EventType.*
-import com.github.dr.rwserver.game.GameUnitType
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
@@ -127,7 +126,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
             o.writeInt(player.site)
             o.writeBoolean(Data.game.isStartGame)
             /* Largest player */
-            o.writeInt(Data.game.getMaxPlayer())
+            o.writeInt(Data.game.maxPlayer)
             o.flushEncodeData(gzip)
             /* 迷雾 */
             o.writeInt(Data.game.mist)
@@ -504,72 +503,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
     override fun gameSummon(unit: String, x: Float, y: Float) {
         sync.lock()
         try {
-            val outStream = GameOutputStream()
-            outStream.writeByte(player.site)
-            outStream.writeBoolean(true)
-            // 建造
-            outStream.writeInt(2)
-
-            var unitID = -2
-            if (IsUtil.notIsNumeric(unit)) {
-                GameUnitType.GameUnits.values().forEach {
-                    if (it.name == unit) {
-                        unitID = it.ordinal
-                        return@forEach
-                    }
-                }
-            } else {
-                unitID = unit.toInt()
-            }
-            if (unitID == -2) {
-                outStream.writeString(unit)
-            } else {
-                outStream.writeInt(unitID)
-            }
-            // X
-            outStream.writeFloat(x)
-            // Y
-            outStream.writeFloat(y)
-            // Tager
-            outStream.writeLong(-1L)
-            //?
-            outStream.writeByte(42)
-            outStream.writeFloat(1)
-            outStream.writeFloat(1)
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-
-            //
-            outStream.writeInt(-1)
-            outStream.writeInt(-1)
-
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-
-            outStream.writeInt(0)
-
-            outStream.writeBoolean(false)
-            outStream.writeBoolean(false)
-
-
-            outStream.writeLong(-1)
-            outStream.writeString("-1")
-            outStream.writeBoolean(false)
-            outStream.writeShort(Data.game.playerManage.sharedControlPlayer.toShort())
-            // System action
-            outStream.writeBoolean(true)
-            outStream.writeByte(0)
-            outStream.writeFloat(0f)
-            outStream.writeFloat(0f)
-            //action type
-            outStream.writeInt(5)
-            outStream.writeInt(0)
-            outStream.writeBoolean(false)
-            Data.game.gameCommandCache.offer(GameCommandPacket(player.site, outStream.getPacketBytes()))
+            Data.game.gameCommandCache.offer(NetStaticData.protocolData.abstractNetPacket.gameSummonPacket(player.site,unit,x, y))
         } catch (e: Exception) {
             Log.error(e)
         } finally {
@@ -650,7 +584,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                     }
                 }
                 try {
-                    NetStaticData.groupNet.broadcast(Data.game.gameSaveCache.convertGameSaveDataPacket())
+                    NetStaticData.groupNet.broadcast(Data.game.gameSaveCache!!.convertGameSaveDataPacket())
                 } catch (e: IOException) {
                     Log.error(e)
                 }

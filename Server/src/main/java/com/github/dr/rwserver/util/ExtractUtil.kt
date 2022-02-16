@@ -12,6 +12,7 @@ package com.github.dr.rwserver.util
 import com.github.dr.rwserver.data.global.Data
 import java.net.InetAddress
 import java.net.UnknownHostException
+import java.nio.charset.Charset
 import java.nio.charset.StandardCharsets
 
 
@@ -19,8 +20,15 @@ import java.nio.charset.StandardCharsets
  * @author Dr
  */
 object ExtractUtil {
+    val defCharset = Charset.defaultCharset()
     @JvmStatic
-    fun stringToUtf8(string: String): String {
+    fun stringDefToUtf8(string: String): String {
+        // 用指定编码转换String为byte[]:
+        return String(string.toByteArray(defCharset), Data.UTF_8)
+    }
+
+    @JvmStatic
+    fun stringGbkToUtf8(string: String): String {
         // 用指定编码转换String为byte[]:
         return String(string.toByteArray(StandardCharsets.ISO_8859_1), Data.UTF_8)
     }

@@ -40,9 +40,10 @@ class PlayerManage(private val maxPlayerSize: Int) {
                 player.isAdmin = true
             }
         } else {
-            if (Data.core.admin.playerData.contains(player.uuid)) {
-                player.isAdmin = true
-                player.superAdmin = true
+            if (Data.core.admin.isAdmin(player.uuid)) {
+                val data = Data.core.admin.playerAdminData.get(player.uuid)
+                player.isAdmin = data.admin
+                player.superAdmin = data.superAdmin
             }
         }
         autoPlayerTeam(player)
