@@ -13,9 +13,6 @@ import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 
 interface AbstractEvent {
-    /** 服务器初始化 [异步-ASync]  */
-    fun registerServerLoadEvent() {}
-
     /**
      * 玩家加入 [同步-Synchronization]
      * @param player Player

@@ -11,11 +11,12 @@ package com.github.dr.rwserver.net.handler.tcp
 
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.global.NetStaticData
+import com.github.dr.rwserver.game.EventGlobalType.NewConnectEvent
 import com.github.dr.rwserver.io.packet.Packet
 import com.github.dr.rwserver.net.core.ConnectionAgreement
 import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.ExtractUtil
+import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.log.Log.debug
 import com.github.dr.rwserver.util.log.Log.error
 import io.netty.channel.ChannelHandler.Sharable
@@ -38,20 +39,20 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                 var type = attr.get()
 
                 if (type == null) {
-                    type = NetStaticData.protocolData.typeConnect.getTypeConnect(ConnectionAgreement(ctx))
+                    val connectionAgreement = ConnectionAgreement(ctx)
+                    type = NetStaticData.protocolData.typeConnect.getTypeConnect(connectionAgreement)
                     attr.setIfAbsent(type)
-                    if (ConnectionAgreement.IPData.contains(type.abstractNetConnect.ip)) {
-                        type.abstractNetConnect.disconnect()
+
+                    val newConnectEvent = NewConnectEvent(connectionAgreement)
+                    Events.fire(newConnectEvent)
+                    if (newConnectEvent.result) {
                         return
-                    } else {
-                        ConnectionAgreement.IPData.add(type.abstractNetConnect.ip)
                     }
                 }
                 if (Data.core.admin.bannedIP24.contains(ExtractUtil.ipToLong(type.abstractNetConnect.ip))) {
                     type.abstractNetConnect.disconnect()
                     return
                 }
-
 
                 ctx.executor().execute {
                     if (type.abstractNetConnect.isConnectServer) {

@@ -26,7 +26,8 @@ import com.github.dr.rwserver.data.plugin.PluginManage.runOnEnable
 import com.github.dr.rwserver.data.plugin.PluginManage.runRegisterEvents
 import com.github.dr.rwserver.func.StrCons
 import com.github.dr.rwserver.game.Event
-import com.github.dr.rwserver.game.EventType.ServerLoadEvent
+import com.github.dr.rwserver.game.EventGlobal
+import com.github.dr.rwserver.game.EventGlobalType.ServerLoadEvent
 import com.github.dr.rwserver.io.output.GameOutputStream
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionPacket
 import com.github.dr.rwserver.util.encryption.Base64.decodeString
@@ -35,7 +36,7 @@ import com.github.dr.rwserver.util.file.FileUtil.Companion.readFileListString
 import com.github.dr.rwserver.util.file.FileUtil.Companion.setFilePath
 import com.github.dr.rwserver.util.game.CommandHandler
 import com.github.dr.rwserver.util.game.Events
-import com.github.dr.rwserver.util.io.IoReadConversion.streamBufferRead
+import com.github.dr.rwserver.util.log.Log
 import com.github.dr.rwserver.util.log.Log.clog
 import com.github.dr.rwserver.util.log.Log.error
 import com.github.dr.rwserver.util.log.Log.info
@@ -56,12 +57,9 @@ import java.util.logging.Logger
  * @author Dr
  */
 object Main {
-    /*
-	 * TODO 防逆向
-	 * 设置多个检查点, 定期检查, 如果发现问题就加密或混淆部分数据
-	 */
     @JvmStatic
     fun main(args: Array<String>) {
+        //System.setProperty("file.encoding","UTF-8")
         Initialization()
 
         set("ALL")
@@ -88,6 +86,7 @@ object Main {
 
         /* Event加载 */
         add(Event())
+        add(EventGlobal())
         clog(Data.localeUtil.getinput("server.load.events"))
 
         /* 初始化Plugin */
@@ -129,8 +128,11 @@ object Main {
     }
 
     private fun buttonMonitoring() {
-        val bufferedReader = streamBufferRead(System.`in`)
-        var count = 0
+        val bufferedReader = System.console()
+        if (bufferedReader == null) {
+            Log.fatal("buttonMonitoring Null")
+            return
+        }
         while (true) {
             try {
                 val str = bufferedReader.readLine()
@@ -154,15 +156,6 @@ object Main {
             } catch (e: Exception) {
                 clog("ButtonMonitoring Error")
                 info(e)
-
-                /* nohup Error */
-                if (10 < count++) {
-                    try {
-                        bufferedReader.close()
-                    } catch (ignored: Exception) {
-                    }
-                    return
-                }
             }
         }
     }

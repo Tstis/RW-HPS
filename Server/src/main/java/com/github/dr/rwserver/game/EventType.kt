@@ -16,9 +16,6 @@ import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
  * @author Dr
  */
 class EventType {
-    /** 服务器初始化  */
-    class ServerLoadEvent
-
     /** 玩家加入  */
     class PlayerJoinEvent(val player: Player)
 
@@ -30,8 +27,7 @@ class EventType {
         /** 游戏实现协议  */
         val abstractNetConnect: GameVersionServer,
         /** 密码SHA256的16进  */
-        val passwd: String
-    ) {
+        val passwd: String) {
         /** 密码SHA256的16进  */
         @JvmField
         var result = false

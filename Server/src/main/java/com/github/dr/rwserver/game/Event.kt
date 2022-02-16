@@ -17,7 +17,6 @@ import com.github.dr.rwserver.net.Administration.PlayerInfo
 import com.github.dr.rwserver.net.netconnectprotocol.realize.GameVersionServer
 import com.github.dr.rwserver.plugin.event.AbstractEvent
 import com.github.dr.rwserver.util.Time.millis
-import com.github.dr.rwserver.util.log.Log
 import com.github.dr.rwserver.util.log.Log.debug
 import com.github.dr.rwserver.util.log.Log.error
 import java.io.IOException
@@ -26,21 +25,6 @@ import java.io.IOException
  * @author Dr
  */
 class Event : AbstractEvent {
-    override fun registerServerLoadEvent() {
-        Data.core.admin.addChatFilter { player: Player, message: String? ->
-            if (player.muteTime > millis()) {
-                return@addChatFilter null
-            }
-            message
-        }
-        Log.run {
-            info("ServerConnectUuid", Data.core.serverConnectUuid)
-            info("TOKEN", Data.core.serverToken)
-            info("bannedIPs", Data.core.admin.bannedIPs)
-            info("bannedUUIDs", Data.core.admin.bannedUUIDs)
-        }
-    }
-
     override fun registerPlayerJoinEvent(player: Player) {
         if (Data.core.admin.bannedUUIDs.contains(player.uuid)) {
             try {

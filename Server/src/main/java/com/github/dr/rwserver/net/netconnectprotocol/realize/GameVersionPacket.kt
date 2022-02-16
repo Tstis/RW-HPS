@@ -13,6 +13,7 @@ import com.github.dr.rwserver.data.global.Cache
 import com.github.dr.rwserver.data.global.Data
 import com.github.dr.rwserver.data.player.Player
 import com.github.dr.rwserver.game.GameMaps
+import com.github.dr.rwserver.game.GameUnitType
 import com.github.dr.rwserver.io.input.GameInputStream
 import com.github.dr.rwserver.io.output.CompressOutputStream
 import com.github.dr.rwserver.io.output.GameOutputStream
@@ -181,6 +182,75 @@ open class GameVersionPacket : AbstractNetPacket {
         Cache.packetCache.put("getDeceiveGameSave",cachePacket)
 
         return cachePacket
+    }
+
+    override fun gameSummonPacket(index: Int, unit: String, x: Float, y: Float): GameCommandPacket {
+        val outStream = GameOutputStream()
+        outStream.writeByte(index)
+        outStream.writeBoolean(true)
+        // 建造
+        outStream.writeInt(2)
+
+        var unitID = -2
+        if (IsUtil.notIsNumeric(unit)) {
+            GameUnitType.GameUnits.values().forEach {
+                if (it.name == unit) {
+                    unitID = it.ordinal
+                    return@forEach
+                }
+            }
+        } else {
+            unitID = unit.toInt()
+        }
+        if (unitID == -2) {
+            outStream.writeString(unit)
+        } else {
+            outStream.writeInt(unitID)
+        }
+        // X
+        outStream.writeFloat(x)
+        // Y
+        outStream.writeFloat(y)
+        // Tager
+        outStream.writeLong(-1L)
+        //?
+        outStream.writeByte(42)
+        outStream.writeFloat(1)
+        outStream.writeFloat(1)
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+
+        //
+        outStream.writeInt(-1)
+        outStream.writeInt(-1)
+
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+
+        outStream.writeInt(0)
+
+        outStream.writeBoolean(false)
+        outStream.writeBoolean(false)
+
+
+        outStream.writeLong(-1)
+        outStream.writeString("-1")
+        outStream.writeBoolean(false)
+        outStream.writeShort(Data.game.playerManage.sharedControlPlayer.toShort())
+        // System action
+        outStream.writeBoolean(true)
+        outStream.writeByte(0)
+        outStream.writeFloat(0f)
+        outStream.writeFloat(0f)
+        //action type
+        outStream.writeInt(5)
+        outStream.writeInt(0)
+        outStream.writeBoolean(false)
+        return GameCommandPacket(index, outStream.getPacketBytes())
     }
 
     @Throws(IOException::class)

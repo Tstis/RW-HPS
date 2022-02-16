@@ -27,15 +27,15 @@ public class Administration {
     public final Seq<Long> bannedIP24;
     public final Seq<String> bannedUUIDs;
     public final Seq<String> whitelist;
-    public final Seq<String> playerData;
     public final ObjectMap<String,PlayerInfo> playerDataCache = new ObjectMap<>();
+    public final ObjectMap<String,PlayerAdminInfo> playerAdminData;
 
     public Administration(PluginData pluginData){
         addChatFilter((player, message) -> {
             if(!player.isAdmin){
                 //防止玩家在 30 秒内两次发送相同的消息
                 if(message.equals(player.lastSentMessage) && Time.getTimeSinceMillis(player.lastMessageTime) < 1000 * 30){
-                    player.sendSystemMessage("您可能不会两次发送相同的消息.");
+                    player.sendSystemMessage("You may not send the same message twice.");
                     return null;
                 }
                 player.lastSentMessage = message;
@@ -44,18 +44,18 @@ public class Administration {
             return message;
         });
 
-        bannedIPs = pluginData.getData("bannedIPs", new Seq<>());
-        bannedIP24 = pluginData.getData("bannedIPs", new Seq<>());
-        bannedUUIDs = pluginData.getData("bannedUUIDs", new Seq<>());
-        whitelist = pluginData.getData("whitelist", new Seq<>());
-        playerData = pluginData.getData("playerData", new Seq<>());
+        bannedIPs = pluginData.getData("bannedIPs", Seq::new);
+        bannedIP24 = pluginData.getData("bannedIPs", Seq::new);
+        bannedUUIDs = pluginData.getData("bannedUUIDs", Seq::new);
+        whitelist = pluginData.getData("whitelist", Seq::new);
+        playerAdminData = pluginData.getData("playerAdminData", ObjectMap::new);
 
         Threads.addSavePool(() -> {
             pluginData.setData("bannedIPs",bannedIPs);
             pluginData.setData("bannedIP24",bannedIP24);
             pluginData.setData("bannedUUIDs",bannedUUIDs);
             pluginData.setData("whitelist",whitelist);
-            pluginData.setData("playerData",playerData);
+            pluginData.setData("playerAdminData",playerAdminData);
         });
 
         Threads.addSavePool(() -> Data.config.save());
@@ -82,16 +82,16 @@ public class Administration {
         return current;
     }
 
-    public void addAdmin(String uuid) {
-        playerData.add(uuid);
+    public void addAdmin(String uuid,boolean supAdmin) {
+        playerAdminData.put(uuid,new PlayerAdminInfo(uuid,true,supAdmin));
     }
 
     public void removeAdmin(String uuid) {
-        playerData.remove(uuid);
+        playerAdminData.remove(uuid);
     }
 
     public boolean isAdmin(String uuid) {
-        return playerData.contains(uuid);
+        return playerAdminData.containsKey(uuid);
     }
 
     public interface ChatFilter{
@@ -110,6 +110,7 @@ public class Administration {
         public long timesJoined = 0;
         public long timeMute = 0;
         public boolean admin = false;
+        public boolean superAdmin = false;
 
         public PlayerInfo(String uuid){
             this.uuid = uuid;
@@ -133,4 +134,17 @@ public class Administration {
             this.timeMute = timeMute;
         }
     }
+
+    public static class PlayerAdminInfo {
+        public final String uuid;
+        public boolean admin = false;
+        public boolean superAdmin = false;
+
+        public PlayerAdminInfo(String uuid,boolean admin,boolean superAdmin){
+            this.uuid = uuid;
+            this.admin = admin;
+            this.superAdmin = superAdmin;
+        }
+    }
+
 }

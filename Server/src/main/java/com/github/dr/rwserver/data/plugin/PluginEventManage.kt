@@ -9,8 +9,10 @@
 
 package com.github.dr.rwserver.data.plugin
 
+import com.github.dr.rwserver.game.EventGlobalType.ServerLoadEvent
 import com.github.dr.rwserver.game.EventType.*
 import com.github.dr.rwserver.plugin.event.AbstractEvent
+import com.github.dr.rwserver.plugin.event.AbstractGlobalEvent
 import com.github.dr.rwserver.struct.Seq
 import com.github.dr.rwserver.util.game.Events
 import com.github.dr.rwserver.util.threads.GetNewThreadPool
@@ -18,21 +20,18 @@ import com.github.dr.rwserver.util.threads.GetNewThreadPool
 internal class PluginEventManage {
     companion object {
         private val pluginEventData = Seq<AbstractEvent>(8)
+        private val pluginGlobalEventData = Seq<AbstractGlobalEvent>(8)
         private val executorService = GetNewThreadPool.getNewFixedThreadPool(5, "PluginEventASync-")
         @JvmStatic
         fun add(abstractEvent: AbstractEvent) {
             pluginEventData.add(abstractEvent)
         }
+        @JvmStatic
+        fun add(abstractGlobalEvent: AbstractGlobalEvent) {
+            pluginGlobalEventData.add(abstractGlobalEvent)
+        }
 
         private fun registerEventAll() {
-            /* ASync */
-            Events.on(ServerLoadEvent::class.java) { _: ServerLoadEvent ->
-                executorService.execute {
-                    pluginEventData.each { obj: AbstractEvent ->
-                        obj.registerServerLoadEvent()
-                    }
-                }
-            }
             /* Sync */
             Events.on(PlayerJoinEvent::class.java) { e: PlayerJoinEvent ->
                 pluginEventData.each { p: AbstractEvent ->
@@ -142,6 +141,17 @@ internal class PluginEventManage {
                         p.registerPlayerIpUnbanEvent(
                             e.ip
                         )
+                    }
+                }
+            }
+        }
+
+        private fun registerGlobalEventAll() {
+            /* ASync */
+            Events.on(ServerLoadEvent::class.java) { _: ServerLoadEvent ->
+                executorService.execute {
+                    pluginGlobalEventData.each { obj: AbstractGlobalEvent ->
+                        obj.registerServerLoadEvent()
                     }
                 }
             }
