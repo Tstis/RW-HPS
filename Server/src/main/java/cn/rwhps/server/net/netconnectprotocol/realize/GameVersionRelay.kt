@@ -653,4 +653,5 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return true
         }
     }
+	}
 }
