@@ -1,61 +1,48 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	kotlin("jvm") version "1.6.10"
 	`maven-publish`
 }
 
 //Netty Version
-val nettyVersion = "4.1.73.Final"
+val nettyVersion = "4.1.75.Final"
 
 /**
- * 这里全部采用的compileOnly 为了适配idea 但是编译的时候会切到implementation
- * 需要帮助!
+ * Fuck implementation
  */
 dependencies {
-	implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
+	api("org.jetbrains.kotlin:kotlin-stdlib:1.6.20")
 
-	//implementation project(":RUDP")
-	//implementation "cn.hutool:hutool-socket:5.7.5"
+//	api(project(":Util"))
+	//api "cn.hutool:hutool-socket:5.7.5"
 
-	implementation("io.netty:netty-buffer:$nettyVersion")
-	implementation("io.netty:netty-codec:$nettyVersion")
-	implementation("io.netty:netty-handler:$nettyVersion")
-	implementation("io.netty:netty-transport:$nettyVersion")
-	implementation("io.netty:netty-transport-native-epoll:$nettyVersion:linux-aarch_64")
-	implementation("io.netty:netty-transport-native-epoll:$nettyVersion:linux-x86_64")
+	api("io.netty:netty-buffer:$nettyVersion")
+	api("io.netty:netty-codec:$nettyVersion")
+	api("io.netty:netty-codec-http:$nettyVersion")
+	api("io.netty:netty-handler:$nettyVersion")
+	api("io.netty:netty-transport:$nettyVersion")
+	api("io.netty:netty-transport-native-epoll:$nettyVersion:linux-aarch_64")
+	api("io.netty:netty-transport-native-epoll:$nettyVersion:linux-x86_64")
 
-//	implementation (group: "io.netty", name: "netty-all", version: "4.1.73.Final") {
+//	api (group: "io.netty", name: "netty-all", version: "4.1.73.val") {
 //		exclude group: "io.netty", module: "netty-resolver"
 //	}
 
-	//implementation fileTree(dir:"libs",include:["ChainMarket-23fc7f989f.jar"])
+	//api fileTree(dir:"libs",include:["ChainMarket-23fc7f989f.jar"])
 
-	implementation("com.github.deng-rui:RUDP:2.0.0")
-	implementation("com.github.deng-rui:Compress-Zip:1.0.0")
+	api("com.github.deng-rui:RUDP:2.0.0")
+	api("com.github.deng-rui:Compress-Zip:1.0.0")
 
-	implementation("com.google.code.gson:gson:2.8.9")
+	api("com.google.code.gson:gson:2.9.0")
 
 	//compileOnly group: "com.ip2location", name: "ip2location-java", version: "8.5.0"
 	//compileOnly group: "com.alibaba", name: "fastjson", version: "1.2.58"
-	implementation("com.squareup.okhttp3:okhttp:4.9.3") {
+	api("com.squareup.okhttp3:okhttp:4.9.3") {
 		exclude(group = "org.jetbrains.kotlin")
 	}
-
-	//compileOnly("commons-io:commons-io:2.11.0")
-	//compileOnly("it.unimi.dsi:fastutil-core:8.5.8")
-	//compileOnly group: "org.bouncycastle", name: "bcprov-jdk15on", version: "1.69"
-
-	//compileOnly fileTree(dir:"libs",include:["*.jar"])
-	//compileOnly group: "org.quartz-scheduler", name: "quartz", version: "2.3.2"
-	//compileOnly group: "com.github.oshi", name: "oshi-core", version: "5.5.0"
-
-
 }
 
-tasks {
-	withType<KotlinCompile>().all {
-		kotlinOptions.jvmTarget = "1.8"
-	}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+	kotlinOptions.jvmTarget = "1.8"
 }
 
 
@@ -78,8 +65,8 @@ tasks.jar {
 	exclude("META-INF/*/*/*/*.xml")
 
 	manifest {
-		 attributes(mapOf("Main-Class" to "com.github.dr.rwserver.Main"))
-		 attributes(mapOf("Launcher-Agent-Class" to  "com.github.dr.rwserver.dependent.LibraryManager"))
+		attributes(mapOf("Main-Class" to "cn.rwhps.server.Main"))
+		attributes(mapOf("Launcher-Agent-Class" to  "cn.rwhps.server.dependent.LibraryManager"))
 	}
 }
 
@@ -88,15 +75,50 @@ publishing {
 		create<MavenPublication>("maven") {
 			groupId = "com.github.RW-HPS"
 			artifactId = "Server"
+			description = "Dedicated to Rusted Warfare(RustedWarfare) High Performance Server"
 			version = "1.0.0"
-			from(components["java"])
 
-			/*
-			Need Help 需要帮助
-			无法分模块创建Pom.Xml
-			pom.withXml {
+			from (components.getByName("java"))
+			//from (components.getByName("kotlin"))
+
+			versionMapping {
+				usage("java-api") {
+					fromResolutionOf("runtimeClasspath")
+				}
+				usage("java-runtime") {
+					fromResolutionResult()
+				}
 			}
- 			*/
+
+			pom {
+				scm {
+					url.set("https://github.com/RW-HPS/RW-HPS")
+					connection.set("scm:https://github.com/RW-HPS/RW-HPS.git")
+					developerConnection.set("scm:git@github.com:RW-HPS/RW-HPS.git")
+				}
+
+				licenses {
+					license {
+						name.set("GNU AGPLv3")
+						url.set("https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE")
+					}
+				}
+
+				developers {
+					developer {
+						id.set("RW-HPS")
+						name.set("RW-HPS Technologies")
+					}
+				}
+
+			}
+
+			pom.withXml {
+				val root = asNode()
+				root.appendNode("description", project.description)
+				root.appendNode("name", project.name)
+				root.appendNode("url", "https://github.com/RW-HPS/RW-HPS")
+			}
 		}
 	}
 }

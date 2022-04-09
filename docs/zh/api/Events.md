@@ -39,7 +39,8 @@ public class Event implements AbstractEvent {
 }
 ```
 
-## 旧版
+## 旧版 (不推荐使用)
+
 ```java
 Events.on(EventType.ServerLoadEvent.class, event -> {
     Log.clog("Example Plugin加载完了");

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>铁锈战争控制台</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="table.js"></script>
+    <script src="mican.min.js"></script>
+    <style>
+        *{
+            margin: 0 auto;
+        }
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+        .spin{
+            animation: rotate 30s linear infinite;
+        }
+        .btn{
+            background-color: rgba(187, 186, 186, 0.53);
+            transition: 1s linear;
+            box-shadow:1px 3px 10px 2px rgb(144 144 144 / 29%);
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            color: #7c7c7d;
+            padding: 5px 8px;
+            user-select: none;
+        }
+        .des{
+            background-color: rgb(248, 175, 247);
+            transition: 1s linear;
+            box-shadow:1px 3px 10px 2px rgb(144 144 144 / 29%);
+
+            color: #250a57;
+            padding: 5px 8px;
+            user-select: none;
+        }
+        .para{
+            background-color: rgb(238, 87, 147);
+            transition: 1s linear;
+            box-shadow:1px 3px 10px 2px rgb(144 144 144 / 29%);
+            color: #250a57;
+            padding: 5px 8px;
+            user-select: none;
+        }
+        .btn:hover{
+            background-color: #ffffff;
+            transition: 1s linear;
+            cursor: pointer;
+            user-select: none;
+        }
+        .des:hover{
+            background-color: #e735a9;
+            transition: 1s linear;
+            cursor: pointer;
+            user-select: none;
+        }
+        .bord-with{
+            width: 810px;
+        }
+        .board{
+            position: relative;
+            color: #dbe6f8;
+            transition: 0.2s;
+        }
+        #cmTab{
+            width: 600px;
+            display: inline-block;
+            border-left: 3px solid #ababab;
+            background-color: #f0f8ffaa;
+        }
+        .cmdEl{
+            margin: 0 3px;
+            display: inline-block;
+            height: 40px;
+            line-height: 40px;
+            font-size: 15px;
+        }
+        .block-cover div{
+            background-color:#333333aa;
+            transition: 1s linear;
+        }
+           input:focus{
+               outline: 0;
+               border: 1px solid rgba(255, 145, 0, 0.45);
+               box-shadow: 9px 0px 9px 0px  #ffbb2f45;
+               transition: 0.5s linear;
+           }
+           input {
+               height: 19px;
+               /*很关键：将默认的select选择框样式清除*/
+               appearance: none;
+               -moz-appearance: none;
+               -webkit-appearance: none;
+               padding: 5px 8px;
+               box-shadow: 2px 2px 5px 4px #5555551a;
+               border: 1px solid rgba(199, 199, 199, 0.13);
+               border-radius: 0;
+               transition: 0.5s linear;
+               color: #494949;
+           }
+           .darken{
+               background-color: #5555552a;
+               transition: 0.5s linear;
+           }
+           .darken:hover{
+               background-color: #aaaaaa2a;
+               transition: 0.5s linear;
+           }
+           /*卡片*/
+        :root{
+            --mc-bg-z:#eee;
+            --mc-bg-ka:#333;
+            --mc-bg-hong: rgb(90, 60, 60);
+            --mc-bg-lv: rgb(89, 212, 144);
+            --mc-bg-hui: rgb(151, 151, 151);
+            --mc-bg-liang: rgb(227, 220, 220);
+        }
+        *{
+            margin: 0 auto;
+        }
+        .mc-ka-z{
+            width:100%;
+            box-shadow: 2px 2px 10px 2px #aac9b942;
+            margin: 20px;
+            float: left;
+            /* border-radius: 4px; */
+        }
+        .mc-ka-z:hover{
+            background-color: rgba(215, 170, 215, 0.6);
+        }
+        .mc-ka-st{
+            width: 210px;
+            height: 200px;
+            margin: 10px 15px;
+            box-shadow: 2px 2px 10px 2px #a09f9fa8;
+            background-color: var(--mc-bg-ka);
+            background-image: url("http://zhongguose.com/img/texture.png");
+            float: left;
+            transition: 0.5s;
+        }
+        .mc-ka-st:hover{
+            cursor: pointer;
+            background-color: var(--mc-bg-liang);
+        }
+        .mc-ka-sx{
+            height: 18px;
+            font-size: 16px;
+            line-height: 18px;
+            color: #7d887d;
+            margin:8px 5px;
+            padding:0 5px;
+            word-wrap:break-word;
+            word-break:normal;
+            display: inline-block;border-radius: 3px;
+            background-color: var(--mc-bg-hong);
+        }
+        .mc-dh{
+            transition: 0.5s;
+        }
+        .mc-ka-tou{
+            background-color: rgba(220, 236, 230, 0.53);
+            padding: 5px 8px;
+        }
+        .mc-ka-tou span{
+            background-color: rgba(53, 212, 149, 0.53);
+            transition: 0.5s;
+            box-shadow: 1px 3px 10px 2px rgb(144 144 144 / 29%);
+            height: 50px;
+            line-height: 50px;
+            font-size: 20px;
+            color: #250a57;
+            padding: 5px 8px;
+            user-select: none;
+        }
+        .mc-ka-tou span:hover{
+            background-color: aquamarine;
+        }
+        .dai{
+            height: 200px;
+            position: relative;
+        }
+        .xianshi{
+            animation: 0.2s show 1;opacity:1;
+        }
+        .touming{
+            animation: 0.2s hide 1;opacity:0;
+        }
+        .m{
+            background-color: #656262;
+            box-shadow: 4px 4px 11px 1px #22222259;
+            display: inline-block;
+            border-radius: 22px;
+            padding: 8px;
+            cursor: pointer;
+            color: cornsilk;
+            transition: 0.3s;
+        }
+        .m:hover{
+            background-color: #aaa;
+        }
+        @keyframes show{
+            0%{opacity:0}
+            100%{opacity:1;}
+        }
+        @keyframes hide{
+            0%{opacity:1}
+            100%{opacity:0;}
+        }
+        .mc-chouti{
+            position: fixed;
+            right: 0px;
+            top: 0px;
+            background-color: rgb(194, 215, 221);
+            box-shadow: 3px 3px 10px 2px #888;
+            height: 100%;
+            width: 500px;
+            z-index: 99999;
+            transform: translateX(500px);
+            transition: transform 0.5s cubic-bezier(0.03, 0.53, 0.54, 0.96);
+        }
+        .mc-chouti-wai{
+            transform: translateX(0px);
+        }
+    </style>
+</head>
+<body>
+<div id="backImg" class="spin" style="transition: 3s;filter: blur(40px);position:fixed; width:100%; height:100%;background-image: url('https://i.loli.net/2021/10/07/9vtB61n37qJwEgL.jpg')"></div>
+<div style="position: absolute;top: 0px;width: 100%">
+    <div id="enTitle" style="font-size: 90px;text-align: center;color: #98a19e8a;height: 20px; margin-top: 200px;">
+        小明正要去上学
+        <div style="
+    font-size: 20px;
+    color: #787878;
+    width: 600px;
+    text-align: right;
+">-2021.10.7</div>
+    </div>
+    <div id="enter" style="width: 300px;height: 100px;position: fixed;top: 50%;left: 50%;margin-left: -150px;margin-top: -50px;">
+        <span class="btn"  onclick="connect()">连接</span>
+        <input id="a" name="a"  style="display: block;float: left;margin-top: 7px;height: 24px;" type="password"/>
+        <div id="backInfo" style="color:red;font-size: 14px"></div>
+    </div>
+    <div id="menu" class="bord-with" style="display: none">
+        <div style="width: 400px;display: inline-block;margin-top: 20px;">
+            <form id="form" class="bord-with">
+                <input id="b" name="b" style="height: 27px"/>
+            </form>
+            <span class="btn" onclick="doCmd()">发送命令</span>
+            <span class="btn" onclick="clearBoard()">清除日志</span>
+            <span class="btn" onclick="boardSwitch(this)">隐藏日志</span>
+            <span class="btn" onclick="setCan()">参数设置</span>
+            <span class="btn" id="cmdHelp">命令帮助</span>
+            <span class="btn"  id="reconnect" onclick="connect()">重新连接</span>
+        </div>
+        <span style="background-color: #7f7f7f;width: 20px"></span>
+        <div id="cmTab">
+        </div>
+    </div>
+    <div id="playStat" style="background-color: #dbe6f840;border-top:2px solid #c1c1c18c;display: none">
+        <div style="height: 50px;width: 550px">
+            <span class="btn" style="font-size: 16px;"  onclick="sendServerMsg()">发送服务器消息</span>
+            <input id="pMsg" style="display: block;float: left;margin: 10px;"/>
+            <span id="playTime" class="des" style="height: 30px;"></span>
+        </div>
+        <div style="height: 10px"></div>
+        <div id="zu" style="margin: 0 auto;width: 980px;overflow: hidden;"></div>
+        <div style="height: 30px"></div>
+    </div>
+    <div id="boardWra" style="background-color: #000000db;width: 900px;height: 400px;font-size: 14px;border:5px solid #82818142;
+        position: fixed;bottom: 10px;display: none">
+        <div id="boardHead" style="user-select: none;background-color: #60606073;height: 20px">日志信息：</div>
+        <div style="height: 380px;overflow: hidden">
+            <div class="board" id="board">
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    let a=axios;
+    styleAttach();
+    let pick=new Object();
+    pick.s=false;
+    pick.for='';
+
+    let isCon=false;
+    let backInfo = document.getElementById("backInfo");
+    let board = document.getElementById("board");
+    let playStartTime=new Date().getTime();
+    let isGameStart=[false];
+    let playTimeDom=document.getElementById("playTime");
+    let cmdTab=document.createElement("div")
+    cmdTab.id="cmdTab"
+    function gt(v){return document.getElementById(v)}
+    function boardGoing(str){
+        let el = document.createElement("p");
+        el.innerText=str;
+        el.style.color=colorWalkHA(100,50,0.2,1,0,200)
+        board.prepend(el);
+    }
+    function clearBoard(){
+        board.innerText="..."
+    }
+    let ws;
+    function boardSwitch(obj){
+        if(obj.innerText=='显示日志'){
+            obj.innerText='隐藏日志'
+            document.getElementById("boardWra").style.display='block'
+        }else {
+            obj.innerText='显示日志'
+            document.getElementById("boardWra").style.display='none'
+        }
+    }
+    function showOther(){
+        let bacImg=document.getElementById("backImg");
+        bacImg.classList.remove("spin");
+        bacImg.style.filter="unset";
+        document.getElementById("boardWra").style.display='block';
+        document.getElementById("enter").style.display='none';
+        document.getElementById("menu").style.display='block';
+        document.getElementById("playStat").style.display='block';
+    }
+    function connect(){
+        if(ws&&ws.isConnected) {
+            boardGoing("已连接")
+            document.getElementById("reconnect").style.display='none'
+            return;
+        }
+        if(document.getElementById("a").value.length<1)  {
+            backInfo.innerText="请输入密码接入"
+            return
+        }
+        ws= new WebSocket("ws://"+location.host+"/WebSocket/GamePanel")
+        ws.onopen=function (){
+            msgSend("-rc")
+            boardGoing("已连接")
+            setTimeout(()=>msgSend("-ts"),1000)
+            isCon=true
+        }
+        ws.onmessage=function (e){
+            if(e.data.indexOf("-c ")>-1){
+              cmdList(e.data)
+            }else if(e.data.indexOf("-ts")==0){
+                playerCard(e.data)
+            }else if(e.data.startsWith("-gf ")) initServerCan(e.data);
+            else if(e.data.startsWith("-chat\n")) {
+                ag=e.data.split('\n');chatShow(ag[1],ag[2])
+            }else if(e.data=="200"){
+                pwd=document.getElementById("a").value;
+                showOther()
+            }else if(e.data=="错误：100"){
+                backInfo.innerText="你把密码给忘了吗，忘了我也没辙"
+            } else boardGoing(e.data)
+        }
+        ws.onclose=function (){
+            boardGoing("已断开")
+            document.getElementById("reconnect").style.display='inline'
+            isCon=false
+        }
+    }
+    let context;
+    function showContext(x,y){
+        function doAc(str){
+            msgSend("-ac "+str)
+            context.hidden=true
+            pick.s=false
+        }
+        if(!context){
+            context=g("div");
+            document.body.append(context)
+            context.style.position='fixed'
+            context.style.top=y+"px";context.style.left=x+"px"
+            context.kick=g("div")
+            context.kick.innerText="踢出"
+            context.kick.style.position='relative'
+            context.kick.style.top='45px'
+            context.kick.classList.add("m")
+            context.append(context.kick)
+            context.kick.onclick=()=>{doAc('k '+pick.tar)}
+            context.mute=g("div")
+            context.mute.innerText="禁言"
+            context.mute.style.position='relative'
+            context.mute.style.top='55px'
+            context.mute.style.left='35px'
+            context.mute.classList.add("m")
+            context.append(context.mute)
+            context.mute.onclick=()=>{doAc('m '+pick.tar)}
+            context.gb=g("div")
+            context.gb.innerText="X"
+            context.gb.classList.add("m")
+            context.gb.onclick=()=>{context.hidden=true;pick.s=false}
+            context.append(context.gb)
+        }else {
+            context.style.top=y+"px";context.style.left=x+"px"
+            context.hidden=false
+        }
+    }
+    function actToPlayer(u,e){
+        if(pick.s==false){
+            pick.tar=u
+            showContext(e.clientX,e.clientY)
+        }
+    }
+    function oneCard(gpi,data,hd,ski,ys){
+        let ka=g("div")
+        ka.classList.add("mc-ka-st","mc-dh")
+        data.forEach((e,i) => {
+            if(ski&&i==ski){
+                ka.id=e;
+                ka.onclick=(evt)=>{actToPlayer(e,evt)}
+                gpi[i]=e
+            }else{
+                let p=g("p")
+                p.classList.add("mc-ka-sx")
+                p.innerText=e
+                if(hd) p.title=hd[i]
+                ka.append(p)
+                if(ys) ys(p,i,data)
+                gpi[i]=p
+            }
+        });
+        return ka;
+    }
+
+    let players={};
+    function toCard(data,p,ys,ski){
+        let hd=data.shift()
+        for(let i in data){
+            let c=data[i]
+            if(players[c.head[0]]) {
+                refreshCard(c,players[c.head[0]],hd,ski,ys)
+                continue;
+            }
+            let ojb={}
+            let a=g("div")
+            a.classList.add("mc-ka-z","mc-dh")
+            players[c.head[0]]=ojb
+            ojb.a=a;
+            p.append(a)
+            let h=g('div')
+            h.classList.add("mc-ka-tou")
+            a.append(h)
+            ojb.h=h;
+            ojb.sh=[]
+            for(let i in c.head){
+                let h1=g("span")
+                h1.innerText=c.head[i]
+                if(i==2) h1.innerText=formatTime(new Date().getTime()-c.head[i])
+                h.append(h1)
+                ojb.sh[i]=h1;
+            }
+            ojb.gp=[]
+            c.body.forEach((e,i)=>{
+                ojb.gp[i]=[]
+                a.append(oneCard(ojb.gp[i],e,hd,ski,ys))
+            })
+        }
+        for(let j in players){
+            if(!data.find(d=>d.head[0]==j)) {
+                players[j].a.remove();
+                delete players[j]
+            }
+        }
+    }
+    function refreshCard(c,p,hd,ski,ys){
+        c.head.forEach((e,i)=>{
+            if(i==2) p.sh[i].innerText=formatTime(new Date().getTime()-e)
+            else p.sh[i].innerText=e
+        })
+        c.body.forEach(s=>{
+            let gpi=p.gp.find(x=>x[1]==s[1])
+            if(gpi){
+                s.forEach((e,i)=>{
+                    if(i==ski) {
+                        gpi[ski]=e
+                        gpi[0].parentElement.id=e;
+                    }else {
+                        gpi[i].innerText=e;
+                        ys(gpi[i],i,s)
+                    }
+                })
+            }else{
+                p.gp[p.gp.length]=[]
+               p.a.append(oneCard(p.gp[p.gp.length-1],s,hd,ski,ys))
+            }
+        })
+        p.gp=p.gp.filter(x=>{
+                if(!c.body.find(y=>y[1]==x[1])){
+                    x[0].parentElement.remove()
+                    return false
+                }else return true
+            }
+        )
+    }
+    function dailg(str,obj,flip){
+        let zih=50
+        let fac=Math.ceil(str.length/13)
+        let x=200
+        let y=50*fac
+        if(fac>8){
+            x=500
+            y=y*2/5
+        }else if(fac>3){
+            x=300
+            y=2/3*y
+        }else if(str.length<5) x=100
+        let dai=g("div")
+        dai.classList.add("dai",'xianshi')
+        dai.style.left=obj.clientWidth-50+'px'
+        dai.style.top=obj.clientHeight/2-y+10+'px'
+        obj.append(dai)
+        if(dai.offsetParent!=obj){dai.style.top=(obj.offsetTop-dai.offsetTop)/2-y+10+'px'}
+        let canvas=g("canvas")
+        canvas.height=y
+        canvas.width=x
+        dai.append(canvas)
+        let ctx=canvas.getContext("2d")
+        let m=8;n=2;
+        ctx.moveTo(x/2,m);
+        // ctx.strokeStyle = "#ee9";
+        ctx.quadraticCurveTo(n,n,m,y/2);
+        ctx.quadraticCurveTo(n,0.8*y,0.2*x,0.85*y);
+        ctx.quadraticCurveTo(0.2*x,0.98*y,3*m,y);
+        ctx.quadraticCurveTo(0.26*x,0.98*y,0.27*x,0.85*y);
+        ctx.quadraticCurveTo(x-n,y-n,x-m,y/2);
+        ctx.quadraticCurveTo(x-n,n,x/2,m);
+        // ctx.stroke();
+        ctx.fillStyle="#eeeedddc"
+        ctx.fill();
+        if(flip) {canvas.style.transform='scaleX(-1)';dai.style.left=-150+'px'}
+        let zi=g("div")
+        zi.innerText=str
+        let mid=midle(x/2,m,n,n,m,y/2)
+        zi.style.width=midle(x/2,m,x-n,n,x/2,m)[0]-mid[0]+40+'px'
+        dai.append(zi)
+        zi.style.position='relative'
+        zi.style.fontSize='16px'
+        if(fac<3){ mid[0]=mid[0]-10;mid[1]+=5}
+        zi.style.top=mid[1]-y+'px'
+        zi.style.left=mid[0]+'px'
+        zi.style.textAlign='center'
+        zi.style.margin='unset'
+        return dai
+    }
+    function midle(p0x,p0y,p1x,p1y,p2x,p2y){
+        r=[]
+        r[0]=0.25*p0x+0.5*p1x+0.25*p2x
+        r[1]=0.25*p0y+0.5*p1y+0.25*p2y
+        return r
+    }
+    function chatShow(u,s){
+        for(let i in players){
+            let x=players[i].gp.find((v)=>v[1]==u)
+            if(x){
+                x=x[0].parentElement;
+                let dai=dailg(s,x,x.offsetLeft-x.parentElement.offsetLeft>600?1:undefined)
+                setTimeout(()=>{dai.classList.remove('xianshi');dai.classList.add('touming');setTimeout(()=>{dai.remove(),200})},2000)
+                break;
+            }
+        }
+    }
+    let colorSch=["#d2ee52","#a251a0","#e4e9b6","#c97ef5","#88e60f","#8e5c4a","#f2cf9d","#8e7221","#faa5fe","#acc651","#acfb1e","#d87daa","#af46ec","#a9b143","#faa759"]
+    let colorTeam=["rgba(9,38,113,0.2)","rgba(179,16,16,0.16)",
+        "#ea8531","#c34b26","#ad5465","#c4eaa9","#8a7597","#cc184c","#f9b185","#899ff3","#bfcb65","#a22e34","#9c5bd8","#994fcf","#d4821c"]
+    // for(let i=0;i<15;i++){
+    //     colorSch[i]=colorWalk(8947848);
+    // }
+    function playerCard(ps){
+        let playStat = document.getElementById("zu");
+        let dm=ps.substr(3);
+        let data = JSON.parse(dm);
+        playTimeDom.online=0;
+        playTimeDom.total=data.length-1;
+        for(let i=1;i<data.length;i++){
+            if(data[i].body[6]=="断开") playTimeDom.online++;
+        }
+        playTimeDom="在线玩家："+playTimeDom.online+"/"+playTimeDom.total;
+        toCard(data,playStat,(p,i,data)=>{
+            if(i==6) p.parentElement.style.setProperty("--mc-bg-ka",data[i]=="断开"?"rgba(151,151,151,0.04)":data[5]=='true'?"rgba(255,221,0,0.18)":colorTeam[data[4]])
+            p.style.setProperty("--mc-bg-hong",colorSch[i])
+        },1)
+    }
+    function doPickCmd(v){
+        if(pick.s==true){
+            document.body.style.cursor="default";
+            pick.s=false;
+            msgSend(pick.for+" "+v);
+            pick.for='';
+            releaseBlock();
+        }
+    }
+    function cmdList(data){
+        let cmdList=data.substr(3)
+        cmdList=cmdList.replaceAll("<","[")
+        cmdList=cmdList.replaceAll(">","]")
+        let cmdL = JSON.parse(cmdList);
+        // let cmdTab = document.getElementById("cmTab");
+        cmdTab.innerText=""
+        cmdL.forEach(x=>{
+            let a = document.createElement("div");
+            a.classList.add("cmdEl")
+            let h = document.createElement("span");
+            h.classList.add("btn")
+            h.style.fontSize="15px"
+            h.innerText=x.h
+            let d = document.createElement("span");
+            d.classList.add("des")
+            d.innerText=x.d
+            let p = document.createElement("span");
+            p.classList.add("para")
+            p.innerHTML=x.p
+            cmdTab.append(a)
+            a.append(h);a.append(d);a.append(p);
+            if(x.p.length<1) {
+                h.onclick=function (e){
+                    e.stopPropagation();
+                    let co=document.getElementById("b");
+                    let c=document.getElementById("b").value;
+                    co.value=x.h;
+                    doCmd()
+                    co.value=c;
+                }
+            }else{
+                if(x.p.indexOf("PlayerSerialNumber")>-1){
+                    d.onclick=function (e){
+                        e.stopPropagation();
+                        if(pick.s==true) return;
+                        document.body.style.cursor="crosshair"
+                        pick.s=true;
+                        pick.for=x.h;
+                        blockOther(document.querySelector("#playerTable > table"))
+                    }
+                }
+                h.onclick=function (e){
+                    e.stopPropagation();
+                    document.getElementById("b").value=x.h
+                }
+            }
+        })
+    }
+    function doCmd(){
+        let ab=new Object()
+        ab.a=document.getElementById("a").value;
+        ab.b=document.getElementById("b").value;
+        ws.send("-p"+ab.a+" -1 "+ab.b);
+    }
+    // function drag0(obj){
+    //     obj.onmousedown = function(e){
+    //         if(e.target!=obj) return;
+    //         if(obj.style.position!="fixed"&&obj.style.position!="absolute"){
+    //             obj.rep=obj.style.position;
+    //             let h=obj.offsetTop;
+    //             let l=obj.offsetLeft;
+    //             obj.style.position="absolute"
+    //             obj.style.top=h+"px";
+    //             obj.style.left=l+"px";
+    //         }
+    //         var divX = e.clientX - this.offsetLeft;
+    //         var divY = e.clientY - this.offsetTop;
+    //         document.onmousemove = function(e){
+    //             var disX = e.clientX - divX;
+    //             var disY = e.clientY - divY;
+    //             obj.style.top = disY + "px";
+    //             obj.style.left = disX + "px";
+    //             document.onmouseup = function(e){
+    //                 document.onmousedown = document.onmousemove = null;
+    //                 if(e.pageY<20){obj.style.position=obj.rep;}
+    //             }
+    //         }
+    //     }
+    // }
+    // drag0(document.getElementById("cmTab"))
+    function sendServerMsg(){
+        let pMsg = document.getElementById("pMsg").value;
+        if(pMsg.length>0){
+            msgSend("msg "+pMsg);
+        }
+    }
+    // setInterval(()=>{
+    //     if(isCon)
+    //     if(isGameStart)  playTimeDom.innerText= '游戏已开始:'+formatTime((new Date().getTime()-playStartTime))
+    //     else playTimeDom.innerText="战役室:"+formatTime((new Date().getTime()-playStartTime))
+    // },1000)
+    setInterval(()=>{
+       if(isCon) {
+          ws.send("-p1 -3 0")
+       }
+    },5000)
+    function msgSend(m){
+        let c=document.getElementById("b").value;
+        document.getElementById("b").value=m;
+        doCmd()
+        document.getElementById("b").value=c;
+    }
+
+    function formatTime(t){
+        let h=parseInt(t/(1000*60*60));
+        return (0==h?"":h+"时")+parseInt(t/(1000*60)%60)+"分"+parseInt((t/1000)%60)+"秒"
+    }
+    //参数设置
+    let serverCan=new Object()
+    serverCan.show=true
+    function getter(n){
+        return serverCan.config[n];
+    }
+    function setter(n,v){
+        msgSend("config "+n+" "+v)
+        serverCan.config[n]=v
+    }
+    function flushAll(){
+        msgSend("-sf"+JSON.stringify(serverCan.config))
+    }
+
+    function initServerCan(configString){
+        let config=JSON.parse(configString.substring(4),(k,v)=>{
+        if(v=="true") return true;
+        if(v=="false") return false;
+        if(v=="") return "";
+        let vv=new Number(v);
+        if(!isNaN(vv)) return vv;
+        return v;
+        })
+        console.log(config)
+        let miList=[]
+        for(let i in config){
+            if(config[i] instanceof Number) {
+                miList.push([i,i,LX.prop,0,10000,1])
+            }
+            else if(typeof config[i] =="boolean") {
+                miList.push([i,i,LX.bl])
+            }else{
+                miList.push([i,i,LX.wb])
+            }
+        }
+        serverCan.miList=miList
+        serverCan.config=config
+        MiCan(miList,setter,getter,'服务器参数面板')
+    }
+    function setCan(){
+        if(!serverCan.config){
+            msgSend("-gf")
+            setTimeout(() => {
+                let start=new Date().getTime();
+                while(!serverCan.config&&new Date().getTime()-start<10*1000){}
+                if(new Date().getTime()-start>=10*1000) {
+                    console.log("超时未响应")
+                }
+            }, 100);
+        }else{
+            if(serverCan.show) {xiaoshi(ban);serverCan.show=false}
+            else {xianshi(ban);serverCan.show=true}
+        }
+    }
+    function ansiHas(el,tarEl){
+        while (el!=null) {
+            if(el==tarEl) return true
+            el=el.parentElement
+        }
+        return false
+    }
+    function applyChouTi(obj,content){
+        obj.onclick=()=>{
+            let chouti=document.getElementById("mc-ct")
+            if(!chouti){
+                content.style.height="100vh"
+                content.style.overflowY="auto"
+                chouti=document.createElement("div")
+                chouti.classList.add("mc-chouti")
+                chouti.id="mc-ct"
+                document.body.append(chouti)
+                chouti.append(content)
+                chouti.hidden=true
+                content.onmousewheel=(e)=>{
+                    e.stopPropagation()
+                }
+            }
+            if(!chouti.hidden) return
+            chouti.hidden=false
+            setTimeout(()=> chouti.classList.add("mc-chouti-wai"),0)
+            function dis(e){
+                if(e.target!=obj&&!ansiHas(e.target,chouti)){
+                    chouti.classList.remove("mc-chouti-wai")
+                    setTimeout(()=> chouti.hidden=true,500)
+                    window.removeEventListener("click",dis)
+                }
+            }
+            window.addEventListener("click",dis)
+        }
+    }
+
+    applyChouTi(document.getElementById("cmdHelp"),cmdTab)
+    drag(document.getElementById("boardHead"),document.getElementById("boardWra"))
+    board.onmousewheel=(e)=>{
+        let speed=50
+        let t=-board.style.top.replace("px","");
+        if(e.wheelDelta<0&&t<=board.clientHeight-board.parentElement.clientHeight){
+            if(t==board.clientHeight-board.parentElement.clientHeight) board.style.top=-(board.clientHeight-board.parentElement.clientHeight)+"px";
+            board.style.top=-(t+speed)+"px";
+        }else {
+            if(speed-t>=0) t=speed
+            board.style.top=-(t-speed)+"px";
+        }
+    }
+</script>
+</body>
+</html>

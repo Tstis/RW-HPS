@@ -8,7 +8,7 @@ mkdir -p ~/rw-hps/docker
 # 创建
 vi ~/rw-hps/docker/Config.json
 # 或者下载
-wget -O ~/rw-hps/docker/Config.json https://raw.githubusercontent.com/yiyungent/RW-HPS/docker/build/docker/Config.json
+wget -O ~/rw-hps/docker/Config.json https://raw.githubusercontent.com/RW-HPS/RW-HPS/master/docker/Config.json
 ```
 
 > 2.运行，Go!
@@ -58,7 +58,7 @@ docker inspect rw-hps-container | grep -i logpath
 mkdir -p ~/rw-hps/docker
 vi ~/rw-hps/docker/Config.json
 # 或者下载
-wget -O ~/rw-hps/docker/Config.json https://raw.githubusercontent.com/yiyungent/RW-HPS/docker/build/docker/Config.json
+wget -O ~/rw-hps/docker/Config.json https://raw.githubusercontent.com/RW-HPS/RW-HPS/master/docker/Config.json
 ```
 
 > ~/rw-hps/docker/Config.json
