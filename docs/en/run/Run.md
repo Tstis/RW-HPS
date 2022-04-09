@@ -1,6 +1,6 @@
 ## RW-HPS Start Server
 ## JVM Environment Requirements
-- JVM: Minimum Java 11 preferred JDK, JRE can also be used
+- JVM: Minimum Java 8 preferred JDK, JRE can also be used
 
 > To download the JDK.
 > - Download and install manually such as [AdoptOpenJDK](https://adoptopenjdk.net/) or [OracleJDK](https://www.oracle.com/java/technologies/javase-downloads.html)
@@ -13,7 +13,7 @@
 #### Windows
 2. Run the jar in your preferred directory using Cmd or PowerShell (on Windows systems hold down Shift+right mouse button and click "Open PowerShell here")
 ```bash
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 ```
 
 #### Linux
@@ -22,7 +22,7 @@ java -jar Server.jar
 
 2. Type directly
 ```bash
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 ```
 
 ### Manually compile the latest test version
@@ -63,7 +63,7 @@ Just wait for it to finish
 5.Run  
 Run the jar in your preferred directory
 ```bash
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 ```
 But this will be closed when SSH is disconnected, so we'll use Screen as above
 
@@ -83,7 +83,7 @@ sudo apt-get install screen -y
 ``bash
 screen -S the name you like
 cd Jar's directory
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 
 # Quit using Ctrl + A + D
 # Reenter using

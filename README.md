@@ -8,7 +8,7 @@
 ![](https://app.fossa.com/api/projects/git%2Bgithub.com%2FRW-HPS%2FRW-HPS.svg?type=shield)
 
 # RW-HPS Project
-RW-HPS is a Rusted Warfare game server, used to quickly set up high-performance game servers on servers running Java11
+RW-HPS is a Rusted Warfare game server, used to quickly set up high-performance game servers on servers running Java8
 
 ## Features
 ### High performance
@@ -31,7 +31,7 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 - Game reconnection
 - Custom map
 - Load Save Game
-- Mods Support (rwmod cannot be loaded directly)
+- Mods Support
 
 **Ex**
 - Loading plugins
@@ -47,9 +47,12 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 </details>
 
 #### Currently to be completed
-- [ ] Analog Layer (technical limitations)
-- [x] Vote
+- [ ] Analog Layer
+- [ ] Vote (Bug :( )
 - [ ] 1.15.P*
+- [x] Load RWMOD
+- [ ] Hot modify game progress
+- [ ] GamePanel
 
 ### Actions that won't be supported
 - Anything related to real money

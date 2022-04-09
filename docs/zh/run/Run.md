@@ -1,6 +1,6 @@
 # RW-HPS Start Server
 ## JVM 环境要求
-- JVM：最低 Java 11 优先建议JDK,也可以使用JRE
+- JVM：最低 Java 8 优先建议JDK,也可以使用JRE
 
 > 要下载 JDK：
 > - 手动下载安装如 [AdoptOpenJDK](https://adoptopenjdk.net/) 或者 [OracleJDK](https://www.oracle.com/java/technologies/javase-downloads.html) 
@@ -13,7 +13,7 @@
 #### Windows
 2.在你喜欢的目录下使用Cmd 或者 PowerShell (Windows 系统按住Shift+鼠标右键，点击"在此处打开 PowerShell") 运行jar
 ```bash
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 ```
 
 #### Linux 
@@ -22,7 +22,7 @@ java -jar Server.jar
 
 2.直接输入
 ```bash
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 ```
 
 ### 手动编译最新的测试版本
@@ -63,7 +63,7 @@ git clone git@github.com:RW-HPS/RW-HPS.git
 5.运行  
 在你喜欢的目录下运行jar
 ```bash
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 ```
 但是这样会在SSH断开后被关闭 那么我们就使用上文的Screen
 
@@ -83,7 +83,7 @@ sudo apt-get install screen -y
 ```bash
 screen -S 你喜欢的名字
 cd Jar的目录下
-java -jar Server.jar
+java -Dfile.encoding=UTF-8 -jar Server.jar
 
 # 退出使用Ctrl + A + D
 #重进使用
