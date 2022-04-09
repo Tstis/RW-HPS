@@ -211,7 +211,7 @@ class Relay {
             var idRelay = id
             val relay: Relay =  if (id.isBlank()) {
                                     while (true) {
-                                        val intId = rand.random(1000, 100000)
+                                        val intId = rand.random(100, 199)
                                         if (!serverRelayData.containsKey(intId)) {
                                             idRelay = intId.toString()
                                             debug(intId)

@@ -535,7 +535,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return
         }
 
-        if ("R".equals(id[0].toString(), ignoreCase = true)) {
+        if ("i".equals(id[0].toString(), ignoreCase = true) || "і".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
         } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
@@ -562,10 +562,10 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
 
         if (IsUtil.notIsBlank(id)) {
             if ("new".equals(id, ignoreCase = true)) {
-            if ("new".equals(id, ignoreCase = true) || "нова".equals(id, ignoreCase = true)) {
+            if ("new".equals(id, ignoreCase = true) || "нова".equals(id, ignoreCase = true) || "н".equals(id, ignoreCase = true)) {
                 newRelayId(false)
             } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true)) {
-            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true) || "мод".equals(id, ignoreCase = true) || "моди".equals(id, ignoreCase = true) || "модифікація".equals(id, ignoreCase = true) || "модифікації".equals(id, ignoreCase = true)) {
+            } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true) || "мод".equals(id, ignoreCase = true) || "моди".equals(id, ignoreCase = true) || "модифікація".equals(id, ignoreCase = true) || "модифікації".equals(id, ignoreCase = true) || "м".equals(id, ignoreCase = true)) {
                 newRelayId(true)
             } else {
                 try {
