@@ -288,13 +288,13 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ ПУР >>> i" + relay!!.id + " }}")
+            o.writeString("{{ s.vangers.tk >>> i" + relay!!.id + " }}")
             //
             o.writeBoolean(false)
             sendPacket(o.createPacket(170)) //+108+140
             //getRelayT4(Data.localeUtil.getinput("relay.server.admin.connect",relay.getId()));
-            sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay.server.admin.connect", relay!!.id), "ADMIN", 5))
-            sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay", relay!!.id), "ADMIN", 5))
+            //sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay.server.admin.connect", relay!!.id), "CEPBEP", -1))
+            sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay", relay!!.id), "CEPBEP", -1))
             //ping();
 
             //debug(name)
@@ -372,7 +372,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             o1.writeBytes(cachePacket!!.bytes)
             relay!!.admin!!.sendPacket(o1.createPacket(174))
             connectionAgreement.add(relay!!.groupNet)
-            sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay", relay!!.id), "ADMIN", 5))
+            sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay", relay!!.id), "CEPBEP", -1))
         } catch (e: IOException) {
             e.printStackTrace()
         } finally {
