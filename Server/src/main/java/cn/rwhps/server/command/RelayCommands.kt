@@ -20,11 +20,11 @@ import cn.rwhps.server.util.game.CommandHandler
 class RelayCommands(handler: CommandHandler) {
     private fun registerRelayCommand(handler: CommandHandler) {
         handler.register("players", "serverCommands.players") { _: Array<String>?, log: StrCons ->
-            if (Relay.serverRelayIpData.size() == 0) {
-                log["No players are currently in the server."]
-            } else {
+            //if (Relay.serverRelayIpData.size() < 0) {
+            //    log["No players are currently in the server."]
+            //} else {
                 log[Relay.relayAllIP]
-            }
+            //}
         }
         handler.register("banrelay", "<id>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
             val relay = Relay.getRelay(arg[0])
@@ -41,24 +41,11 @@ class RelayCommands(handler: CommandHandler) {
 
         }
 
-        handler.register("unbanrelay", "<ip>", "serverCommands.unBanrelay") { arg: Array<String>, log: StrCons ->
+        handler.register("unban", "<ip>", "serverCommands.unBanrelay") { arg: Array<String>, log: StrCons ->
             val ip = arg[0]
             Data.core.admin.bannedIP24.remove(IpUtil.ipToLong24(ip))
             log["OK!  $ip The *.*.*.0 segment is unDisabled"]
         }
-
-        handler.register("bans",  "serverCommands.bans") { _: Array<String>, log: StrCons ->
-            if (Data.core.admin.bannedIP24.size() == 0) {
-                log["No bans are currently in the server."]
-            } else {
-                log["Bans: {0}", Data.core.admin.bannedIP24.size()]
-                val data = StringBuilder()
-                for (ipLong in Data.core.admin.bannedIP24) {
-                    data.append(Data.LINE_SEPARATOR)
-                        .append("IP: ").append(IpUtil.long24ToIp(ipLong))
-                }
-                log[data.toString()]
-            }
         }
     }
 
