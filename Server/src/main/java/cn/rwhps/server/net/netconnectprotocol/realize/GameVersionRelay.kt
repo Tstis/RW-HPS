@@ -531,7 +531,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
     private fun idCustom(inId: String) {
         var id = inId
         if (id.isEmpty()) {
-            sendRelayServerType(Data.i18NBundle.getinput("relay.server.no", "空"))
+            sendRelayServerType(Data.i18NBundle.getinput("relay.server.no", "-0"))
             return
         }
 
@@ -561,7 +561,6 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
         }
 
         if (IsUtil.notIsBlank(id)) {
-            if ("new".equals(id, ignoreCase = true)) {
             if ("new".equals(id, ignoreCase = true) || "нова".equals(id, ignoreCase = true) || "н".equals(id, ignoreCase = true)) {
                 newRelayId(false)
             } else if ("mod".equals(id, ignoreCase = true) || "mods".equals(id, ignoreCase = true)) {
@@ -653,5 +652,4 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return true
         }
     }
-}
 }
