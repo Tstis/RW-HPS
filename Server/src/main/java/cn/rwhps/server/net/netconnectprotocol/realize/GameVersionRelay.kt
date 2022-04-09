@@ -535,7 +535,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return
         }
 
-        if ("i".equals(id[0].toString(), ignoreCase = true) || "і".equals(id[0].toString(), ignoreCase = true)) {
+        if ("i".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
         } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
@@ -653,5 +653,5 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return true
         }
     }
-	}
+}
 }
