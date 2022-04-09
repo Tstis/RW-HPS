@@ -26,7 +26,7 @@ class RelayCommands(handler: CommandHandler) {
                 log[Relay.relayAllIP]
             //}
         }
-        handler.register("banrelay", "<id>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
+        handler.register("ban", "<id>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
             val relay = Relay.getRelay(arg[0])
             if (isBlank(relay)) {
                 log["NOT RELAY ROOM"]
@@ -46,6 +46,19 @@ class RelayCommands(handler: CommandHandler) {
             Data.core.admin.bannedIP24.remove(IpUtil.ipToLong24(ip))
             log["OK!  $ip The *.*.*.0 segment is unDisabled"]
         }
+		
+		handler.register("bans",  "serverCommands.bans") { _: Array<String>, log: StrCons ->
+            if (Data.core.admin.bannedIP24.size() == 0) {
+                log["No bans are currently in the server."]
+            } else {
+                log["Bans: {0}", Data.core.admin.bannedIP24.size()]
+                val data = StringBuilder()
+                for (ipLong in Data.core.admin.bannedIP24) {
+                    data.append(Data.LINE_SEPARATOR)
+                        .append("IP: ").append(IpUtil.long24ToIp(ipLong))
+                }
+                log[data.toString()]
+            }
         }
     }
 
