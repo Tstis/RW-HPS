@@ -18,7 +18,7 @@ import java.io.IOException
 import java.io.OutputStream
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GameInputStream : Closeable {
     private val buffer: DisableSyncByteArrayInputStream
@@ -211,6 +211,13 @@ class GameInputStream : Closeable {
         readString()
         return readStreamBytes()
     }
+
+
+
+    fun getSize(): Long {
+        return this.buffer.available().toLong()
+    }
+
 
     override fun toString(): String {
         return "GameInputStream{" +

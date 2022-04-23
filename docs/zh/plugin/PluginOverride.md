@@ -17,7 +17,7 @@
 package dr.rwhps.plugin.test;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class OveMain extends GameVersionServer {
     ...

@@ -25,7 +25,7 @@ import java.net.URLClassLoader
 import java.util.*
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class PluginsLoad {
     private fun loadJar(jarFileList: Seq<File>): Seq<PluginLoadData> {
@@ -134,7 +134,7 @@ class PluginsLoad {
         ) {
         init {
             if (mkdir) {
-                main.pluginDataFileUtil = FileUtil.getFolder(Data.Plugin_Plugins_Path).toFolder(this.name)
+                main.pluginDataFileUtil = FileUtil.getFolder(Data.Plugin_Plugins_Path,true).toFolder(this.name)
             }
         }
 

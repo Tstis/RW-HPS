@@ -12,7 +12,7 @@ package cn.rwhps.server.net.netconnectprotocol.realize
 import cn.rwhps.server.net.core.ConnectionAgreement
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2020/9/5 17:02:33
  */
 class GameVersionServerBeta(connectionAgreement: ConnectionAgreement?) : GameVersionServer(connectionAgreement!!) {

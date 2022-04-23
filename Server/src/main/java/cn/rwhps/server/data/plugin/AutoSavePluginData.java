@@ -10,7 +10,7 @@
 package cn.rwhps.server.data.plugin;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class AutoSavePluginData extends AbstractPluginData {
     public AutoSavePluginData() {

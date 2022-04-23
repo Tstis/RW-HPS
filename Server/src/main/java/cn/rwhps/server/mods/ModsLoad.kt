@@ -13,76 +13,142 @@ import cn.rwhps.server.struct.ObjectMap
 import cn.rwhps.server.struct.OrderedMap
 import cn.rwhps.server.util.IsUtil.isBlank
 import cn.rwhps.server.util.ModsIniUtil
-import cn.rwhps.server.util.file.FileUtil
 import cn.rwhps.server.util.log.Log
+import cn.rwhps.server.util.log.exp.RwGamaException
 import cn.rwhps.server.util.zip.zip.ZipDecoder
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.compress.archivers.zip.ZipFile
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 /**
  * Mods加载
- * @author Dr
+ * @author RW-HPS/Dr
  */
-class ModsLoad {
+internal class ModsLoad {
     val a: Pattern = Pattern.compile("\\$\\{([^}]*)}")
-    val b: Pattern = Pattern.compile("[A-Za-z_][A-Za-z_.0-9]*")
+    val b: Pattern = Pattern.compile("[A-Za-z_][A-Za-z_.\\d]*")
 
-    val file: File
-
-    constructor(fileUtil: FileUtil) {
-        this.file = fileUtil.file
-    }
+    private val zipRead: ZipDecoder
 
     constructor(file: File) {
-        this.file = file
+        this.zipRead = ZipDecoder(file)
+    }
+    constructor(zipFile: ZipFile) {
+        this.zipRead = ZipDecoder(zipFile)
     }
 
-    fun load(): ObjectMap<String,Int> {
-        val orderedMap = ZipDecoder(file).getSpecifiedSuffixInThePackageAllFileNameAndPath("ini")
-        val template = ZipDecoder(file).getSpecifiedSuffixInThePackageAllFileName("template")
 
-        val result = ObjectMap<String,Int>()
+    constructor(inStream: InputStream) {
+        this.zipRead = ZipDecoder (inStream)
+    }
+    constructor(zipInStream: ZipArchiveInputStream) {
+        this.zipRead = ZipDecoder(zipInStream)
+    }
 
-        orderedMap.forEach { k: ObjectMap.Entry<String, ByteArray> ->
+    fun close() {
+        zipRead.close()
+    }
+
+    fun load(): OrderedMap<String,ModsIniData> {
+        // 暴力获取文件 直接读 看看有没有包含 core 这个字符
+        val orderedMap = zipRead.modsLoadingDedicated()
+
+        zipRead.close()
+
+        /**
+         * 大写组
+         */
+        val allCaps = OrderedMap<String, String>()
+
+        /* 阴间moder 的解决办法
+         * https://github.com/RW-HPS/RW-HPS/issues/188
+         *
+         * 华夏有衣来挨打 !
+         */
+        orderedMap.keys().forEach { allCaps.put(it.uppercase(),it) }
+
+        val seq = orderedMap.keys().toSeq()
+        val fileMap = OrderedMap<String, ByteArray>()
+
+        // 对文件夹进行排序
+        seq.sort { name1, name2 ->
+            val filePath1 = name1.substring(0, name1.length - name1.split("/").toTypedArray()[name1.split("/").toTypedArray().size - 1].length)
+            val filePath2 = name2.substring(0, name2.length - name2.split("/").toTypedArray()[name2.split("/").toTypedArray().size - 1].length)
+
+            // 根目录最低优先
+            if (filePath1 == "" || filePath2 == "") {
+                return@sort 0
+            }
+
+            return@sort filePath1.compareTo(filePath2)
+        }
+
+        // 排序后重构文件夹
+        seq.each { fileMap.put(it,orderedMap[it]) }
+
+        val result = OrderedMap<String,ModsIniData>()
+
+        fileMap.forEach { k: ObjectMap.Entry<String, ByteArray> ->
             val namePath = k.key
             val bytes = k.value
 
             val name = namePath.split("/").toTypedArray()[namePath.split("/").toTypedArray().size - 1]
             val filePath = namePath.substring(0,namePath.length - name.length)
 
+
+            // all-units.template 不作为 INI 读取
+            if (name == "all-units.template") {
+                return@forEach
+            }
+            // Fuck
+            /**
+             * 只读取ini文件
+             * 此处批评 @华夏有衣 的阴间 xini文件
+             */
+            if (!name.endsWith(".ini")) {
+                return@forEach
+            }
+
+
             val modData = ModsIniData(bytes)
             if (modData.getValue("core", "dont_load").toBoolean()) {
                 return@forEach
             }
 
-            copyFrom(modData, modData, filePath, orderedMap)
+            copyFrom(modData, modData, filePath, orderedMap,allCaps,0)
 
-            if (template.containsKey("all-units.template")) {
-                copyFromAllUnit(modData,ModsIniData(template["all-units.template"]),orderedMap)
+            if (orderedMap.containsKey("all-units.template")) {
+                copyFromAllUnit(modData,ModsIniData(orderedMap["all-units.template"]),orderedMap,allCaps)
             }
 
             val copyFromSection = modData.checkEachModuleValue("@copyFromSection")
             copyFromSection.each {
-                copyFromSection(modData,it,it)
+                copyFromSection(modData,it,it,0)
             }
 
             globalAndDefine(modData)
 
-            result.put(modData.getName(), modData.getMd5())
+            result.put(modData.getName(), modData)
         }
         return result
     }
 
-    private fun copyFromAllUnit(beRecorded: ModsIniData, allUnit: ModsIniData, orderedMap: OrderedMap<String, ByteArray>) {
+    private fun copyFromAllUnit(beRecorded: ModsIniData, allUnit: ModsIniData, orderedMap: OrderedMap<String, ByteArray>, allCaps: OrderedMap<String, String>) {
         beRecorded.addModsConfig(allUnit)
-        copyFrom(beRecorded,allUnit, orderedMap = orderedMap)
+        copyFrom(beRecorded,allUnit, orderedMap = orderedMap, allCaps = allCaps, deepLoop = 0)
     }
 
-    private fun copyFrom(beRecorded: ModsIniData, read: ModsIniData?, pathIn: String? = null, orderedMap: OrderedMap<String, ByteArray>) {
+    private fun copyFrom(beRecorded: ModsIniData, read: ModsIniData?, pathIn: String? = null, orderedMap: OrderedMap<String, ByteArray>, allCaps: OrderedMap<String, String>, deepLoop: Int) {
+        if (deepLoop > 10) {
+            throw RwGamaException.ModsException("[Load RwMod Error]  Too many deep loops")
+        }
+
         val str = read!!.getValue("core", "copyFrom")
-        var a: ModsIniData? = null
+        var copyData: ModsIniData? = null
         if (str != null) {
             val arrayOfString = str.split(",".toRegex()).toTypedArray()
             mutableListOf(*arrayOfString as Array<*>).reverse()
@@ -102,19 +168,34 @@ class ModsLoad {
                         path = "$pathIn$copyFrom"
                     }
 
+                    var bytes: ByteArray? = orderedMap[path]
+
+                    if (bytes == null) {
+                        val caps = allCaps[path.uppercase()] ?: throw RwGamaException.ModsException("[Load RwMod Error]  CopyFrom Not Found : $copyFrom")
+                        bytes = orderedMap[caps]
+                    }
+
+                    if (bytes == null) {
+                        throw RwGamaException.ModsException("[Load RwMod Error]  File Not Found : $copyFrom")
+                    }
+
                     try {
-                        a = ModsIniData(orderedMap[path])
-                        beRecorded.addModsConfig(a)
+                        copyData = ModsIniData(bytes)
+                        beRecorded.addModsConfig(copyData)
                     } catch (e: IOException) {
                         e.printStackTrace()
                     }
-                    copyFrom(beRecorded, a, pathIn, orderedMap)
+                    copyFrom(beRecorded, copyData, pathIn, orderedMap,allCaps,deepLoop+1)
                 }
             }
         }
     }
 
-    private fun copyFromSection(beRecorded: ModsIniData, moduleName: String,key: String) {
+    private fun copyFromSection(beRecorded: ModsIniData, moduleName: String,key: String, deepLoop: Int) {
+        if (deepLoop > 10) {
+            throw RwGamaException.ModsException("[Load RwMod Error]  Too many deep loops")
+        }
+
         val copyFromSectionValue = beRecorded.getValue(key, "@copyFromSection")
         if (copyFromSectionValue.isNullOrEmpty()) {
             return
@@ -139,7 +220,7 @@ class ModsLoad {
                     }
                 }
 
-                copyFromSection(beRecorded,moduleName,section)
+                copyFromSection(beRecorded,moduleName,section, deepLoop+1)
             }
         }
 

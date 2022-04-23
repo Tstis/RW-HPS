@@ -12,6 +12,7 @@ package cn.rwhps.server.data.global
 import cn.rwhps.server.data.global.Data.LINE_SEPARATOR
 import cn.rwhps.server.math.Rand
 import cn.rwhps.server.net.GroupNet
+import cn.rwhps.server.net.core.DataPermissionStatus
 import cn.rwhps.server.net.netconnectprotocol.realize.GameVersionRelay
 import cn.rwhps.server.struct.IntMap
 import cn.rwhps.server.struct.Seq
@@ -30,6 +31,11 @@ class Relay {
 
 
     var admin: GameVersionRelay? = null
+        set(value) {
+            field = value
+            value?.permissionStatus = DataPermissionStatus.RelayStatus.HostPermission
+        }
+
     var closeRoom = false
 
     val serverUuid = UUID.randomUUID().toString()

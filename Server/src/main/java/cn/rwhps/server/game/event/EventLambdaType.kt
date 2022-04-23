@@ -12,7 +12,7 @@ package cn.rwhps.server.game.event
 import cn.rwhps.server.game.GameUnitType.GameActions
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class EventLambdaType {
     class PlayerUnit(val gameActions: GameActions, val unitName: String)

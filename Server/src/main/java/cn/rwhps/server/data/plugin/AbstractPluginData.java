@@ -28,7 +28,7 @@ import java.io.*;
  * [PluginData] 的默认实现. 使用 '{@link AbstractPluginData#setData}' 自带创建 [Value] 并跟踪其改动.
  * 实现注意
  * 此类型处于实验性阶段. 使用其中定义的属性和函数是安全的, 但将来可能会新增成员抽象函数.
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @SuppressWarnings("unchecked")
 class AbstractPluginData {

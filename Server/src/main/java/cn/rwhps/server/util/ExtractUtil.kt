@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets
 
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object ExtractUtil {
     val defCharset: Charset = Charset.defaultCharset()

@@ -39,7 +39,7 @@ public class Event implements AbstractEvent {
 }
 ```
 
-## 旧版 (不推荐使用)
+## 旧版 (不推荐使用) - 未来版本将被切为内部方法
 
 ```java
 Events.on(EventType.ServerLoadEvent.class, event -> {

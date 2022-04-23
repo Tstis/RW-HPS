@@ -10,6 +10,6 @@
 package cn.rwhps.server.mods
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Mod 

@@ -12,7 +12,7 @@ package cn.rwhps.server.io.packet
 import cn.rwhps.server.util.ExtractUtil
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Packet(@JvmField val type: Int, @JvmField val bytes: ByteArray) {
     /**

@@ -10,7 +10,7 @@
 package cn.rwhps.server.util.encryption
 
 /**
- * @author Dr.
+ * @author RW-HPS/Dr.
  * @Data 2020/6/25 9:28
  */
 object Game {

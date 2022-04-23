@@ -15,7 +15,7 @@ import javax.crypto.KeyGenerator
 import javax.crypto.spec.SecretKeySpec
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Aes {
     /**

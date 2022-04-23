@@ -9,6 +9,8 @@
 
 package cn.rwhps.server.command
 
+import cn.rwhps.server.command.relay.RelayCommands
+import cn.rwhps.server.command.server.ServerCommands
 import cn.rwhps.server.core.Call
 import cn.rwhps.server.core.Core
 import cn.rwhps.server.core.Initialization
@@ -33,7 +35,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class CoreCommands(handler: CommandHandler) {
     private fun registerCore(handler: CommandHandler) {
@@ -68,9 +70,6 @@ class CoreCommands(handler: CommandHandler) {
         }
 
         handler.register("reloadconfig", "serverCommands.reloadconfig") { Data.config = BaseConfig.stringToClass() }
-        handler.register("reloadmods", "serverCommands.reloadmods") { _: Array<String>?, log: StrCons ->
-            log[Data.i18NBundle.getinput("server.loadMod",ModManage.reLoadMods())]
-        }
         handler.register("exit", "serverCommands.exit") { Core.exit() }
     }
 
@@ -117,9 +116,7 @@ class CoreCommands(handler: CommandHandler) {
             Data.game.init()
 
             NetStaticData.ServerNetType = IRwHps.NetType.ServerProtocol
-            NetStaticData.RwHps =
-                ServiceLoader.getService(ServiceLoader.ServiceType.IRwHps,"IRwHps", IRwHps.NetType::class.java)
-                    .newInstance(IRwHps.NetType.ServerProtocol) as IRwHps
+            NetStaticData.RwHps = ServiceLoader.getService(ServiceLoader.ServiceType.IRwHps,"IRwHps", IRwHps.NetType::class.java).newInstance(IRwHps.NetType.ServerProtocol) as IRwHps
 
             TimeTaskData.CallTeamTask = Threads.newThreadService2({ Call.sendTeamData() }, 0, 2, TimeUnit.SECONDS)
             TimeTaskData.CallPingTask = Threads.newThreadService2({ Call.sendPlayerPing() }, 0, 2, TimeUnit.SECONDS)
@@ -232,7 +229,7 @@ class CoreCommands(handler: CommandHandler) {
         // Test (孵化器）
         handler.register("log", "[a...]", "serverCommands.exit") { _: Array<String>, _: StrCons ->
         }
-        handler.register("logg", "<1>", "serverCommands.exit") { arg: Array<String>, _: StrCons ->
+        handler.register("logg", "<1>", "serverCommands.exit") { _: Array<String>, _: StrCons ->
         }
         handler.register("kc", "<1>", "serverCommands.exit") { arg: Array<String>, _: StrCons ->
             val site = arg[0].toInt() - 1

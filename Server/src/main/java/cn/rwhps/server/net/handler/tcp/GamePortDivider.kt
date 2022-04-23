@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets
 /**
  * 根据第一个包来判定连接
  * @author HuiAnxiaoxing
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @ChannelHandler.Sharable
 internal class GamePortDivider(private val divider: StartGamePortDivider) : ChannelInboundHandlerAdapter() {
@@ -79,7 +79,7 @@ internal class GamePortDivider(private val divider: StartGamePortDivider) : Chan
 
                             if (request.method().equals(HttpMethod.GET)) {
                                 WebData.runWebGetInstance(url, SendWeb(ctx.channel(),request))
-                                return;
+                                return
                             } else if (request.method().equals(HttpMethod.POST)) {
                                 if (msg is HttpContent) {
                                     val httpContent = msg as HttpContent
@@ -92,11 +92,6 @@ internal class GamePortDivider(private val divider: StartGamePortDivider) : Chan
                             }
                         }
                     }
-
-                    override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-                        Log.error(cause)
-                        ctx.close()
-                    }
                 })
             }
         } else {
@@ -107,6 +102,6 @@ internal class GamePortDivider(private val divider: StartGamePortDivider) : Chan
     }
 
     companion object {
-        private val WS_URI = "/WebSocket"
+        private const val WS_URI = "/WebSocket"
     }
 }

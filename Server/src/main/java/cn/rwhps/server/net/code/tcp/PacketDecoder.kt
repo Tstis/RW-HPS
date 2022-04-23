@@ -18,7 +18,7 @@ import io.netty.util.ReferenceCountUtil
 
 /**
  * Parse game packets
- * @author Dr
+ * @author RW-HPS/Dr
  */
 /**
  *    1 2 3 4  5  6  7  8  ...

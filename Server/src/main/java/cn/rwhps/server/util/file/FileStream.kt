@@ -30,7 +30,7 @@ internal object FileStream {
         return result
     }
 
-    private fun readFileData(inputStream: InputStream, voidCons: (String) -> Unit) {
+    fun readFileData(inputStream: InputStream, voidCons: (String) -> Unit) {
         try {
             IoReadConversion.streamBufferRead(inputStream).use { br ->
                 var line: String?

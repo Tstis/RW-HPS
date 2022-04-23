@@ -15,6 +15,7 @@ package cn.rwhps.server.net.netconnectprotocol.internal.relay
 import cn.rwhps.server.io.GameInputStream
 import cn.rwhps.server.io.GameOutputStream
 import cn.rwhps.server.io.packet.Packet
+import cn.rwhps.server.util.PacketType
 import java.io.IOException
 
 /**
@@ -31,7 +32,7 @@ fun relayServerTypeInternal(msg: String): Packet {
     o.writeInt(5) //可能和-AX一样
     // Msg
     o.writeString(msg)
-    return o.createPacket(117) /// -> 118
+    return o.createPacket(PacketType.RELAY_117) /// -> 118
 }
 
 /**

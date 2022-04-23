@@ -12,7 +12,7 @@ package cn.rwhps.server.io.packet
 import cn.rwhps.server.util.ExtractUtil
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GameCommandPacket(val sendBy: Int, val bytes: ByteArray) {
     /**

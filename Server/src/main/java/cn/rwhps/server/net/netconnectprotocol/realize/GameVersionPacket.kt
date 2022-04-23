@@ -35,7 +35,7 @@ import java.io.IOException
 import java.math.BigInteger
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @MainProtocolImplementation
 open class GameVersionPacket : AbstractNetPacket {
@@ -53,7 +53,7 @@ open class GameVersionPacket : AbstractNetPacket {
         val o = GameOutputStream()
         o.writeLong(1000L)
         o.writeByte(0)
-        return o.createPacket(PacketType.PACKET_HEART_BEAT)
+        return o.createPacket(PacketType.HEART_BEAT)
     }
 
     @Throws(IOException::class)
@@ -106,7 +106,7 @@ open class GameVersionPacket : AbstractNetPacket {
             val bytes = stream.readStreamBytes()
             o.writeString("gameSave")
             o.flushMapData(bytes.size, bytes)
-            return o.createPacket(PacketType.PACKET_SYNC)
+            return o.createPacket(PacketType.SYNC)
         }
     }
 
@@ -124,7 +124,7 @@ open class GameVersionPacket : AbstractNetPacket {
             o.writeString("SAVE:" + Data.game.maps.mapName + ".tmx")
         }
         o.writeBoolean(false)
-        return o.createPacket(PacketType.PACKET_START_GAME)
+        return o.createPacket(PacketType.START_GAME)
     }
 
     @Throws(IOException::class)
@@ -155,7 +155,7 @@ open class GameVersionPacket : AbstractNetPacket {
         gzipEncoder.writeString("This is RW-HPS [Deceive Get GameSave]!")
         o.flushEncodeData(gzipEncoder)
 
-        val cachePacket = o.createPacket(PacketType.PACKET_SYNC)
+        val cachePacket = o.createPacket(PacketType.SYNC)
         Cache.packetCache.put("getDeceiveGameSave",cachePacket)
 
         return cachePacket
@@ -246,7 +246,7 @@ open class GameVersionPacket : AbstractNetPacket {
         val o = GameOutputStream()
         o.writeString("exited")
 
-        val cachePacket = o.createPacket(PacketType.PACKET_DISCONNECT)
+        val cachePacket = o.createPacket(PacketType.DISCONNECT)
         Cache.packetCache.put("getExitPacket",cachePacket)
 
         return cachePacket
@@ -302,7 +302,7 @@ open class GameVersionPacket : AbstractNetPacket {
         out.writeInt(1)
         out.writeInt(151)
         out.writeInt(151)
-        return out.createPacket(PacketType.PACKET_PREREGISTER_CONNECTION)
+        return out.createPacket(PacketType.PREREGISTER_INFO_RECEIVE)
     }
 
     @Throws(IOException::class)
@@ -325,6 +325,6 @@ open class GameVersionPacket : AbstractNetPacket {
         out.writeString(uuid)
         out.writeInt(1198432602)
         out.writeString(Game.connectKey(key))
-        return out.createPacket(PacketType.PACKET_PLAYER_INFO)
+        return out.createPacket(PacketType.REGISTER_PLAYER)
     }
 }

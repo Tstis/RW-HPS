@@ -17,7 +17,7 @@ import cn.rwhps.server.net.core.server.AbstractNetConnect
  * [NewServerHandler.kt] Only provide network support. This method is needed to parse the data packet call
  *
  * Each Type Connect is bound to an Abstract Net Connect
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2021/12/16 07:40:35
  */
 interface TypeConnect {

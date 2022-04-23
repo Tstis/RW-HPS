@@ -14,7 +14,7 @@ import cn.rwhps.server.struct.ObjectMap;
 import cn.rwhps.server.struct.Seq;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @SuppressWarnings("unchecked")
 public class CommandHandler{

@@ -14,7 +14,7 @@ package cn.rwhps.server.util.alone.annotations
  * 一般来说，这并不会改变IDEA的行为——它只是一个标记，表明指定方法是未完成的。
  * The specified method is defective and needs to be overridden.
  * In general, this doesn't change the behavior of the idea - it's just a token that indicates that the specified method is incomplete。
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @MustBeDocumented
 @kotlin.annotation.Retention(AnnotationRetention.BINARY)
@@ -25,4 +25,7 @@ package cn.rwhps.server.util.alone.annotations
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER
 )
-internal annotation class NeedHelp
+internal annotation class NeedHelp(
+    val info_CN: String = "",
+    val info_EN: String = ""
+)

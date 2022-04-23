@@ -12,34 +12,35 @@ package cn.rwhps.server.util.zip.zip
 import cn.rwhps.server.game.GameMaps.MapData
 import cn.rwhps.server.struct.OrderedMap
 import cn.rwhps.server.struct.Seq
-import cn.rwhps.server.util.io.IoRead
-import cn.rwhps.server.util.io.IoRead.MultiplexingReadStream
-import cn.rwhps.server.util.log.Log.error
-import cn.rwhps.server.util.log.exp.FileException
-import org.apache.compress.ZipEntry
-import org.apache.compress.ZipFile
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.compress.archivers.zip.ZipFile
 import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
 import java.io.InputStream
-import java.nio.charset.Charset
-import java.util.zip.ZipInputStream
 
 /**
  * 解码
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class ZipDecoder {
-    private var zipFile: ZipFile
-    private lateinit var file: File
+    private val zipRead: ZipDecoderUtils
 
     constructor(file: File) {
-        zipFile = ZipFile(file)
-        this.file = file
+        this.zipRead = ZipFileDecoder(file)
+    }
+    constructor(zipFile: ZipFile) {
+        this.zipRead = ZipFileDecoder(zipFile)
     }
 
-    constructor(zipFile: ZipFile) {
-        this.zipFile = zipFile
+
+    constructor(inStream: InputStream) {
+        this.zipRead = ZipStreamDecoder (inStream)
+    }
+    constructor(zipInStream: ZipArchiveInputStream) {
+        this.zipRead = ZipStreamDecoder(zipInStream)
+    }
+
+    fun close() {
+        zipRead.close()
     }
 
     /**
@@ -48,27 +49,7 @@ class ZipDecoder {
      * @return OrderedMap<String, ByteArray>
      */
     fun getSpecifiedSuffixInThePackage(endWith: String): OrderedMap<String, ByteArray> {
-        val data = OrderedMap<String, ByteArray>(8)
-        var zipEntry: ZipEntry
-        try {
-            MultiplexingReadStream().use { multiplexingReadStream ->
-                val entries = zipFile.entries
-                while (entries.hasMoreElements()) {
-                    zipEntry = entries.nextElement() as ZipEntry
-                    val nameCache = zipEntry.name
-                    val name = nameCache.split("/").toTypedArray()[nameCache.split("/").toTypedArray().size - 1]
-                    if (name.endsWith(endWith)) {
-                        data.put(
-                            name.substring(0, name.length - name.substring(name.lastIndexOf(".")).length),
-                            multiplexingReadStream.readInputStreamBytes(zipFile.getInputStream(zipEntry))
-                        )
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            error(e)
-        }
-        return data
+        return zipRead.getSpecifiedSuffixInThePackage(endWith)
     }
 
     /**
@@ -77,28 +58,7 @@ class ZipDecoder {
      * @return OrderedMap<String, ByteArray>
      */
     fun getSpecifiedSuffixInThePackageAllFileName(endWith: String): OrderedMap<String, ByteArray> {
-        val data = OrderedMap<String, ByteArray>(8)
-        try {
-            ZipInputStream(FileInputStream(file), Charset.forName("GBK")).use {
-                var zipEntry: ZipEntry
-                MultiplexingReadStream().use { multiplexingReadStream ->
-                    val entries = zipFile.entries
-                    while (entries.hasMoreElements()) {
-                        zipEntry = entries.nextElement() as ZipEntry
-                        val nameCache = zipEntry.name
-
-                        val name = nameCache.split("/").toTypedArray()[nameCache.split("/").toTypedArray().size - 1]
-                        if (name.endsWith(endWith)) {
-                            //Log.debug(nameCache,name)
-                            data.put(name, multiplexingReadStream.readInputStreamBytes(zipFile.getInputStream(zipEntry)))
-                        }
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            error(e)
-        }
-        return data
+        return zipRead.getSpecifiedSuffixInThePackageAllFileName(endWith)
     }
 
     /**
@@ -106,28 +66,18 @@ class ZipDecoder {
      * @param endWith String
      * @return OrderedMap<String, ByteArray>
      */
-    fun getSpecifiedSuffixInThePackageAllFileNameAndPath(endWith: String): OrderedMap<String, ByteArray> {
-        val data = OrderedMap<String, ByteArray>(8)
-        try {
-            ZipInputStream(FileInputStream(file), Charset.forName("GBK")).use {
-                var zipEntry: ZipEntry
-                MultiplexingReadStream().use { multiplexingReadStream ->
-                    val entries = zipFile.entries
-                    while (entries.hasMoreElements()) {
-                        zipEntry = entries.nextElement() as ZipEntry
-                        val nameCache = zipEntry.name
+    fun getSpecifiedSuffixInThePackageAllFileNameAndPath(endWithSeq: Seq<String>): OrderedMap<String, ByteArray> {
+        return zipRead.getSpecifiedSuffixInThePackageAllFileNameAndPath(endWithSeq)
+    }
 
-                        if (nameCache.endsWith(endWith)) {
-                            //Log.debug(nameCache,name)
-                            data.put(nameCache, multiplexingReadStream.readInputStreamBytes(zipFile.getInputStream(zipEntry)))
-                        }
-                    }
-                }
-            }
-        } catch (e: IOException) {
-            error(e)
-        }
-        return data
+    /**
+     * 获取ZIP内的指定结尾的文件名(全名+路径)与bytes
+     * @param endWith String
+     * @return OrderedMap<String, ByteArray>
+     */
+
+    fun modsLoadingDedicated(): OrderedMap<String, ByteArray> {
+        return zipRead.modsLoadingDedicated()
     }
 
     /**
@@ -136,22 +86,7 @@ class ZipDecoder {
      * @return Seq<String>
      */
     fun getTheFileNameOfTheSpecifiedSuffixInTheZip(endWith: String): Seq<String> {
-        // Max 5M
-        val maxSize = 1024 * 1024 * 5
-        val data = Seq<String>(8)
-        var zipEntry: ZipEntry
-        val entries = zipFile.entries
-        while (entries.hasMoreElements()) {
-            zipEntry = entries.nextElement() as ZipEntry
-            if (zipEntry.size >= maxSize) {
-                continue
-            }
-            val name = zipEntry.name
-            if (name.endsWith(endWith)) {
-                data.add(name.substring(0, name.length - name.substring(name.lastIndexOf(".")).length))
-            }
-        }
-        return data
+        return zipRead.getTheFileNameOfTheSpecifiedSuffixInTheZip(endWith)
     }
 
     /**
@@ -161,35 +96,10 @@ class ZipDecoder {
      */
     @Throws(Exception::class)
     fun getTheFileBytesOfTheSpecifiedSuffixInTheZip(mapData: MapData): ByteArray {
-        ZipInputStream(FileInputStream(file), Charset.forName("GBK")).use {
-            var zipEntry: ZipEntry
-            val entries = zipFile.entries
-            while (entries.hasMoreElements()) {
-                zipEntry = entries.nextElement() as ZipEntry
-                val name = zipEntry.name
-                if (name.endsWith(mapData.type) && name.contains(mapData.mapFileName)) {
-                    return IoRead.readInputStreamBytes(zipFile.getInputStream(zipEntry))
-                }
-            }
-        }
-        throw FileException("CANNOT_FIND_FILE")
+        return zipRead.getTheFileBytesOfTheSpecifiedSuffixInTheZip(mapData)
     }
 
     fun getZipNameInputStream(name: String): InputStream? {
-        try {
-            val entries = zipFile.entries
-            var ze: ZipEntry
-            while (entries.hasMoreElements()) {
-                ze = entries.nextElement()
-                if (!ze.isDirectory) {
-                    if (ze.name == name) {
-                        return zipFile.getInputStream(ze)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            error(e)
-        }
-        return null
+        return zipRead.getZipNameInputStream(name)
     }
 }

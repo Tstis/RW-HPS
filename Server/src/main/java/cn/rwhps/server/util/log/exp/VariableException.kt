@@ -12,7 +12,7 @@ package cn.rwhps.server.util.log.exp
 import cn.rwhps.server.util.log.ErrorCode
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class VariableException(type: String) : RuntimeException(ErrorCode.valueOf(type).error) {
     class ArrayRuntimeException(type: String) : RuntimeException(ErrorCode.valueOf(type).error)

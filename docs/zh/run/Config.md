@@ -54,27 +54,13 @@
 > 是否启用第一个进入为Admin  
 "OneAdmin": true  
 
-> 无用  
-"IpCheckMultiLanguageSupport": false  
-
 > 是否启用重连-BETA  
-"ReConnect": false  
-
-> 无用  
-"WinOrLose": false  
-"WinOrLoseTime": 30000
+"ReConnect": false
 
 > RELAY模式下 是否启用单房间模式  
 "SingleUserRelay": false  
 > 单房间模式下是否启用Mod  
 "SingleUserRelayMod": false
-
-> Server模式下是否读取Mod  
-"OneReadUnitList": false
-
-> 无用  
-"GameOverUpList": false
-"PasswdCheckApi": false
 
 > 是否自动重读取maps下地图  
 "AutoReLoadMap": false

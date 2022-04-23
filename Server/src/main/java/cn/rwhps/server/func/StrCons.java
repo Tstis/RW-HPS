@@ -12,7 +12,7 @@ package cn.rwhps.server.func;
 import java.text.MessageFormat;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public interface StrCons {
     /**

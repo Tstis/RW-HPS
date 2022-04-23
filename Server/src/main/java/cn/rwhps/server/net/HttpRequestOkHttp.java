@@ -21,7 +21,7 @@ import java.util.Objects;
 
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class HttpRequestOkHttp {
 

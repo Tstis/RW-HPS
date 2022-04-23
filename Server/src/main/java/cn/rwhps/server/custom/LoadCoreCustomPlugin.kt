@@ -18,5 +18,6 @@ internal class LoadCoreCustomPlugin {
     private val amusement = "[Amusement Plugin]"
     init {
         PluginManage.addPluginClass("UpList","Dr","$core UpList","1.0", UpList(), mkdir = false, skip = true)
+        //PluginManage.addPluginClass("GamePanel","Dr","$coreEx GamePanel","1.0", GamePanel(),false)
     }
 }

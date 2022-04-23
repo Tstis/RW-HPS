@@ -12,9 +12,9 @@ package cn.rwhps.server.io.input
 /**
  * 这个是为ByteArrayInputStream做出的特殊改造
  * 你可以直接为Stream加入数据 并清除以前读取过的数据(防止Stream越来越大)
- * @author Dr
+ * @author RW-HPS/Dr
  */
-internal class ClearableAndReusableDisableSyncByteArrayInputStream : DisableSyncByteArrayInputStream(ByteArray(0)) {
+class ClearableAndReusableDisableSyncByteArrayInputStream : DisableSyncByteArrayInputStream(ByteArray(0)) {
     /**
      * 向字节流中加入数据
      * 设置length的目的是 你输入的bytes长度无法猜测 你可以直接把你的buf[]输入进来 再把length设置为读取到的长度

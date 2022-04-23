@@ -13,7 +13,7 @@ import cn.rwhps.server.net.handler.tcp.GamePortWebSocket
 import cn.rwhps.server.util.log.exp.VariableException
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object WebData {
     private val getData: MutableMap<String, WebGet> = HashMap()

@@ -11,7 +11,7 @@ package cn.rwhps.server.func;
 
 /**
  * Cons2 轮循 Map专用
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public interface Cons2<T, N>{
     /**

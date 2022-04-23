@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Rules(private var config: BaseConfig) {
     /** 是否已启动游戏  */

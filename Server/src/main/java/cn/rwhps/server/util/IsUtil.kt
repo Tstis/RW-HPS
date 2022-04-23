@@ -15,7 +15,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object IsUtil {
     private val PATTERN = Pattern.compile("[0-9]*")

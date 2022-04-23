@@ -24,7 +24,7 @@ import java.io.OutputStream
  * @property isClosed Boolean
  * @property type TypeConnect?
  * @constructor
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal class PackagingSocket(private val socket: ReliableServerSocket.ReliableClientSocket) {
     val remoteSocketAddressString = socket.remoteSocketAddress.toString()

@@ -15,7 +15,7 @@ import cn.rwhps.server.util.file.FileUtil
 import cn.rwhps.server.util.game.CommandHandler
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 abstract class Plugin {
     lateinit var pluginDataFileUtil: FileUtil

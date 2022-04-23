@@ -11,7 +11,7 @@ package cn.rwhps.server.func;
 
 /**
  * Intc 轮循 IntSet专用
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public interface Intc{
     /**

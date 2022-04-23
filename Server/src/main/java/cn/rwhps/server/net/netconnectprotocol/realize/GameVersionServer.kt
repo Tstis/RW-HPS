@@ -21,6 +21,7 @@ import cn.rwhps.server.io.output.CompressOutputStream
 import cn.rwhps.server.io.packet.GameCommandPacket
 import cn.rwhps.server.io.packet.Packet
 import cn.rwhps.server.net.core.ConnectionAgreement
+import cn.rwhps.server.net.core.DataPermissionStatus.ServerStatus
 import cn.rwhps.server.net.core.server.AbstractNetConnect
 import cn.rwhps.server.net.core.server.AbstractNetConnectServer
 import cn.rwhps.server.net.netconnectprotocol.internal.relay.relayServerTypeInternal
@@ -40,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.math.min
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2020/9/5 17:02:33
  */
 
@@ -59,6 +60,8 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
 
     /** 玩家  */
     override lateinit var player: Player
+    override var permissionStatus: ServerStatus = ServerStatus.InitialConnection
+        internal set
 
     override val version: String
         get() = "1.14 RW-HPS"
@@ -116,7 +119,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
         // 允许观众
         o.writeBoolean(true)
         o.writeBoolean(false)
-        sendPacket(o.createPacket(PacketType.PACKET_SERVER_INFO))
+        sendPacket(o.createPacket(PacketType.SERVER_INFO))
     }
 
     override fun sendTeamData(gzip: CompressOutputStream) {
@@ -149,7 +152,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
             o.writeBoolean(Data.game.sharedControl)
             /* 游戏暂停 */
             o.writeBoolean(false)
-            sendPacket(o.createPacket(PacketType.PACKET_TEAM_LIST))
+            sendPacket(o.createPacket(PacketType.TEAM_LIST))
         } catch (e: IOException) {
             Log.error("Team", e)
         }
@@ -214,7 +217,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
     override fun sendKick(reason: String) {
         val o = GameOutputStream()
         o.writeString(reason)
-        sendPacket(o.createPacket(PacketType.PACKET_KICK))
+        sendPacket(o.createPacket(PacketType.KICK))
         disconnect()
     }
 
@@ -494,7 +497,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
             o.writeString("com.corrodinggames.rts.server")
             o.writeString(Data.core.serverConnectUuid)
             o.writeInt(key)
-            sendPacket(o.createPacket(PacketType.PACKET_REGISTER_CONNECTION))
+            sendPacket(o.createPacket(PacketType.PREREGISTER_INFO))
         }
     }
 
@@ -513,7 +516,7 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
         try {
             val o = GameOutputStream()
             o.writeInt(0)
-            sendPacket(o.createPacket(PacketType.PACKET_PASSWD_ERROR))
+            sendPacket(o.createPacket(PacketType.PASSWD_ERROR))
             inputPassword = true
         } catch (e: Exception) {
             Log.error("[Player] sendErrorPasswd", e)
@@ -620,7 +623,6 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
                 disconnect()
                 return
             }
-
             relaySelect!!(id)
         } catch (e: Exception) {
             Log.error(e)
@@ -645,6 +647,4 @@ open class GameVersionServer(connectionAgreement: ConnectionAgreement) : Abstrac
     override fun hashCode(): Int {
         return player.hashCode()
     }
-
-
 }

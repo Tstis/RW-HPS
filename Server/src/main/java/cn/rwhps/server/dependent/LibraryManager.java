@@ -25,7 +25,7 @@ import static cn.rwhps.server.net.HttpRequestOkHttp.downUrl;
 import static cn.rwhps.server.util.IsUtil.notIsBlank;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class LibraryManager {
 

@@ -30,6 +30,10 @@ import java.net.URLDecoder.decode
  * FileUtil.getFolder("文件夹名") 因为不会创建文件 只会创建目录
  * FileUtil.getFolder("文件夹名").toFile("文件名") 只会创建目录
  *
+ * FileUtil.getFolder("文件夹名" , true) 返回的 FileUtil 在您操作 toFile toFolder 时 会直接返回新的 FileUtil 对象
+ *     而原来的对象可重用 toFile toFolder
+ *
+ *
  *
  * FileUtil The three instances of will not do anything and will not create directories and files:
  * 如果需要先目录再文件 那么用FileUtil.toFolder(文件夹名).toFile(文件名)
@@ -43,48 +47,63 @@ import java.net.URLDecoder.decode
  * FileUtil().mkdir()会创建文件夹并尝试创建文件
  * FileUtil().createNewFile()会尝试创建文件
  *
+ * FileUtil(filepath,true).toFile() 会直接返回一个新的 FileUtil
+ * FileUtil(filepath,true).toFolder() 会直接返回一个新的 FileUtil
+ *
  *
  * 部分误区:
  * 在操作FileUtil()的时候不会进行创建文件,但是当你操作File的时候,那么就会创建文件
  *     例子:
  *         FileUtil.getFile("文件名").exists()的时候就不会创建文件
  *         FileUtil.getFile("文件名").getInputsStream()的时候就会自动创建一个文件
+ *
+ * 只有FileUtil.getFolder("文件夹名" , true) 创建的 和 FileUtil(filepath,true) 创建的 FileUtil 在您操作 toFile toFolder 时 会直接返回新的 FileUtil 对象
+ *
  * 欢迎提交修改
  */
 /**
  * Server文件处理核心
- * @author Dr
+ * @author RW-HPS/Dr
+ * @version 5.5.0
  */
-class FileUtil {
+open class FileUtil {
     /** 内部的File  */
-    val file: File
+    var file: File
+        protected set
 
-    /** 当前操作的文件  */
-    val path: String
+    /** 当前操作的文件地址  */
+    var path: String
+        protected set
+
+    protected val isNewFile: Boolean
 
     constructor(file: File) {
         this.file = file
         this.path = file.path
+        this.isNewFile = false
     }
 
-    constructor(filepath: String) {
+    constructor(filepath: String, isNewFile: Boolean = false) {
         this.path = filepath
         file = File(filepath)
+        this.isNewFile = isNewFile
+
     }
 
-    private constructor(file: File, filepath: String, ismkdir: Boolean = false) {
+    protected constructor(file: File, filepath: String, ismkdir: Boolean = false, isNewFile: Boolean = false) {
         this.file = file
         this.path = filepath
         if (ismkdir) {
             file.mkdirs()
         }
+        this.isNewFile = isNewFile
     }
 
-    fun exists(): Boolean {
+    open fun exists(): Boolean {
         return file.exists()
     }
 
-    fun notExists(): Boolean {
+    open fun notExists(): Boolean {
         return !file.exists()
     }
 
@@ -93,17 +112,31 @@ class FileUtil {
     }
 
     fun toFile(filename: String): FileUtil {
-        return FileUtil(File(this.path + "/" + filename))
+        return if (isNewFile) {
+            FileUtil(File(this.path + "/" + filename))
+        } else {
+            file = File(this.path + "/" + filename)
+            path = this.path + "/" + filename
+            this
+        }
     }
 
     fun toFolder(filename: String): FileUtil {
         var to = this.path
-        if ("/" == filename[0].toString()) {
-            to += filename.substring(1, filename.length)
+        to += if ("/" == filename[0].toString()) {
+            filename.substring(1, filename.length)
         } else {
-            to += "/$filename"
+            "/$filename"
         }
-        return FileUtil(File(to),to,true)
+
+        return if (isNewFile) {
+            FileUtil(File(to),to,true)
+        } else {
+            this.file = File(to)
+            this.path = to
+            file.mkdirs()
+            this
+        }
     }
 
     val fileList: Seq<File>
@@ -165,10 +198,10 @@ class FileUtil {
      * @param log Log
      * @param cover 是否尾部写入
      */
-    fun writeFile(log: Any, cover: Boolean = false) {
+    open fun writeFile(log: Any, cover: Boolean = true) {
         mkdir()
         try {
-            fileToOutStream(file, cover).use { osw ->
+            fileToOutStream(file, !cover).use { osw ->
                 osw.write(log.toString())
                 osw.flush()
             }
@@ -177,7 +210,7 @@ class FileUtil {
         }
     }
 
-    fun writeFileByte(bytes: ByteArray, cover: Boolean) {
+    open fun writeFileByte(bytes: ByteArray, cover: Boolean) {
         mkdir()
         try {
             BufferedOutputStream(FileOutputStream(file, cover)).use { osw ->
@@ -190,7 +223,7 @@ class FileUtil {
     }
 
     @Throws(Exception::class)
-    fun writeByteOutputStream(cover: Boolean): FileOutputStream {
+    open fun writeByteOutputStream(cover: Boolean): FileOutputStream {
         mkdir()
         return fileToStream(file, cover)
     }
@@ -213,7 +246,7 @@ class FileUtil {
         return readFileToByteArray(file)
     }
 
-    fun readFileStringData(): String {
+    open fun readFileStringData(): String {
         mkdir()
         try {
             FileInputStream(file).use { fileInputStream -> return readFileString(fileInputStream) }
@@ -225,7 +258,7 @@ class FileUtil {
         return ""
     }
 
-    fun readFileListStringData(): Seq<String> {
+    open fun readFileListStringData(): Seq<String> {
         mkdir()
         try {
             FileInputStream(file).use { fileInputStream -> return readFileListString(fileInputStream) }
@@ -314,7 +347,7 @@ class FileUtil {
          */
         @JvmStatic
 		@JvmOverloads
-        fun getFolder(toFile: String? = null): FileUtil {
+        fun getFolder(toFile: String? = null, isNewFile: Boolean = false): FileUtil {
             val filepath: String
             var to = toFile
             if (null != toFile) {
@@ -331,7 +364,7 @@ class FileUtil {
             } else {
                 defaultFilePath + to
             }
-            return FileUtil(File(filepath), filepath,true)
+            return FileUtil(File(filepath), filepath,true,isNewFile)
         }
 
         @JvmStatic

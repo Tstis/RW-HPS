@@ -13,7 +13,7 @@ import cn.rwhps.server.plugin.Plugin
 
 /**
  * 为服务器注入多语言
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class AddLang(val plugin: Plugin) {
     init {

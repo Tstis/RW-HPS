@@ -13,6 +13,7 @@ import cn.rwhps.server.data.global.Data
 import cn.rwhps.server.data.global.NetStaticData
 import cn.rwhps.server.io.packet.Packet
 import cn.rwhps.server.net.core.ConnectionAgreement
+import cn.rwhps.server.net.core.DataPermissionStatus.RelayStatus
 import cn.rwhps.server.net.core.TypeConnect
 import cn.rwhps.server.net.core.server.AbstractNetConnect
 import cn.rwhps.server.net.netconnectprotocol.realize.GameVersionRelay
@@ -42,25 +43,64 @@ open class TypeRelay : TypeConnect {
 
     @Throws(Exception::class)
     override fun typeConnect(packet: Packet) {
-        con.lastReceivedTime()
+        if (relayCheck(packet)) {
+            return
+        }
+
+        val permissionStatus = con.permissionStatus
 
         // CPU branch prediction
-        if (packet.type == 175) {
-            con.addRelaySend(packet)
+        if (packet.type == PacketType.PACKET_FORWARD_CLIENT_TO.type) {
+            if (permissionStatus == RelayStatus.HostPermission) {
+                con.addRelaySend(packet)
+            }
         } else {
             when (packet.type) {
-                PacketType.PACKET_HEART_BEAT -> {
+                PacketType.HEART_BEAT.type -> {
                     con.addGroup(packet)
                     con.getPingData(packet)
                 }
+                PacketType.PACKET_FORWARD_CLIENT_TO_REPEATED.type -> {
+                }
+                PacketType.ACCEPT_START_GAME.type -> {
+                    con.relay!!.isStartGame = true
+                    con.sendResultPing(packet)
+                }
+                PacketType.DISCONNECT.type -> con.disconnect()
+                PacketType.SERVER_DEBUG_RECEIVE.type -> con.debug(packet)
+                else -> con.sendResultPing(packet)
 
-                PacketType.PACKET_PREREGISTER_CONNECTION -> {
+        }
+
+        }
+    }
+
+    protected fun relayCheck(packet: Packet): Boolean {
+        con.lastReceivedTime()
+
+        val permissionStatus = con.permissionStatus
+
+        if (permissionStatus.ordinal < RelayStatus.PlayerPermission.ordinal) {
+            // Initial Connection
+            if (permissionStatus == RelayStatus.InitialConnection) {
+                if (packet.type == PacketType.PREREGISTER_INFO_RECEIVE.type) {
+                    // Wait Certified
+                    con.permissionStatus = RelayStatus.WaitCertified
+
                     con.setCachePacket(packet)
                     con.sendRelayServerInfo()
-                    con.sendRelayServerCheck()
+                    con.sendVerifyClientValidity()
+                } else {
+                    con.disconnect()
                 }
-                152 -> {
-                    if (con.receiveRelayServerCheck(packet)) {
+                return true
+            }
+
+            if (permissionStatus == RelayStatus.WaitCertified) {
+                if (packet.type == 152) {
+                    if (con.receiveVerifyClientValidity(packet)) {
+                        // Certified End
+                        con.permissionStatus = RelayStatus.CertifiedEnd
                         if (!Data.config.SingleUserRelay) {
                             con.relayDirectInspection()
                         } else {
@@ -72,26 +112,27 @@ open class TypeRelay : TypeConnect {
                             }
                         }
                     } else {
-                        con.disconnect()
+                        con.sendVerifyClientValidity()
                     }
+                } else {
+                    con.disconnect()
                 }
+                return true
+            }
 
-                118 -> con.sendRelayServerTypeReply(packet)
-                176 -> {
+            if (permissionStatus == RelayStatus.CertifiedEnd) {
+                if (packet.type == PacketType.RELAY_118_117_REC.type) {
+                    con.sendRelayServerTypeReply(packet)
                 }
-                112 -> {
-                    con.relay!!.isStartGame = true
-                    con.sendResultPing(packet)
-                }
-                PacketType.PACKET_DISCONNECT -> con.disconnect()
-                PacketType.PACKET_SERVER_DEBUG -> con.debug(packet)
-                else -> con.sendResultPing(packet)
+                return true
+            }
 
+            // 你肯定没验证
+            con.disconnect()
         }
-
-        }
+        return false
     }
 
     override val version: String
-        get() = "RELAY"
+        get() = "RELAY 1.1.0"
 }

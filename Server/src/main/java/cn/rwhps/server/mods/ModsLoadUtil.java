@@ -11,7 +11,7 @@ package cn.rwhps.server.mods;
 
 /**
  * Mods加载辅助
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class ModsLoadUtil {
     protected static void checkName(String paramString) {

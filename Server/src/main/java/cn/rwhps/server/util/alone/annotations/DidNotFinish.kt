@@ -13,7 +13,7 @@ package cn.rwhps.server.util.alone.annotations
  * 指定方法是未完成的,半成品。一般来说，这并不会改变IDEA的行为——它只是一个标记，表明指定方法是未完成的。
  * The specified method is incomplete semi-finished.
  * In general, this doesn't change the behavior of the idea - it's just a token that indicates that the specified method is incomplete。
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @Retention(AnnotationRetention.SOURCE)
 @MustBeDocumented

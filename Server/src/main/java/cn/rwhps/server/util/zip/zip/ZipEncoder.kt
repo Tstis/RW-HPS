@@ -11,15 +11,15 @@ package cn.rwhps.server.util.zip.zip
 
 import cn.rwhps.server.struct.Seq
 import cn.rwhps.server.util.io.IoRead.copyInputStream
-import org.apache.compress.ZipEntry
-import org.apache.compress.ZipFile
-import org.apache.compress.ZipOutputStream
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipFile
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
+import java.util.zip.ZipOutputStream
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object ZipEncoder {
     /**
@@ -36,8 +36,8 @@ object ZipEncoder {
             val names = HashSet<String>()
             for (sourceZipFile in sourceZipFiles) {
                 ZipFile(sourceZipFile).use { zipFile ->
-                    var ze: ZipEntry
-                    val enumeration: Enumeration<out ZipEntry> = zipFile.entries
+                    var ze: ZipArchiveEntry
+                    val enumeration: Enumeration<out ZipArchiveEntry> = zipFile.entries
                     while (enumeration.hasMoreElements()) {
                         ze = enumeration.nextElement()
                         if (!ze.isDirectory) {
@@ -45,7 +45,7 @@ object ZipEncoder {
                             if (names.contains(ze.name) || !updateFile.contains(ze.name)) {
                                 continue
                             }
-                            val oze = ZipEntry(ze.name)
+                            val oze = ZipArchiveEntry(ze.name)
                             out.putNextEntry(oze)
                             if (ze.size > 0) {
                                 copyInputStream(zipFile.getInputStream(ze), out)

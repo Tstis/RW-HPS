@@ -22,7 +22,7 @@ import java.util.regex.Pattern
 
 /**
  * Mods INI 解析器
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal class ModsIniData {
     /** 提取在[ ] 中间  */

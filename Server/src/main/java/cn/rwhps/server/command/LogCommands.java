@@ -12,7 +12,7 @@ package cn.rwhps.server.command;
 import cn.rwhps.server.util.game.CommandHandler;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class LogCommands {
 	public LogCommands(CommandHandler handler) {

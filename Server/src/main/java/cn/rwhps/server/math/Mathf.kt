@@ -10,7 +10,7 @@
 package cn.rwhps.server.math
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Mathf {
     @JvmField

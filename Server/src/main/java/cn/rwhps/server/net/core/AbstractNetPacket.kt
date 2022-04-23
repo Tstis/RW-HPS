@@ -19,7 +19,7 @@ import java.io.IOException
 
 /**
  * 获取包 转换包 理论上全版本通用 但是部分版本需要特殊覆盖实现
- * @author Dr
+ * @author RW-HPS/Dr
  */
 interface AbstractNetPacket {
     /**

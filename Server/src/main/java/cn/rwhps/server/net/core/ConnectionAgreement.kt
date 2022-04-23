@@ -23,7 +23,7 @@ import java.net.SocketException
 import java.util.*
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2021年2月2日星期二 06:31:11
  */
 class ConnectionAgreement {

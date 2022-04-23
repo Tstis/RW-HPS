@@ -12,7 +12,7 @@ package cn.rwhps.server.net.http
 import cn.rwhps.server.data.json.Json
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 abstract class WebGet {
     abstract fun get(getUrl: String, data: String, send: SendWeb)

@@ -21,7 +21,7 @@ import java.text.MessageFormat
 import java.util.*
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  * @Date ?
  */
 class I18NBundle {

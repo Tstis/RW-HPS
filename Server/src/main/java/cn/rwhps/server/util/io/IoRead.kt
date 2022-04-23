@@ -13,7 +13,7 @@ import cn.rwhps.server.io.output.DisableSyncByteArrayOutputStream
 import java.io.*
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object IoRead {
     /** 在复制方法中使用的默认缓冲区大小  */

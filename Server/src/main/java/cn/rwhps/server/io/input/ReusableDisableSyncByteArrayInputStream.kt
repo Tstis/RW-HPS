@@ -12,9 +12,9 @@ package cn.rwhps.server.io.input
 import kotlin.math.min
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
-internal open class ReusableDisableSyncByteArrayInputStream : DisableSyncByteArrayInputStream(ByteArray(0)) {
+open class ReusableDisableSyncByteArrayInputStream : DisableSyncByteArrayInputStream(ByteArray(0)) {
     fun position(): Int {
         return pos
     }

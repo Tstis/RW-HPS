@@ -9,7 +9,7 @@
 package cn.rwhps.server.util
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Font16 {
     private val ENCODE = "GB2312"

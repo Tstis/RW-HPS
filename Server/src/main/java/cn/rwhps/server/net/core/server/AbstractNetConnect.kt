@@ -16,6 +16,7 @@ import cn.rwhps.server.io.packet.Packet
 import cn.rwhps.server.net.GroupNet
 import cn.rwhps.server.net.core.ConnectionAgreement
 import cn.rwhps.server.net.game.ConnectServer
+import cn.rwhps.server.util.PacketType
 import cn.rwhps.server.util.Time
 import cn.rwhps.server.util.log.Log
 import java.io.IOException
@@ -25,7 +26,7 @@ import java.nio.charset.StandardCharsets
 /**
  * Realize basic network information packaging
  * The game protocol compulsory inheritance of this class
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2021/12/16 08:55:26
  */
 abstract class AbstractNetConnect(protected val connectionAgreement: ConnectionAgreement) {
@@ -133,7 +134,7 @@ abstract class AbstractNetConnect(protected val connectionAgreement: ConnectionA
         try {
             val o = GameOutputStream()
             o.writeString(str)
-            sendPacket(o.createPacket(2001))
+            sendPacket(o.createPacket(PacketType.SERVER_DEBUG))
         } catch (_: Exception) {
         }
     }
