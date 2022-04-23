@@ -307,7 +307,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ УІД >>> s.vangers.tk >>> ukr" + relay!!.id + " }}")
+            o.writeString("{{ УІД >>> s.vangers.tk >>> u" + relay!!.id + " }}")
             // 多播
             o.writeBoolean(false)
             sendPacket(o.createPacket(PacketType.FORWARD_HOST_SET)) //+108+140
@@ -556,8 +556,8 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return
         }
 
-        if ("ukr".equals(id[0].toString(), ignoreCase = true)) {
-            id = id.substring(3)
+        if ("u".equals(id[0].toString(), ignoreCase = true)) {
+            id = id.substring(1)
         } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
             val customID = splitNumbers(id)
