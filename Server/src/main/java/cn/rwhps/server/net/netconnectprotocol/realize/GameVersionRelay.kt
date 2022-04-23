@@ -288,12 +288,12 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ s.vangers.tk >>> i" + relay!!.id + " }}")
+            o.writeString("{{ УІД >>> s.vangers.tk >>> ukr" + relay!!.id + " }}")
             //
             o.writeBoolean(false)
             sendPacket(o.createPacket(170)) //+108+140
             //getRelayT4(Data.localeUtil.getinput("relay.server.admin.connect",relay.getId()));
-            //sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay.server.admin.connect", relay!!.id), "CEPBEP", -1))
+            sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay.server.admin.connect", relay!!.id), "РЕКЛАМА", 3))
             sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay", relay!!.id), "CEPBEP", -1))
             //ping();
 
@@ -535,8 +535,8 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             return
         }
 
-        if ("i".equals(id[0].toString(), ignoreCase = true)) {
-            id = id.substring(1)
+        if ("ukr".equals(id[0].toString(), ignoreCase = true)) {
+            id = id.substring(3)
         } else if ("C".equals(id[0].toString(), ignoreCase = true)) {
             id = id.substring(1)
             val customID = splitNumbers(id)
