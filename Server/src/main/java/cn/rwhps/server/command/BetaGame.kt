@@ -9,7 +9,7 @@
 package cn.rwhps.server.command
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object BetaGame {
     internal fun CheckGameWin() {

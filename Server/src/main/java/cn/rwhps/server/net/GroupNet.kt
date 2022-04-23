@@ -22,7 +22,7 @@ import java.io.IOException
 import java.util.concurrent.Executors
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GroupNet {
     private val channelGroup: ChannelGroup = DefaultChannelGroup( GlobalEventExecutor.INSTANCE)

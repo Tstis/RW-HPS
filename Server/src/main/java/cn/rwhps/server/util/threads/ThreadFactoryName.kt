@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadFactory
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object ThreadFactoryName {
     /**

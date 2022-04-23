@@ -24,10 +24,13 @@ import java.lang.reflect.Field
 
 /**
  * Save data for serialization and deserialization
- * @author Dr
+ * @author RW-HPS/Dr
  */
 data class BaseConfig(
     val DefStartCommand: String = "start",
+    // Docker 白嫖支持
+    val DockerSupCommand: List<String> = arrayListOf(),
+
     val Log: String = "WARN",
 
     val ServerName: String = "RW-HPS",

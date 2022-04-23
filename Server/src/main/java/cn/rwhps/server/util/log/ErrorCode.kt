@@ -11,7 +11,7 @@ package cn.rwhps.server.util.log
 
 /**
  * 错误码
- * @author Dr
+ * @author RW-HPS/Dr
  */
 enum class ErrorCode(val code: Int, private val errMsg: String) {
     /*状态码*/ /**
@@ -83,7 +83,8 @@ enum class ErrorCode(val code: Int, private val errMsg: String) {
     UNSUPPORTED_SERIALIZATION(60001, "Unsupported serialization"),
 
     /*文件层*/
-    CANNOT_FIND_FILE(70001,"Cannot find file");
+    CANNOT_FIND_FILE(70001,"Cannot find file"),
+    REPEAT_READ(70002,"Repeat read");
 
     val error: String
         get() = "[" + this.code + "] : " + errMsg

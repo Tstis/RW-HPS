@@ -38,5 +38,5 @@ internal fun chatMessagePacketInternal(msg: String, sendBy: String, team: Int): 
     o.writeInt(team)
     // 队伍
     o.writeInt(team)
-    return o.createPacket(PacketType.PACKET_SEND_CHAT)
+    return o.createPacket(PacketType.CHAT)
 }

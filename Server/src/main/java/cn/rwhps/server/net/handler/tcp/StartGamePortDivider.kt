@@ -15,7 +15,7 @@ import io.netty.channel.socket.SocketChannel
 
 /**
  * @author HuiAnxiaoxing
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal class StartGamePortDivider(startNet: StartNet) : AbstractNet(startNet) {
     private val divider: GamePortDivider = GamePortDivider(this)

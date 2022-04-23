@@ -12,6 +12,7 @@ package cn.rwhps.server.net.core.server
 import cn.rwhps.server.data.player.Player
 import cn.rwhps.server.io.output.CompressOutputStream
 import cn.rwhps.server.io.packet.Packet
+import cn.rwhps.server.net.core.DataPermissionStatus
 import cn.rwhps.server.util.log.Log
 import org.intellij.lang.annotations.JdkConstants
 import org.jetbrains.annotations.Nls
@@ -20,10 +21,12 @@ import java.io.IOException
 /**
  * Only provide interface but not implement
  * As the interface of game CoreNet, it provides various version support for GameServer
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2021/7/31/ 14:14
  */
 interface AbstractNetConnectServer {
+    val permissionStatus: DataPermissionStatus.ServerStatus
+
     /**
      * Acquire players
      * @return Player

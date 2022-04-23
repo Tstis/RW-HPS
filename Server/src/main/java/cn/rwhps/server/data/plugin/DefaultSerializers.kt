@@ -20,7 +20,7 @@ import java.io.DataOutput
 import java.io.IOException
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal object DefaultSerializers {
     @JvmStatic

@@ -20,7 +20,7 @@ import com.google.gson.Gson
 //Json
 //写的越久，BUG越多，伤痕越疼，脾气越差/-活得越久 故事越多 伤痕越疼，脾气越差
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Json {
     private val jsonObject: Any

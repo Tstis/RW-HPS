@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 import java.util.stream.IntStream
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Call {
     @JvmStatic
@@ -91,10 +91,11 @@ object Call {
     }
 
     @JvmStatic
-    fun upDataGameData() {
+    @JvmOverloads
+    fun upDataGameData(unitData: Boolean = false) {
         Data.game.playerManage.playerGroup.each { e: Player ->
             try {
-                e.con!!.sendServerInfo(false)
+                e.con!!.sendServerInfo(unitData)
             } catch (err: IOException) {
                 error("[ALL] Send System Info Error", err)
             }
@@ -189,6 +190,8 @@ object Call {
         private var forcedReturn = false
 
         override fun run() {
+            //Data.game.playerManage.playerGroup[0].sync()
+
             // 检测人数是否符合Gameover
             val playerSize = Data.game.playerManage.playerGroup.size()
             if (playerSize == 0) {

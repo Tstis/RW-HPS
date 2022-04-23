@@ -11,7 +11,7 @@ package cn.rwhps.server.func;
 
 /**
  * Cons 轮循 Seq专用
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public interface Cons<T>{
     /**

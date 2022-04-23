@@ -13,7 +13,7 @@ import cn.rwhps.server.net.core.server.AbstractNetConnect
 import cn.rwhps.server.util.Time.concurrentMillis
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal class TimeoutDetection {
     companion object {

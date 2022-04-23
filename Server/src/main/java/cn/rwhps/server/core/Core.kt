@@ -14,7 +14,7 @@ import cn.rwhps.server.data.global.Data
 import kotlin.system.exitProcess
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Core {
     @JvmStatic

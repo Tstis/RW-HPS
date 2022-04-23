@@ -14,7 +14,7 @@ import cn.rwhps.server.util.alone.annotations.NeedHelp
 // 也许知道这终是徒劳，却还要做临死前的挣扎
 // Maybe you know it's futile, but you still have to fight before you die
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 @NeedHelp
 class GameEnvironmentSimulation {

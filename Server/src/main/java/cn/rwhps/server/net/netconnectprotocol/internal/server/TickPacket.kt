@@ -34,7 +34,7 @@ internal fun gameTickPacketInternal(tick: Int): Packet {
     // 可读取的按键包长度
     // 因为不存在按键包 所以这个包只会让客户端更新Tick
     o.writeInt(0)
-    return o.createPacket(PacketType.PACKET_TICK)
+    return o.createPacket(PacketType.TICK)
 }
 
 /**
@@ -54,7 +54,7 @@ internal fun gameTickCommandPacketInternal(tick: Int, cmd: GameCommandPacket): P
     val enc = CompressOutputStream.getGzipOutputStream("c", false)
     enc.writeBytes(cmd.bytes)
     o.flushEncodeData(enc)
-    return o.createPacket(PacketType.PACKET_TICK)
+    return o.createPacket(PacketType.TICK)
 }
 
 /**
@@ -76,5 +76,5 @@ internal fun gameTickCommandsPacketInternal(tick: Int, cmd: Seq<GameCommandPacke
         enc.writeBytes(c.bytes)
         o.flushEncodeData(enc)
     }
-    return o.createPacket(PacketType.PACKET_TICK)
+    return o.createPacket(PacketType.TICK)
 }

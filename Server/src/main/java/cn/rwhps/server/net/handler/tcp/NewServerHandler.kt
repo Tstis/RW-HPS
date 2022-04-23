@@ -76,13 +76,13 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
     @Throws(Exception::class)
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable?) {
         //ctx.close()
-/*
+
         error(RuntimeException())
         error(cause == null)
         error(cause!!)
         error(cause.message!!)
         error(cause.localizedMessage!!)
-        error(cause.cause!!)*/
+        error(cause.cause!!)
     }
 
     companion object {

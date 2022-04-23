@@ -27,7 +27,7 @@ import kotlin.math.ceil
 
 /**
  * Vote 为游戏提供一个默认的Vote接口
- * @author Dr
+ * @author RW-HPS/Dr
  * @Date 2022/02/04 15:00:05
  */
 class Vote {

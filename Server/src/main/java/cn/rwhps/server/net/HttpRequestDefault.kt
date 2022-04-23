@@ -19,7 +19,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object HttpRequestDefault {
     fun downUrl(url: String?, file: File): Boolean {

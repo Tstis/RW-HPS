@@ -9,17 +9,9 @@
 
 package cn.rwhps.server.util.log.exp
 
-import cn.rwhps.server.util.log.ErrorCode
-
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class RwGamaException {
-    open class KickException(type: String) : Exception(ErrorCode.valueOf(type).error)
-
-    class KickStartException(type: String) : KickException(type)
-
-    class KickPullException(type: String) : KickException(type)
-
-    class PasswdException(type: String) : KickException(type)
+    class ModsException(type: String) : Exception(type)
 }

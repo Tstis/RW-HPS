@@ -13,7 +13,7 @@ import cn.rwhps.server.data.player.Player
 import cn.rwhps.server.net.netconnectprotocol.realize.GameVersionServer
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class EventType {
     /** 玩家加入  */

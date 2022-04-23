@@ -7,7 +7,7 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package cn.rwhps.server.command
+package cn.rwhps.server.command.relay
 
 import cn.rwhps.server.data.global.Data
 import cn.rwhps.server.data.global.Relay
@@ -70,5 +70,7 @@ class RelayCommands(handler: CommandHandler) {
         registerRelayCommand(handler)
 
         PluginManage.runRegisterRelayCommands(handler)
+
+        RelayClientCommands(Data.RELAY_COMMAND)
     }
 }

@@ -16,7 +16,7 @@ import cn.rwhps.server.util.zip.zip.ZipDecoder
 
 /**
  * 游戏的地图数据
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GameMaps {
     /** 地图类型  */

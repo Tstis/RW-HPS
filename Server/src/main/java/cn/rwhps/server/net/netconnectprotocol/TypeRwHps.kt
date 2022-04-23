@@ -48,26 +48,29 @@ open class TypeRwHps : TypeConnect {
         con.lastReceivedTime()
 
         //Log.debug(packet.type,ExtractUtil.bytesToHex(packet.bytes))
-        if (packet.type == PacketType.PACKET_ADD_GAMECOMMAND) {
+        if (packet.type == PacketType.GAMECOMMAND_RECEIVE.type) {
             con.receiveCommand(packet)
             con.player.lastMoveTime = concurrentSecond()
         } else {
             when (packet.type) {
-                PacketType.PACKET_PREREGISTER_CONNECTION -> con.registerConnection(packet)
-                PacketType.PACKET_PLAYER_INFO -> if (!con.getPlayerInfo(packet)) {
+                PacketType.PREREGISTER_INFO_RECEIVE.type -> con.registerConnection(packet)
+                PacketType.REGISTER_PLAYER.type -> if (!con.getPlayerInfo(packet)) {
                     con.disconnect()
                 }
-                PacketType.PACKET_HEART_BEAT_RESPONSE -> {
+                PacketType.HEART_BEAT_RESPONSE.type -> {
                     val player = con.player
                     player.ping = (System.currentTimeMillis() - player.timeTemp).toInt() shr 1
                 }
-                PacketType.PACKET_ADD_CHAT -> con.receiveChat(packet)
-                PacketType.PACKET_DISCONNECT -> con.disconnect()
-                PacketType.PACKET_ACCEPT_START_GAME -> con.player.start = true
-                PacketType.PACKET_SERVER_DEBUG -> con.debug(packet)
+                PacketType.CHAT_RECEIVE.type -> con.receiveChat(packet)
+                PacketType.DISCONNECT.type -> con.disconnect()
+                PacketType.ACCEPT_START_GAME.type -> con.player.start = true
+                PacketType.SERVER_DEBUG_RECEIVE.type -> con.debug(packet)
                 // 竞争 谁先到就用谁
-                PacketType.PACKET_SYNC -> if (Data.game.gameSaveCache == null) {
+                PacketType.SYNC.type -> if (Data.game.gameSaveCache == null) {
                     val gameSavePacket = GameSavePacket(packet)
+                    //gameSavePacket.analyze()
+                    //Core.exit()
+
                     if (gameSavePacket.checkTick()) {
                         Data.game.gameSaveCache = gameSavePacket
                         synchronized(Data.game.gameSaveWaitObject) {
@@ -76,7 +79,7 @@ open class TypeRwHps : TypeConnect {
                     }
                 }
 
-                118 -> con.sendRelayServerTypeReply(packet)
+                PacketType.RELAY_118_117_REC.type -> con.sendRelayServerTypeReply(packet)
 
                 0 -> {
                     // 忽略空包

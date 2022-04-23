@@ -13,7 +13,7 @@ import cn.rwhps.server.struct.ObjectMap
 import cn.rwhps.server.struct.Seq
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Events {
     private val EVENTS =

@@ -11,7 +11,7 @@ package cn.rwhps.server.func;
 
 /**
  * Boolf 轮询中if判定 Seq专用
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public interface BooleanIf<T>{
     boolean get(T t);

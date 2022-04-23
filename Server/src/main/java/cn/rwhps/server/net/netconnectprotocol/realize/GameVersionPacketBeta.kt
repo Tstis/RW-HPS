@@ -14,7 +14,7 @@ import cn.rwhps.server.io.GameOutputStream
 import java.io.IOException
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GameVersionPacketBeta : GameVersionPacket() {
     @Throws(IOException::class)

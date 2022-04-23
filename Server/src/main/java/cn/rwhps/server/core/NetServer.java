@@ -17,7 +17,7 @@ import cn.rwhps.server.util.file.FileUtil;
 import cn.rwhps.server.util.log.Log;
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class NetServer {
 

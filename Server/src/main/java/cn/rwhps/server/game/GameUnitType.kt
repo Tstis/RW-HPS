@@ -82,8 +82,13 @@ class GameUnitType {
         turretT3,
         damagingBorder,
         zoneMarker,
-        editorOrBuilder
+        editorOrBuilder;
             //modularSpider
+
+        companion object {
+            // 进行全匹配 查看是否在游戏内置列表中
+            fun from(type: String?): GameUnits? = GameUnits.values().find { it.name == type || it.name.lowercase() == type?.lowercase() }
+        }
     }
     
     enum class GameCustomUnits {

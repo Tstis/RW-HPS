@@ -26,7 +26,7 @@ import java.util.*
 
 /**
  *
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Player(
     @JvmField var con: GameVersionServer?,

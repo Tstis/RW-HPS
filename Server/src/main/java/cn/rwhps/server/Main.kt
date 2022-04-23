@@ -9,13 +9,14 @@
 
 package cn.rwhps.server
 
-import cn.rwhps.server.command.ClientCommands
 import cn.rwhps.server.command.CoreCommands
 import cn.rwhps.server.command.LogCommands
+import cn.rwhps.server.core.Core
 import cn.rwhps.server.core.Initialization
 import cn.rwhps.server.core.thread.Threads.newThreadCore
 import cn.rwhps.server.custom.LoadCoreCustomPlugin
 import cn.rwhps.server.data.base.BaseConfig
+import cn.rwhps.server.data.base.BaseTestConfig
 import cn.rwhps.server.data.global.Data
 import cn.rwhps.server.data.mods.ModManage
 import cn.rwhps.server.data.plugin.PluginEventManage.Companion.add
@@ -49,11 +50,22 @@ import java.util.logging.Logger
  */
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
+
+        System.setProperty("file.encoding","UTF-8")
+
+        // 强制 UTF-8 我不愿意解决奇奇怪怪的问题
+        if (!System.getProperty("file.encoding").equals("UTF-8",ignoreCase = true)) {
+            clog("Please use UTF-8 !!!  -> java -Dfile.encoding=UTF-8 -jar Server.jar")
+            clog("For non-UTF8 problems, please solve it yourself")
+            Core.mandatoryExit()
+        }
+
+
         Initialization()
 
         set("ALL")
@@ -68,6 +80,7 @@ object Main {
         setFilePath(if (args.isNotEmpty()) decodeString(args[0]) else null)
 
         Data.config = BaseConfig.stringToClass()
+        Data.configTest = BaseTestConfig.stringToClass()
         Data.core.load()
 
         clog(Data.i18NBundle.getinput("server.hi"))
@@ -75,7 +88,6 @@ object Main {
 
         /* 命令加载 */
         CoreCommands(Data.SERVER_COMMAND)
-        ClientCommands(Data.CLIENT_COMMAND)
         LogCommands(Data.LOG_COMMAND)
         clog(Data.i18NBundle.getinput("server.load.command"))
 
@@ -95,9 +107,9 @@ object Main {
 
 
         /* Load Mod */
-        ModManage.loadCore()
         clog(Data.i18NBundle.getinput("server.loadMod",ModManage.load(getFolder(Data.Plugin_Mods_Path))))
         ModManage.loadUnits()
+        //ModManage.test()
 
 
         /* 按键监听 */
@@ -120,12 +132,21 @@ object Main {
         }
 
         clog("Server Run PID : ${Data.core.pid}")
+
+        Data.config.DockerSupCommand.forEach {
+            val responseDockerSupCommand = Data.SERVER_COMMAND.handleMessage(it, StrCons { obj: String -> clog(obj) })
+            if (responseDockerSupCommand != null && responseDockerSupCommand.type != CommandHandler.ResponseType.noCommand) {
+                if (responseDockerSupCommand.type != CommandHandler.ResponseType.valid) {
+                    clog("Please check the command , Unable to use StartCommand inside Config to start the server")
+                }
+            }
+        }
     }
 
     private fun inputMonitor() {
         val instreamCommandReader = System.`in`
         if (instreamCommandReader == null) {
-            Log.fatal("inputMonitor Null")
+            Log.fatal("inputMonitor Null & listen command denied")
             return
         }
         val bufferedReader = IoReadConversion.streamBufferRead(instreamCommandReader)
@@ -159,3 +180,39 @@ object Main {
 }
 
 // 你的身体是为你服务的 而不是RW-HPS(?)  !
+
+/**
+                       ::
+                      :;J7, :,                        ::;7:
+                      ,ivYi, ,                       ;LLLFS:
+                      :iv7Yi                       :7ri;j5PL
+                     ,:ivYLvr                    ,ivrrirrY2X,
+                    :;r@Wwz.7r:                :ivu@kexianli.
+                    :iL7::,:::iiirii:ii;::::,,irvF7rvvLujL7ur
+                   ri::,:,::i:iiiiiii:i:irrv177JX7rYXqZEkvv17
+                ;i:, , ::::iirrririi:i:::iiir2XXvii;L8OGJr71i
+              :,, ,,:   ,::ir@mingyi.irii:i:::j1jri7ZBOS7ivv,
+                 ,::,    ::rv77iiiriii:iii:i::,rvLq@huhao.Li
+             ,,      ,, ,:ir7ir::,:::i;ir:::i:i::rSGGYri712:
+           :::  ,v7r:: ::rrv77:, ,, ,:i7rrii:::::, ir7ri7Lri
+          ,     2OBBOi,iiir;r::        ,irriiii::,, ,iv7Luur:
+        ,,     i78MBBi,:,:::,:,  :7FSL: ,iriii:::i::,,:rLqXv::
+        :      iuMMP: :,:::,:ii;2GY7OBB0viiii:i:iii:i:::iJqL;::
+       ,     ::::i   ,,,,, ::LuBBu BBBBBErii:i:i:i:i:i:i:r77ii
+      ,       :       , ,,:::rruBZ1MBBqi, :,,,:::,::::::iiriri:
+     ,               ,,,,::::i:  @arqiao.       ,:,, ,:::ii;i7:
+    :,       rjujLYLi   ,,:::::,:::::::::,,   ,:i,:,,,,,::i:iii
+    ::      BBBBBBBBB0,    ,,::: , ,:::::: ,      ,,,, ,,:::::::
+    i,  ,  ,8BMMBBBBBBi     ,,:,,     ,,, , ,   , , , :,::ii::i::
+    :      iZMOMOMBBM2::::::::::,,,,     ,,,,,,:,,,::::i:irr:i:::,
+    i   ,,:;u0MBMOG1L:::i::::::  ,,,::,   ,,, ::::::i:i:iirii:i:i:
+    :    ,iuUuuXUkFu7i:iii:i:::, :,:,: ::::::::i:i:::::iirr7iiri::
+    :     :rk@Yizero.i:::::, ,:ii:::::::i:::::i::,::::iirrriiiri::,
+     :      5BMBBBBBBSr:,::rv2kuii:::iii::,:i:,, , ,,:,:i@petermu.,
+          , :r50EZ8MBBBBGOBBBZP7::::i::,:::::,: :,:,::i;rrririiii::
+              :jujYY7LS0ujJL7r::,::i::,::::::::::::::iirirrrrrrr:ii:
+           ,:  :@kevensun.:,:,,,::::i:i:::::,,::::::iir;ii;7v77;ii;i,
+           ,,,     ,,:,::::::i:iiiii:i::::,, ::::iiiir@xingjief.r;7:i,
+        , , ,,,:,,::::::::iiiiiiiiii:,:,:::::::::iiir;ri7vL77rrirri::
+         :,, , ::::::::i:::i:::i:i::,,,,,:,::i:i:::iir;@Secbone.ii:::
+ */

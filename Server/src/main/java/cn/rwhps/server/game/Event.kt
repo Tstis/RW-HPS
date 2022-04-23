@@ -22,7 +22,7 @@ import cn.rwhps.server.util.log.Log.error
 import java.io.IOException
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Event : AbstractEvent {
     override fun registerPlayerJoinEvent(player: Player) {
@@ -55,6 +55,7 @@ class Event : AbstractEvent {
         }
 
         Call.sendSystemMessage(Data.i18NBundle.getinput("player.ent", player.name))
+
 
 
         // ConnectServer("127.0.0.1",5124,player.con)

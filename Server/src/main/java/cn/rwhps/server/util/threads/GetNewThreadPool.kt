@@ -12,7 +12,7 @@ package cn.rwhps.server.util.threads
 import java.util.concurrent.*
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object GetNewThreadPool {
     fun getNewFixedThreadPool(nThreads: Int, name: String): ThreadPoolExecutor {

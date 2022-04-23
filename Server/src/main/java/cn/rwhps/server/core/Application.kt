@@ -26,7 +26,7 @@ import java.util.*
 
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Application {
     val settings: PluginData = PluginData()

@@ -15,38 +15,56 @@ package cn.rwhps.server.util
  * From Game-Ilb.jar and Rukkit
  *
  * @author [RukkitDev](https://github.com/RukkitDev)
- * @author Dr
+ * @author RW-HPS/Dr
  */
-object PacketType {
-    const val PACKET_SERVER_DEBUG = 2000
+enum class PacketType(val type: Int) {
+    /* DEBUG */
+    SERVER_DEBUG_RECEIVE(2000),
+    SERVER_DEBUG(2001),
 
-    //Server Commands
-    const val PACKET_REGISTER_CONNECTION = 161
-    const val PACKET_TEAM_LIST = 115
-    const val PACKET_HEART_BEAT = 108
-    const val PACKET_SEND_CHAT = 141
-    const val PACKET_SERVER_INFO = 106
-    const val PACKET_KICK = 150
-    const val PACKET_SYNCCHECKSUM_STATUS = 31
-    const val PACKET_A = 30
+    /* Preregister */
+    PREREGISTER_INFO_RECEIVE(160),
+    PREREGISTER_INFO(161),
+    PASSWD_ERROR(113),
+    REGISTER_PLAYER(110),
 
-    //Client Commands
-    const val PACKET_PREREGISTER_CONNECTION = 160
-    const val PACKET_HEART_BEAT_RESPONSE = 109
-    const val PACKET_ADD_CHAT = 140
-    const val PACKET_PLAYER_INFO = 110
-    const val PACKET_DISCONNECT = 111
-    const val PACKET_ACCEPT_START_GAME = 112
-    const val PACKET_ACCEPT_BUTTON_GAME = 20
+    /* Server Info */
+    SERVER_INFO(106),
+    TEAM_LIST(115),
 
-    //Game Commands
-    const val PACKET_ADD_GAMECOMMAND = 20
-    const val PACKET_TICK = 10
-    const val PACKET_SYNC = 35
-    const val PACKET_START_GAME = 120
-    const val PACKET_PASSWD_ERROR = 113
+    /* Heart */
+    HEART_BEAT(108),
+    HEART_BEAT_RESPONSE(109),
 
-    //Relay Commands
+    /* Chat */
+    CHAT_RECEIVE(140),
+    CHAT(141),
 
+
+    KICK(150),
+    DISCONNECT(111),
+
+
+    START_GAME(120),
+    ACCEPT_START_GAME(112),
+
+    /* GameStart Commands */
+    TICK(10),
+    GAMECOMMAND_RECEIVE(20),
+    SYNCCHECKSUM_STATUS(31),
+    SYNC(35),
+
+    /* Relay */
+    RELAY_117(117),
+    RELAY_118_117_REC(118),
+    RELAY_151(151),
+    RELAY_VERSION_INFO(163),
+    FORWARD_HOST_SET(170),
+    FORWARD_CLIENT_ADD(172),
+    FORWARD_CLIENT_REMOVE(173),
+    PACKET_FORWARD_CLIENT_FROM(174),
+    PACKET_FORWARD_CLIENT_TO(175),
+    PACKET_FORWARD_CLIENT_TO_REPEATED(176),
+    PACKET_RECONNECT_TO(178);
 
 }

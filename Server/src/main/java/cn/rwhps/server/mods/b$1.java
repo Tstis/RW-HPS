@@ -15,7 +15,7 @@ package cn.rwhps.server.mods;
  *
  * 可能是计算三角函数
  *
- * @author Dr
+ * @author RW-HPS/Dr
  */
 public class b$1 {
         int a;

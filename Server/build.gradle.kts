@@ -30,9 +30,12 @@ dependencies {
 	//api fileTree(dir:"libs",include:["ChainMarket-23fc7f989f.jar"])
 
 	api("com.github.deng-rui:RUDP:2.0.0")
-	api("com.github.deng-rui:Compress-Zip:1.0.0")
+	//api("com.github.deng-rui:Compress-Zip:1.0.0")
 
 	api("com.google.code.gson:gson:2.9.0")
+
+	api("org.apache.commons:commons-compress:1.21")
+
 
 	//compileOnly group: "com.ip2location", name: "ip2location-java", version: "8.5.0"
 	//compileOnly group: "com.alibaba", name: "fastjson", version: "1.2.58"

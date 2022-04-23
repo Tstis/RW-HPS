@@ -18,7 +18,7 @@ import cn.rwhps.server.util.Time.getTimeSinceMillis
 import cn.rwhps.server.util.Time.millis
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Administration(pluginData: PluginData) {
     private val chatFilters = Seq<ChatFilter>()

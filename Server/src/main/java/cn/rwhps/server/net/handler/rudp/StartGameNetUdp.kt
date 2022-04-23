@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap
  * @property udpSocket ReliableServerSocket
  * @property rudpDataList ConcurrentHashMap<String, RudpData>
  * @constructor
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal class StartGameNetUdp(
     private val udpSocket: ReliableServerSocket
@@ -50,7 +50,7 @@ internal class StartGameNetUdp(
      * @property input ReliableSocketInputStream
      * @property decoder PacketDecoder
      * @constructor
-     * @author Dr
+     * @author RW-HPS/Dr
      */
     internal class RudpData(val socket: PackagingSocket, val input: ReliableSocketInputStream) {
         val decoder = PacketDecoder(socket)

@@ -17,7 +17,7 @@ import io.netty.handler.codec.http.HttpRequest
 import io.netty.handler.codec.http.HttpResponseStatus
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class SendWeb(
     private val channel: Channel,

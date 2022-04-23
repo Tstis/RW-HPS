@@ -7,7 +7,7 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package cn.rwhps.server.command
+package cn.rwhps.server.command.server
 
 import cn.rwhps.server.core.Call.sendMessageLocal
 import cn.rwhps.server.core.Call.sendSystemMessageLocal
@@ -15,6 +15,7 @@ import cn.rwhps.server.core.Call.sendTeamData
 import cn.rwhps.server.core.Call.sendTeamMessage
 import cn.rwhps.server.core.Call.testPreparationPlayer
 import cn.rwhps.server.core.Call.upDataGameData
+import cn.rwhps.server.core.NetServer
 import cn.rwhps.server.core.thread.Threads.newThreadService
 import cn.rwhps.server.core.thread.TimeTaskData
 import cn.rwhps.server.data.global.Data
@@ -35,9 +36,9 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
-class ClientCommands(handler: CommandHandler) {
+internal class ClientCommands(handler: CommandHandler) {
     private val localeUtil = Data.i18NBundle
     private fun isAdmin(player: Player): Boolean {
         if (player.isAdmin) {

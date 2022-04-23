@@ -16,7 +16,7 @@ import cn.rwhps.server.struct.Seq
 import cn.rwhps.server.util.alone.BlackList
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object NetStaticData {
     @JvmField

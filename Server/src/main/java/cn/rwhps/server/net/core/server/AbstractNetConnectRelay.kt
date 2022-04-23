@@ -11,15 +11,18 @@ package cn.rwhps.server.net.core.server
 
 import cn.rwhps.server.data.global.Relay
 import cn.rwhps.server.io.packet.Packet
+import cn.rwhps.server.net.core.DataPermissionStatus
 import java.io.IOException
 
 /**
  * Only provide interface but not implement
  * As the interface of game CoreNet, it provides various version support for GameServer
- * @author Dr
+ * @author RW-HPS/Dr
  * @date 2021/7/31/ 14:14
  */
 interface AbstractNetConnectRelay {
+    val permissionStatus: DataPermissionStatus.RelayStatus
+
     /**
      * 获取Relay的协议 无则为null
      * @return Relay
@@ -56,12 +59,12 @@ interface AbstractNetConnectRelay {
     /**
      * 检测Relay的校验是否正确-发送
      */
-    fun sendRelayServerCheck()
+    fun sendVerifyClientValidity()
 
     /**
      * 检测Relay的校验是否正确-校验
      */
-    fun receiveRelayServerCheck(packet: Packet): Boolean
+    fun receiveVerifyClientValidity(packet: Packet): Boolean
 
     /**
      * Server类型
@@ -130,6 +133,15 @@ interface AbstractNetConnectRelay {
     fun addRelaySend(packet: Packet)
     fun sendResultPing(packet: Packet)
     fun sendCustomPacket(packet: Packet)
+
+    /**
+     * RELAY玩家断开
+     */
     fun relayPlayerDisconnect()
+
+    /**
+     * 多播复用
+     * @param packet Packet
+     */
     fun multicastAnalysis(packet: Packet)
 }

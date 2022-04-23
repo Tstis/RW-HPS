@@ -28,7 +28,7 @@ import cn.rwhps.server.util.I18NBundle
 import cn.rwhps.server.util.log.Log
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class Initialization {
     private fun initMaps() {
@@ -108,7 +108,6 @@ class Initialization {
     }
 
     companion object {
-        // 避免多次ctrl
         @Volatile
         private var isClose = true
 

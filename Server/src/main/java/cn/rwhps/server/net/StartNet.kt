@@ -10,8 +10,8 @@
 package cn.rwhps.server.net
 
 import cn.rwhps.server.data.global.Data
+import cn.rwhps.server.net.code.rudp.PacketDecoderTest
 import cn.rwhps.server.net.core.AbstractNet
-import cn.rwhps.server.net.handler.rudp.PackagingSocket
 import cn.rwhps.server.net.handler.rudp.StartGameNetUdp
 import cn.rwhps.server.net.handler.tcp.StartGameNetTcp
 import cn.rwhps.server.struct.Seq
@@ -19,25 +19,22 @@ import cn.rwhps.server.util.ReflectionUtils
 import cn.rwhps.server.util.log.Log
 import cn.rwhps.server.util.log.Log.clog
 import cn.rwhps.server.util.log.Log.error
+import io.netty.bootstrap.Bootstrap
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.Channel
-import io.netty.channel.ChannelOption
-import io.netty.channel.EventLoopGroup
-import io.netty.channel.ServerChannel
+import io.netty.channel.*
 import io.netty.channel.epoll.Epoll
 import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.epoll.EpollServerSocketChannel
 import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.socket.nio.NioDatagramChannel
 import io.netty.channel.socket.nio.NioServerSocketChannel
 import io.netty.util.concurrent.DefaultEventExecutorGroup
 import io.netty.util.concurrent.EventExecutorGroup
-import net.udp.ReliableServerSocket
-import net.udp.ReliableSocket
 import java.net.BindException
 import java.net.ServerSocket
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  * 遵守NetGameServer服务对外最少开放接口,尽量内部整合
  */
 class StartNet {
@@ -123,19 +120,29 @@ class StartNet {
     }
 
     fun startUdp(port: Int) {
-        Log.warn("[BETA 警告]","您正在尝试使用测试功能 可能存在未知问题")
-        Log.warn("[BETA warning]","You are trying to use the test function There may be an unknown problem")
+        val group = NioEventLoopGroup()
+        val bootstrap = Bootstrap()
+        bootstrap.group(group)
+            .channel(NioDatagramChannel::class.java)
+            .option(ChannelOption.SO_BROADCAST, true)
+            .handler(object : ChannelInitializer<NioDatagramChannel?>() {
+                @Throws(Exception::class)
+                override fun initChannel(nioDatagramChannel: NioDatagramChannel?) {
+                    if (nioDatagramChannel == null) {
+                        return
+                    }
+                    nioDatagramChannel.pipeline().addLast(PacketDecoderTest())
+                }
+            })
         try {
-            ReliableServerSocket(port).use { serverSocket ->
-                this.serverSocket = serverSocket
-                startGameNetUdp = StartGameNetUdp(serverSocket)
-                do {
-                    val socket = serverSocket.accept() as ReliableSocket
-                    startGameNetUdp!!.run(PackagingSocket(socket as ReliableServerSocket.ReliableClientSocket))
-                } while (true)
-            }
-        } catch (ignored: Exception) {
-            error("UDP Start Error", ignored)
+            //4.bind到指定端口，并返回一个channel，该端口就是监听UDP报文的端口
+            val channel: Channel = bootstrap.bind(5123).sync().channel()
+            //5.等待channel的close
+            channel.closeFuture().sync()
+            //6.关闭group
+            group.shutdownGracefully()
+        } catch (e: InterruptedException) {
+            e.printStackTrace()
         }
     }
 

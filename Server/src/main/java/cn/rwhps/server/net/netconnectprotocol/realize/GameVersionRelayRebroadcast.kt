@@ -41,7 +41,7 @@ import java.util.stream.IntStream
  * @property version Protocol version
  * @constructor
  *
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : GameVersionRelay(connectionAgreement) {
     private lateinit var lastSentPacket: Packet
@@ -76,7 +76,7 @@ class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : Ga
             o.writeString("{{RW-HPS }}.Room ID : " + relay!!.id)
             // Multicast
             o.writeBoolean(true)
-            sendPacket(o.createPacket(170)) //+108+140
+            sendPacket(o.createPacket(PacketType.FORWARD_HOST_SET)) //+108+140
             sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay.server.admin.connect", relay!!.id), "ADMIN", 5))
             sendPacket(NetStaticData.RwHps.abstractNetPacket.getChatMessagePacket(Data.i18NBundle.getinput("relay", relay!!.id), "ADMIN", 5))
             //ping();
@@ -104,7 +104,7 @@ class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : Ga
                 val type = inStream.readInt()
                 //Log.clog(target+"   "+type);
 
-                if (IntStream.of(PacketType.PACKET_DISCONNECT, PacketType.PACKET_HEART_BEAT).anyMatch { i: Int -> i == type }) {
+                if (IntStream.of(PacketType.DISCONNECT.type, PacketType.HEART_BEAT.type).anyMatch { i: Int -> i == type }) {
                     return
                 }
 
@@ -121,7 +121,7 @@ class GameVersionRelayRebroadcast(connectionAgreement: ConnectionAgreement) : Ga
                 }
 
                 when (type) {
-                    PacketType.PACKET_KICK -> {
+                    PacketType.KICK.type -> {
                         relayPlayerDisconnect()
                     }
                 }

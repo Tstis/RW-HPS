@@ -13,7 +13,7 @@ import cn.rwhps.server.data.global.Data
 import cn.rwhps.server.struct.ObjectMap
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 internal object ColorCodes {
     private const val FLUSH = "\u001b[H\u001b[2J"

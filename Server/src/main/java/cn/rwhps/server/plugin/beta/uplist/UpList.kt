@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
  * 为 服务器进入官方列表提供API支持
  * 并不打算开放源码 避免被滥用 (已经被滥用了 指漫天AD)
  * API随Server版本而进行版本更新
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class UpList : Plugin() {
     private var upServerList = false

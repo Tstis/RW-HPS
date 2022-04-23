@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object StringFilteringUtil {
     private val pattern = Pattern.compile("[1-9][0-9]{4,14}")

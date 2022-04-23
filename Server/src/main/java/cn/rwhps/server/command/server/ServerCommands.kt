@@ -7,7 +7,7 @@
  * https://github.com/RW-HPS/RW-HPS/blob/master/LICENSE
  */
 
-package cn.rwhps.server.command
+package cn.rwhps.server.command.server
 
 import cn.rwhps.server.core.Call
 import cn.rwhps.server.core.Call.sendMessage
@@ -18,6 +18,7 @@ import cn.rwhps.server.core.thread.TimeTaskData
 import cn.rwhps.server.data.global.Data
 import cn.rwhps.server.data.global.Data.LINE_SEPARATOR
 import cn.rwhps.server.data.global.NetStaticData
+import cn.rwhps.server.data.mods.ModManage
 import cn.rwhps.server.data.player.Player
 import cn.rwhps.server.data.plugin.PluginManage
 import cn.rwhps.server.func.StrCons
@@ -35,9 +36,9 @@ import cn.rwhps.server.util.log.Log.error
 import java.io.IOException
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
-class ServerCommands(handler: CommandHandler) {
+internal class ServerCommands(handler: CommandHandler) {
     private fun registerPlayerCommand(handler: CommandHandler) {
         handler.register("say", "<text...>", "serverCommands.say") { arg: Array<String>, _: StrCons ->
             val response = StringBuilder(arg[0])
@@ -157,13 +158,6 @@ class ServerCommands(handler: CommandHandler) {
         handler.register("clearmuteall", "serverCommands.clearmuteall") { _: Array<String>?, _: StrCons ->
             Data.game.playerManage.playerGroup.each { e: Player -> e.muteTime = 0 }
         }
-        handler.register("reloadmaps", "serverCommands.reloadmaps") { _: Array<String>?, log: StrCons ->
-            val size = Data.game.mapsData.size
-            Data.game.mapsData.clear()
-            Data.game.checkMaps()
-            // Reload 旧列表的Custom数量 : 新列表的Custom数量
-            log["Reload Old Size:New Size is {0}:{1}", size, Data.game.mapsData.size]
-        }
     }
 
     private fun registerPlayerStatusCommand(handler: CommandHandler) {
@@ -207,6 +201,23 @@ class ServerCommands(handler: CommandHandler) {
                 }
                 log[data.toString()]
             }
+        }
+
+        handler.register("reloadmods", "serverCommands.reloadmods") { _: Array<String>?, log: StrCons ->
+            if (Data.game.isStartGame) {
+                log[Data.i18NBundle.getinput("err.startGame")]
+            } else {
+                log[Data.i18NBundle.getinput("server.loadMod", ModManage.reLoadMods())]
+                upDataGameData(true)
+            }
+
+        }
+        handler.register("reloadmaps", "serverCommands.reloadmaps") { _: Array<String>?, log: StrCons ->
+            val size = Data.game.mapsData.size
+            Data.game.mapsData.clear()
+            Data.game.checkMaps()
+            // Reload 旧列表的Custom数量 : 新列表的Custom数量
+            log["Reload Old Size:New Size is {0}:{1}", size, Data.game.mapsData.size]
         }
     }
 
@@ -333,5 +344,7 @@ class ServerCommands(handler: CommandHandler) {
         registerPlayerCustomEx(handler)
 
         PluginManage.runRegisterServerCommands(handler)
+
+        ClientCommands(Data.CLIENT_COMMAND)
     }
 }

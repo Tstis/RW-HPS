@@ -17,7 +17,7 @@ import java.util.zip.GZIPInputStream
 
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object GzipDecoder {
     @JvmStatic

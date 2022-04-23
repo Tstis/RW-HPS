@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
 /**
- * @author Dr
+ * @author RW-HPS/Dr
  */
 object Time {
     /** 高并发下的效率提升  */
@@ -81,16 +81,22 @@ object Time {
      * 获取JDK当前时间
      */
     @JvmStatic
-    val utcMillis: Long get() {
-        // 获取JDK当前时间
-        val cal = Calendar.getInstance()
-        // 取得时间偏移量
-        val zoneOffset = cal[Calendar.ZONE_OFFSET]
-        // 取得夏令时差
-        val dstOffset = cal[Calendar.DST_OFFSET]
-        // 从本地时间里扣除这些差量，即可以取得UTC时间
-        cal.add(Calendar.MILLISECOND, -(zoneOffset + dstOffset))
-        return cal.timeInMillis
+    val utcMillis: Long
+        get() {
+            // 获取JDK当前时间
+            val cal = Calendar.getInstance()
+            // 取得时间偏移量
+            val zoneOffset = cal[Calendar.ZONE_OFFSET]
+            // 取得夏令时差
+            val dstOffset = cal[Calendar.DST_OFFSET]
+            // 从本地时间里扣除这些差量，即可以取得UTC时间
+            cal.add(Calendar.MILLISECOND, -(zoneOffset + dstOffset))
+            return cal.timeInMillis
+        }
+
+    @JvmStatic
+    fun getMilliFormat(fot: Int): String {
+        return format(concurrentMillis(), fot)
     }
 
     @JvmStatic

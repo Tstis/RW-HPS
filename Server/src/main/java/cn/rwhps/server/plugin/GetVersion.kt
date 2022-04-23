@@ -33,7 +33,7 @@ import java.util.*
  * 其中 identifier 和 metadata 都是可选的.
  *
  * 对于核心版本号, 此实现稍微比语义化版本规范宽松一些, 允许 x.y 的存在.
- * @author Dr
+ * @author RW-HPS/Dr
  */
 class GetVersion(version: String) {
     /**
