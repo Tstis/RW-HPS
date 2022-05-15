@@ -19,15 +19,7 @@ import cn.rwhps.server.util.IpUtil
 import cn.rwhps.server.util.game.Events
 import cn.rwhps.server.util.log.Log.debug
 import cn.rwhps.server.util.log.Log.error
-import com.github.dr.rwserver.data.global.Data
-import com.github.dr.rwserver.data.global.NetStaticData
-import com.github.dr.rwserver.io.packet.Packet
-import com.github.dr.rwserver.net.core.ConnectionAgreement
-import com.github.dr.rwserver.net.core.TypeConnect
-import com.github.dr.rwserver.util.ExtractUtil
-import com.github.dr.rwserver.util.log.Log.debug
-import com.github.dr.rwserver.util.log.Log.error
-import com.github.dr.rwserver.struct.Seq
+import cn.rwhps.server.struct.Seq
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler

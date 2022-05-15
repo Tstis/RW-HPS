@@ -44,9 +44,8 @@ class RelayCommands(handler: CommandHandler) {
         handler.register("banip", "<ip>", "serverCommands.banrelay") { arg: Array<String>, log: StrCons ->
             val ip = arg[0]
             if (isBlank(ip)) {
+				log["Enter IP of segment"]
             } else {
-                relay!!.groupNet.disconnect()
-                relay.sendMsg("Ви були забанені адміністрацією релея.")
                 Data.core.admin.bannedIP24.add(IpUtil.ipToLong24(ip))
                 log["OK!  $ip The *.*.*.0 segment is disabled"]
             }
