@@ -42,6 +42,9 @@ dependencies {
 	api("com.squareup.okhttp3:okhttp:4.9.3") {
 		exclude(group = "org.jetbrains.kotlin")
 	}
+
+	implementation("org.jline:jline-reader:3.21.0")
+	implementation("org.fusesource.jansi:jansi:2.4.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {

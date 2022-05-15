@@ -1,108 +1,70 @@
-# 文档太老了 ! 需要更新 !  
 
-# Start
 
-> 1.创建配置文件
 
-```bash
-mkdir -p ~/rw-hps/docker
-# 创建
-vi ~/rw-hps/docker/Config.json
-# 或者下载
-wget -O ~/rw-hps/docker/Config.json https://raw.githubusercontent.com/RW-HPS/RW-HPS/master/docker/Config.json
-```
+> 本镜像为方便管理 (后台运行+前台交互, 异常时自动重启), 已打包 `Supervisor`, 并将常用管理脚本打包
 
-> 2.运行，Go!
+> PS: Docker 镜像使用 `GitHub Actions` 自动更新, 可选版本号, 或选择最新开发版 (tag: `{last_release}-beta`), [点击查看](https://github.com/RW-HPS/RW-HPS/pkgs/container/rw-hps)
+
+## Docker
+
+> 后台运行
 
 ```bash
-docker run -d --restart=always -v ~/rw-hps/docker:/app/data -p 5123:5123 --name rw-hps-container yiyungent/rw-hps
+docker run --name rw-hps -d -p 5123:5123 -v ~/rw-hps-data:/app/data ghcr.io/rw-hps/rw-hps
 ```
 
-
-
-# 注意
-
-这里是将 `宿主机` 的 `~/rw-hps/docker` 挂载到 `容器内` 的 `/app/data`,   
-也就是说 宿主机 `~/rw-hps/docker` 相当于 `data` 目录，成功启动容器后，会生成 `plugins Setting.bin Config.json`
-
-
-# 补充
-
-> 下方用于从源代码中自己构建镜像等
+> 进入容器内部
 
 ```bash
-docker build -t rw-hps .
-docker stop rw-hps-container
-docker rm rw-hps-container
-docker run -d -v ~/rw-hps/docker:/app/data -p 5123:5123 --name rw-hps-container rw-hps
-docker run -it -v ~/rw-hps/docker:/app/data -p 5123:5123 --name rw-hps-container rw-hps bash
-docker attach rw-hps-container
-docker exec -it rw-hps-container bash
-docker start -i rw-hps-container bash
+docker exec -it rw-hps bash
 ```
+
+> 查看当前状态 是否处于运行中
 
 ```bash
-docker build -t yiyungent/rw-hps .
-docker push yiyungent/rw-hps
-docker run -d -v ~/rw-hps/docker:/app/data -p 5123:5123 --name rw-hps-container yiyungent/rw-hps
-docker run -it -v ~/rw-hps/docker:/app/data -p 5123:5123 --name rw-hps-container yiyungent/rw-hps bash
-docker exec -it rw-hps-container bash
-docker logs rw-hps-container
+root@5616fb973882:/app# ./status.sh
+rw-hps                           RUNNING   pid 9, uptime 0:26:01
 ```
+
+> 进入前台交互/输入 RW-HPS 指令
 
 ```bash
-# 日志路径
-docker inspect rw-hps-container | grep -i logpath
+./connect.sh
 ```
+
+> 重启 rw-hps 服务
 
 ```bash
-mkdir -p ~/rw-hps/docker
-vi ~/rw-hps/docker/Config.json
-# 或者下载
-wget -O ~/rw-hps/docker/Config.json https://raw.githubusercontent.com/RW-HPS/RW-HPS/master/docker/Config.json
-```
-
-> ~/rw-hps/docker/Config.json
-
-```json
-{
-	"readMap":"false",
-	"deleteLib":"",
-	"log":"ALL",
-	"winOrLose":"false",
-	"oneReadUnitList":"false",
-	"serverName":"RW-HPS",
-	"webApiSsl":"false",
-	"maxMessageLen":"40",
-	"reConnect":"true",
-	"webApiSslKetPath":"",
-	"maxPlayerAd":"",
-	"startAd":"",
-	"winOrLoseTime":"30000",
-	"pluginNumber":"",
-	"defIncome":"1.0",
-	"enterServerAd":"",
-	"maxUnit":"200",
-	"modNumber":"",
-	"iPCheckMultiLanguageSupport":"false",
-	"webApiPort":"0",
-	"maxPlayer":"10",
-	"oneAdmin":"true",
-	"tickSpeed":"0",
-	"webApi":"false",
-	"runPid":"2463",
-	"startPlayerAd":"",
-	"serverUpID":"",
-	"startRelay":"true",
-	"gameOverUpList":"false",
-	"port":"5123",
-	"passwd":"",
-	"webUrl":"",
-	"UDPSupport":"true",
-	"passwdCheckApi":"false",
-	"webApiSslPasswd":""
-}
+./restart.sh
 ```
 
 
+
+## Docker Compose
+
+```yml docker-compose.yml
+version: '3.4'
+
+services:
+  rw-hps:
+    image: ghcr.io/rw-hps/rw-hps
+    container_name: rw-hps
+    ports:
+      - "5123:5123"
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./data:/app/data
+    privileged: true
+    user: root
+```
+
+> 后台运行
+
+```bash
+docker-compose up -d
+```
+
+> 其它和 Docker 一致
 

@@ -64,7 +64,7 @@ class UpList : Plugin() {
         }
     }
 
-    private fun initUpListData(port: String?) {
+    private fun initUpListData(port: String?): Boolean {
         val formBody = FormBody.Builder()
         formBody.add("Passwd", IsUtil.notIsBlank(Data.game.passwd).toString())
         formBody.add("ServerName",Data.config.ServerName)
@@ -73,14 +73,23 @@ class UpList : Plugin() {
         formBody.add("PlayerSize",Data.game.playerManage.playerGroup.size().toString())
         formBody.add("PlayerMaxSize",Data.game.maxPlayer.toString())
 
-        val resultUpList = HttpRequestOkHttp.doPost(Data.urlData.readString("Get.UpListData.Bak"), formBody)
+        var resultUpList = HttpRequestOkHttp.doPost(Data.urlData.readString("Get.UpListData.Bak"), formBody)
+
+        if (resultUpList.isBlank()) {
+            resultUpList = HttpRequestOkHttp.doPost(Data.urlData.readString("Get.UpListData"), formBody)
+        }
+
+        if (resultUpList.isBlank()) {
+            Log.error("[Get UPLIST Data Error] 意外错误 无法初始化")
+            return false
+        }
 
         if (resultUpList.startsWith("[-1]")) {
             Log.error("[Get UPLIST Data Error] Please Check API")
-            return
+            return false
         } else if (resultUpList.startsWith("[-2]")) {
             Log.error("[Get UPLIST Data Error] IP prohibited")
-            return
+            return false
         }
 
         val json = Json(resultUpList)
@@ -98,12 +107,14 @@ class UpList : Plugin() {
         Log.debug(updateData)
 
         Log.debug(resultUpList)
+        return true
     }
 
     private fun add(log: StrCons, port: String? = null) {
         if (!upServerList) {
-            initUpListData(port)
-            Threads.newThreadCore { upServerList = true ; uplist() }
+            if (initUpListData(port)) {
+                Threads.newThreadCore { upServerList = true ; uplist() }
+            }
         } else {
             log["Already on the list"]
         }

@@ -79,7 +79,7 @@ public class HttpRequestOkHttp {
 		try {
 			return getHttpResultString(request,false);
 		} catch (Exception exception) {
-			Log.error("getHttpResultString",exception);
+			Log.debug("getHttpResultString",exception);
 		}
 		return "";
 	}

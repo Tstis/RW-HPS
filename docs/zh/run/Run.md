@@ -11,7 +11,7 @@
 > 你也可以去Jitpack用一些阴间的方法下载
 
 #### Windows
-2.在你喜欢的目录下使用Cmd 或者 PowerShell (Windows 系统按住Shift+鼠标右键，点击"在此处打开 PowerShell") 运行jar
+2.在你喜欢的目录下使用 ~~Cmd~~(不推荐) 或者 PowerShell (Windows 系统按住Shift+鼠标右键，点击"在此处打开 PowerShell") 运行jar
 ```bash
 java -Dfile.encoding=UTF-8 -jar Server.jar
 ```

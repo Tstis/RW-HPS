@@ -115,8 +115,6 @@ class StartNet {
             bossGroup.shutdownGracefully()
             workerGroup.shutdownGracefully()
         }
-
-        error("END")
     }
 
     fun startUdp(port: Int) {

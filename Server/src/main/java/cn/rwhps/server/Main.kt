@@ -26,23 +26,30 @@ import cn.rwhps.server.data.plugin.PluginManage.loadSize
 import cn.rwhps.server.data.plugin.PluginManage.runInit
 import cn.rwhps.server.data.plugin.PluginManage.runOnEnable
 import cn.rwhps.server.data.plugin.PluginManage.runRegisterEvents
+import cn.rwhps.server.data.totalizer.TimeAndNumber
 import cn.rwhps.server.func.StrCons
 import cn.rwhps.server.game.Event
 import cn.rwhps.server.game.EventGlobal
 import cn.rwhps.server.game.event.EventGlobalType.ServerLoadEvent
+import cn.rwhps.server.io.ConsoleStream
 import cn.rwhps.server.util.encryption.Base64.decodeString
 import cn.rwhps.server.util.file.FileUtil.Companion.getFolder
 import cn.rwhps.server.util.file.FileUtil.Companion.setFilePath
 import cn.rwhps.server.util.game.CommandHandler
 import cn.rwhps.server.util.game.Events
-import cn.rwhps.server.util.io.IoReadConversion
-import cn.rwhps.server.util.log.Log
 import cn.rwhps.server.util.log.Log.clog
 import cn.rwhps.server.util.log.Log.info
 import cn.rwhps.server.util.log.Log.set
 import cn.rwhps.server.util.log.Log.setCopyPrint
+import org.jline.reader.EndOfFileException
+import org.jline.reader.LineReader
+import org.jline.reader.LineReaderBuilder
+import org.jline.reader.UserInterruptException
+import org.jline.terminal.TerminalBuilder
+import java.io.InterruptedIOException
 import java.util.logging.Level
 import java.util.logging.Logger
+import kotlin.system.exitProcess
 
 /**
  * Welcome to Bugs RW-HPS !
@@ -53,11 +60,17 @@ import java.util.logging.Logger
  * @author RW-HPS/Dr
  */
 object Main {
+    private lateinit var reader: LineReader
+
     @JvmStatic
     fun main(args: Array<String>) {
 
         System.setProperty("file.encoding","UTF-8")
 
+        /* 尝试写一个UTF-8编码 */
+        System.setProperty("file.encoding", "UTF-8")
+        /* 覆盖输入输出流 */
+        inputMonitorInit()
         // 强制 UTF-8 我不愿意解决奇奇怪怪的问题
         if (!System.getProperty("file.encoding").equals("UTF-8",ignoreCase = true)) {
             clog("Please use UTF-8 !!!  -> java -Dfile.encoding=UTF-8 -jar Server.jar")
@@ -111,10 +124,6 @@ object Main {
         ModManage.loadUnits()
         //ModManage.test()
 
-
-        /* 按键监听 */
-        newThreadCore{ inputMonitor() }
-
         /* 加载完毕 */
         Events.fire(ServerLoadEvent())
 
@@ -141,19 +150,55 @@ object Main {
                 }
             }
         }
+
+        /* 按键监听 */
+        newThreadCore{ inputMonitor() }
+    }
+
+    /**
+     * 摆烂
+     * Win的CMD就是个垃圾
+     */
+    private fun inputMonitorInit() {
+        val terminal = TerminalBuilder.builder().encoding("UTF-8").build()
+        reader = LineReaderBuilder.builder().terminal(terminal).completer(ConsoleStream.TabCompleter).build() as LineReader
     }
 
     private fun inputMonitor() {
-        val instreamCommandReader = System.`in`
-        if (instreamCommandReader == null) {
-            Log.fatal("inputMonitor Null & listen command denied")
-            return
-        }
-        val bufferedReader = IoReadConversion.streamBufferRead(instreamCommandReader)
+        /* #209 */
+        val idlingCount = TimeAndNumber(5, 10)
+        var last = 0
+
         while (true) {
+            val line = try {
+                reader.readLine("> ")
+            } catch (e: InterruptedIOException) {
+                return
+            } catch (e: UserInterruptException) {
+                if (last != 1) {
+                    reader.printAbove("Interrupt again to force exit application")
+                    last = 1
+                    continue
+                }
+                reader.printAbove("force exit")
+                exitProcess(255)
+            } catch (e: EndOfFileException) {
+                if (last != 2) {
+                    reader.printAbove("Catch EndOfFile, again to exit application")
+                    last = 2
+                    continue
+                }
+                reader.printAbove("exit")
+                exitProcess(1)
+            }
+
+            last = 0
+            if (line.isEmpty()) {
+                continue
+            }
+
             try {
-                val str = bufferedReader.readLine()
-                val response = Data.SERVER_COMMAND.handleMessage(str,
+                val response = Data.SERVER_COMMAND.handleMessage(line,
                     StrCons { obj: String -> clog(obj) })
                 if (response != null && response.type != CommandHandler.ResponseType.noCommand) {
                     if (response.type != CommandHandler.ResponseType.valid) {
@@ -172,8 +217,14 @@ object Main {
                     }
                 }
             } catch (e: Exception) {
-                clog("InputMonitor Error")
-                info(e)
+                if (idlingCount.checkStatus()) {
+                    clog("InputMonitor Idling")
+                    return
+                } else {
+                    clog("InputMonitor Error")
+                    info(e)
+                    idlingCount.count++
+                }
             }
         }
     }

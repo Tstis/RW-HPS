@@ -69,6 +69,13 @@ Despite most of the things you can do in a normal game, you may also do a lot of
   > Discord: [RW-HPS](https://discord.gg/VwwxJhVG64)  
 - Mirrors:
   [Github](https://github.com/RW-HPS/RW-HPS) ; [Gitee](https://gitee.com/derdct/RW-HPS)
+  
+### Used by whom
+- Tiexiu.xyz
+    - [简幻欢](https://sfe.simpfun.cn)  
+- RELAY-Unofficial
+    - **RelayCN-Unofficial IP** - [SimpFun Cloud](https://cloud.simpfun.cn) : relay.der.kim
+    - **RelayRU-Unofficial IP** - `kaif.cloud`(Not URL)
 
 ## Recommended Configuration
 

@@ -42,7 +42,7 @@ object Data {
 	 */
     /** 自定义包名  */
     const val SERVER_ID = "cn.rwhps.server"
-    const val SERVER_CORE_VERSION = "5.5.0-M1-DEV"
+    const val SERVER_CORE_VERSION = "5.5.0-M2-DEV"
     /** 单位数据缓存  */
 	@JvmField val utilData = CompressOutputStream.getGzipOutputStream("customUnits", false)
 
