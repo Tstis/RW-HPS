@@ -19,6 +19,15 @@ import cn.rwhps.server.util.IpUtil
 import cn.rwhps.server.util.game.Events
 import cn.rwhps.server.util.log.Log.debug
 import cn.rwhps.server.util.log.Log.error
+import com.github.dr.rwserver.data.global.Data
+import com.github.dr.rwserver.data.global.NetStaticData
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.core.ConnectionAgreement
+import com.github.dr.rwserver.net.core.TypeConnect
+import com.github.dr.rwserver.util.ExtractUtil
+import com.github.dr.rwserver.util.log.Log.debug
+import com.github.dr.rwserver.util.log.Log.error
+import com.github.dr.rwserver.struct.Seq
 import io.netty.channel.ChannelHandler.Sharable
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.SimpleChannelInboundHandler
@@ -42,7 +51,14 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                     val connectionAgreement = ConnectionAgreement(ctx)
                     type = NetStaticData.RwHps.typeConnect.getTypeConnect(connectionAgreement)
                     attr.setIfAbsent(type)
-
+                    
+					if (ConnectionAgreement.IPData.contains(type.abstractNetConnect.ip)) {
+                        type.abstractNetConnect.disconnect()
+                        return
+                    } else {
+                        ConnectionAgreement.IPData.add(type.abstractNetConnect.ip)
+                    }
+					
                     if (Data.core.admin.bannedIP24.contains(IpUtil.ipToLong24(type.abstractNetConnect.ip))) {
                         type.abstractNetConnect.disconnect()
                         return
@@ -53,6 +69,11 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                     if (newConnectEvent.result) {
                         return
                     }
+                }
+                }
+                if (Data.core.admin.bannedIP24.contains(ExtractUtil.ipToLong(type.abstractNetConnect.ip))) {
+                    type.abstractNetConnect.disconnect()
+                    return
                 }
 
                 ctx.executor().execute {

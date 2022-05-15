@@ -11,10 +11,15 @@ package cn.rwhps.server.net.core
 
 import cn.rwhps.server.game.event.EventGlobalType
 import cn.rwhps.server.io.packet.Packet
+import com.github.dr.rwserver.struct.Seq
 import cn.rwhps.server.net.GroupNet
 import cn.rwhps.server.net.handler.rudp.PackagingSocket
 import cn.rwhps.server.util.game.Events
 import cn.rwhps.server.util.log.Log
+import com.github.dr.rwserver.io.packet.Packet
+import com.github.dr.rwserver.net.GroupNet
+import com.github.dr.rwserver.net.rudp.PackagingSocket
+import com.github.dr.rwserver.util.log.Log
 import io.netty.channel.ChannelHandlerContext
 import java.io.DataOutputStream
 import java.io.IOException
@@ -111,6 +116,7 @@ class ConnectionAgreement {
     @Throws(IOException::class)
     fun close(groupNet: GroupNet?) {
         Events.fire(EventGlobalType.NewCloseEvent(this))
+        IPData.remove(ip)
         if (groupNet != null) {
             if (objectOutStream is ChannelHandlerContext) {
                 groupNet.remove(objectOutStream.channel())
@@ -146,5 +152,9 @@ class ConnectionAgreement {
 
     private fun convertIp(ipString: String): String {
         return ipString.substring(1, ipString.indexOf(':'))
+    }
+
+    companion object {
+        val IPData = Seq<String>()
     }
 }
