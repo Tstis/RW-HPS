@@ -307,7 +307,7 @@ open class GameVersionRelay(connectionAgreement: ConnectionAgreement) : Abstract
             // List OPEN
             o.writeBoolean(false)
             o.writeBoolean(true)
-            o.writeString("{{ УІД >>> s.vangers.tk >>> u" + relay!!.id + " }}")
+            o.writeString("{{ S4U >>> s.vangers.tk >>> u" + relay!!.id + " }}")
             // 多播
             o.writeBoolean(false)
             sendPacket(o.createPacket(PacketType.FORWARD_HOST_SET)) //+108+140
