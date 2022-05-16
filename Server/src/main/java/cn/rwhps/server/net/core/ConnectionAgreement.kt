@@ -111,8 +111,8 @@ class ConnectionAgreement {
 
     @Throws(IOException::class)
     fun close(groupNet: GroupNet?) {
-        //Events.fire(EventGlobalType.NewCloseEvent(this))
-        IPData.remove(ip)
+		IPData.remove(ip)
+        Events.fire(EventGlobalType.NewCloseEvent(this))
         if (groupNet != null) {
             if (objectOutStream is ChannelHandlerContext) {
                 groupNet.remove(objectOutStream.channel())
