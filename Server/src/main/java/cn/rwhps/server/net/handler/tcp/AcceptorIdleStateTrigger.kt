@@ -68,10 +68,10 @@ internal class AcceptorIdleStateTrigger : ChannelInboundHandlerAdapter() {
         }
     }
 
-    /**
-     * 清理连接 释放资源
-     * @param ctx ChannelHandlerContext
-     */
+   
+    // 清理连接 释放资源
+    @param ctx ChannelHandlerContext
+    
     private fun clear(ctx: ChannelHandlerContext) {
         val channel = ctx.channel()
         try {
