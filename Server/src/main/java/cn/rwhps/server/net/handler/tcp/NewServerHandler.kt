@@ -40,33 +40,20 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                 var type = attr.get()
 
                 if (type == null) {
-                    val connectionAgreement = ConnectionAgreement(ctx)
-                    val type = NetStaticData.RwHps.typeConnect.getTypeConnect(connectionAgreement)
+                    type = NetStaticData.protocolData.typeConnect.getTypeConnect(ConnectionAgreement(ctx))
                     attr.setIfAbsent(type)
-                    
-					if (ConnectionAgreement.IPData.contains(type.abstractNetConnect.ip)) {
+                    if (ConnectionAgreement.IPData.contains(type.abstractNetConnect.ip)) {
                         type.abstractNetConnect.disconnect()
                         return
                     } else {
                         ConnectionAgreement.IPData.add(type.abstractNetConnect.ip)
                     }
-					
-                    if (Data.core.admin.bannedIP24.contains(IpUtil.ipToLong24(type.abstractNetConnect.ip))) {
-                        type.abstractNetConnect.disconnect()
-                        return
-                    }
-
-                    val newConnectEvent = NewConnectEvent(connectionAgreement)
-                    Events.fire(newConnectEvent)
-                    if (newConnectEvent.result) {
-                        return
-                    }
-                }
                 }
                 if (Data.core.admin.bannedIP24.contains(ExtractUtil.ipToLong(type.abstractNetConnect.ip))) {
                     type.abstractNetConnect.disconnect()
                     return
                 }
+
 
                 ctx.executor().execute {
                     if (type.abstractNetConnect.isConnectServer) {
@@ -76,7 +63,7 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                     try {
                         type.typeConnect(msg)
                     } catch (e: Exception) {
-                        debug(e = e)
+                        debug(e)
                         //type.disconnect()
                     }
                 }
@@ -98,8 +85,8 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
         error(cause.cause!!)
     }
 
-    companion object {
-        @JvmField
-        val NETTY_CHANNEL_KEY = AttributeKey.valueOf<TypeConnect>("User-Net")!!
-    }
+//    companion object {
+//        @JvmField
+//        val NETTY_CHANNEL_KEY = AttributeKey.valueOf<TypeConnect>("User-Net")!!
+//    }
 }
