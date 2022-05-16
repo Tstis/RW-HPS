@@ -84,7 +84,7 @@ internal class AcceptorIdleStateTrigger : ChannelInboundHandlerAdapter() {
                 ctx.close()
             }
         } finally {
-            //OVER_MAP.remove(channel.id().asLongText())
+            OVER_MAP.remove(channel.id().asLongText())
         }
     }
 }
