@@ -81,9 +81,9 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                     }
                 }
             }
-        } catch (ss: Exception) {
-            error(ss)
-        }
+        } //catch (ss: Exception) {
+          //  error(ss)
+        //}
     }
 
     @Throws(Exception::class)
