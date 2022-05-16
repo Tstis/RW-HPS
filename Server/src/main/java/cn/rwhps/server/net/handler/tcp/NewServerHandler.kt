@@ -41,7 +41,7 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
 
                 if (type == null) {
                     val connectionAgreement = ConnectionAgreement(ctx)
-                    type = NetStaticData.RwHps.typeConnect.getTypeConnect(connectionAgreement)
+                    val type = NetStaticData.RwHps.typeConnect.getTypeConnect(connectionAgreement)
                     attr.setIfAbsent(type)
                     
 					if (ConnectionAgreement.IPData.contains(type.abstractNetConnect.ip)) {
@@ -81,9 +81,9 @@ internal class NewServerHandler : SimpleChannelInboundHandler<Any?>() {
                     }
                 }
             }
-        } //catch (ss: Exception) {
-          //  error(ss)
-        //}
+        } catch (ss: Exception) {
+            error(ss)
+        }
     }
 
     @Throws(Exception::class)
