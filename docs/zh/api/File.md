@@ -31,7 +31,7 @@ FileUtil.getTempFile("文件名")
 // 获取临时文件夹
 FileUtil.getTempDirectory("文件夹名")
 // 会创建文件夹并尝试创建文件
-FileUtil().mkdir();
+new FileUtil().mkdir();
 // 会尝试创建文件
-FileUtil().createNewFile();
+nwe FileUtil().createNewFile();
 ```

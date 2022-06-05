@@ -115,8 +115,7 @@ RW-HPS是一个Rusted Warfare游戏的服务端,用于在运行Java8的服务器
 #### 目前待完成
 - [ ] 模拟层
 - [ ] Vote (Bug :( )
-- [ ] 1.15.P*
-- [x] Load RWMOD
+- [x] 1.15.P*
 - [ ] 热修改游戏进度
 - [ ] WEB面板
 
@@ -142,7 +141,8 @@ RW-HPS是一个Rusted Warfare游戏的服务端,用于在运行Java8的服务器
 - Tiexiu.xyz
     - [简幻欢](https://sfe.simpfun.cn)  
 - 非官方RELAY
-    - **RelayCN-Unofficial IP** - [SimpFun Cloud](https://vps.tiexiu.xyz) : relay.der.kim
+    - **RelayCN-Unofficial IP** - [SimpFun Cloud](https://cloud.simpfun.cn) : relay.der.kim
+    - **RelayRU-Unofficial IP** - `kaif.cloud`(Not URL)
 
 ## 运行配置
 
@@ -181,3 +181,8 @@ RW-HPS是AGPL v3授权的开放源码项目，完全免费使用。然而，如�
 
 特别感谢 [JetBrains](https://www.jetbrains.com/?from=rw-hps) 为开源项目提供免费的 [IntelliJ IDEA](https://www.jetbrains.com/idea/?from=rw-hps) 等 IDE 的授权  
 [<img src=".github/jetbrains-variant-3.png" width="200"/>](https://www.jetbrains.com/?from=rw-hps)
+  
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/RW-HPS/RW-HPS.svg)](https://starchart.cc/RW-HPS/RW-HPS)

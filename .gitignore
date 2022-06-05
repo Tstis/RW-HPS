@@ -1,6 +1,6 @@
 logs/
 /net/build/
-/Server/build/
+/Server-Core/build/
 /timetask/build/
 config/
 *.gif

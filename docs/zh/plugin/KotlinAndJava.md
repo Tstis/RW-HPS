@@ -304,5 +304,3 @@ Java 使用者可以认为 `@JvmBlockingBridge suspend fun getValue(): String` �
 
 
 ----
-
-> [回到 Mirai 文档索引](README.md#jvm-平台-mirai-开发)

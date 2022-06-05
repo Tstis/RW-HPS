@@ -49,8 +49,7 @@ Despite most of the things you can do in a normal game, you may also do a lot of
 #### Currently to be completed
 - [ ] Analog Layer
 - [ ] Vote (Bug :( )
-- [ ] 1.15.P*
-- [x] Load RWMOD
+- [x] 1.15.P*
 - [ ] Hot modify game progress
 - [ ] GamePanel
 
@@ -69,6 +68,13 @@ Despite most of the things you can do in a normal game, you may also do a lot of
   > Discord: [RW-HPS](https://discord.gg/VwwxJhVG64)  
 - Mirrors:
   [Github](https://github.com/RW-HPS/RW-HPS) ; [Gitee](https://gitee.com/derdct/RW-HPS)
+  
+### Used by whom
+- Tiexiu.xyz
+    - [简幻欢](https://sfe.simpfun.cn)  
+- RELAY-Unofficial
+    - **RelayCN-Unofficial IP** - [SimpFun Cloud](https://cloud.simpfun.cn) : relay.der.kim
+    - **RelayRU-Unofficial IP** - `kaif.cloud`(Not URL)
 
 ## Recommended Configuration
 
@@ -113,6 +119,11 @@ If you meet any problem or have any questions, feel free to file an issue. Our g
 ## Statements
 ### For educational purposes only
 - RW-HPS is a free and open source project and is only for educational purposes. You shall not use this project for any illegal purposes. The author or the developement team of this project will not be held responsible for any damages.
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/RW-HPS/RW-HPS.svg)](https://starchart.cc/RW-HPS/RW-HPS)
 
 ## License
 - [AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)
